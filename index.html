@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demetriou CarsCy Nicosia | Εισαγωγές & Πωλήσεις Αυτοκινήτων</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --primary-color: #1a1a1a; --accent-color: #e50914; --text-light: #ffffff; --bg-light: #f4f4f4; --card-bg: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-light); color: #333; }
+        header { background-color: var(--primary-color); color: var(--text-light); padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo h1 { font-size: 24px; font-weight: 800; }
+        .logo span { color: var(--accent-color); }
+        .showroom { max-width: 1200px; margin: 40px auto; padding: 20px; }
+        .showroom h2 { text-align: center; margin-bottom: 30px; font-size: 28px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+        .car-card { background-color: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .car-img { width: 100%; height: 200px; object-fit: cover; }
+        .car-details { padding: 20px; }
+        .car-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+        .car-price { font-size: 22px; color: var(--accent-color); font-weight: bold; }
+        footer { background-color: #111; color: #666; text-align: center; padding: 20px; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><h1>Demetriou <span>CarsCy</span></h1></div>
+    </header>
+
+    <section class="showroom">
+        <h2>Διαθέσιμα Οχήματα</h2>
+        <div class="grid" id="carGrid">
+            <!-- Τα αυτοκίνητα θα εμφανιστούν εδώ αυτόματα -->
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Demetriou CarsCy. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const sbClient = supabase.createClient(
+            "https://qwcdqsmoaobmbeaviioh.supabase.co", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw"
+        );
+
+        async function fetchCars() {
+            const { data: cars, error } = await sbClient.from('cars').select('*');
+            
+            if (cars) {
+                const grid = document.getElementById('carGrid');
+                grid.innerHTML = '';
+                cars.forEach(car => {
+                    grid.innerHTML += `
+                        <div class="car-card">
+                            <img src="${car.image_url}" alt="${car.brand_model}" class="car-img">
+                            <div class="car-details">
+                                <div class="car-title">${car.brand_model}</div>
+                                <div class="car-price">€${car.price}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        fetchCars();
+    </script>
+</body>
+</html>
