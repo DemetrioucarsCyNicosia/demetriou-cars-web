@@ -44,7 +44,6 @@
         .stock-section { margin-top: 40px; }
         .stock-list { display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
         
-        /* Custom Scrollbar για το stock list */
         .stock-list::-webkit-scrollbar { width: 6px; }
         .stock-list::-webkit-scrollbar-thumb { background: var(--line-color); border-radius: 3px; }
         
@@ -116,12 +115,10 @@
     </div>
 
     <script>
-        // Σωστά αρχεία σύνδεσης Supabase
         const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
         const sbClient = supabase.createClient(sbUrl, sbKey);
 
-        // 1. ΣΥΝΑΡΤΗΣΗ ΦΟΡΤΩΣΗΣ ΣΤΟΚ
         async function loadStock() {
             const container = document.getElementById('stockList');
             
@@ -131,19 +128,17 @@
                 .order('id', { ascending: false });
 
             if (error) {
-                console.error("Σφάλμα ανάκτησης:", error);
+                console.error(error);
                 container.innerHTML = `<p style='color: #ff4a4a; font-size: 13px;'>Σφάλμα φόρτωσης: ${error.message}</p>`;
                 return;
             }
 
             if (!cars || cars.length === 0) {
-                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px;'>Δεν υπάρχουν οχήματα στη βάση δεδομένων.</p>";
+                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px;'>Δεν υπάρχουν οχήματα στη βάση.</p>";
                 return;
             }
 
-            // Χτίσιμο της λίστας
             container.innerHTML = cars.map(car => {
-                // Διαμόρφωση εμφάνισης τιμής
                 let displayPrice = "On Request";
                 if (car.price && car.price.trim() !== "") {
                     let cleanPrice = car.price.replace(/[^0-9]/g, '');
@@ -166,7 +161,6 @@
             }).join('');
         }
 
-        // 2. ΣΥΝΑΡΤΗΣΗ ΑΠΟΘΗΚΕΥΣΗΣ
         async function saveCar(e) {
             e.preventDefault();
             const errBox = document.getElementById('errorMsg');
@@ -190,22 +184,20 @@
                 errBox.style.display = 'block';
             } else {
                 document.getElementById('carForm').reset();
-                await loadStock(); // Φρεσκάρισμα
+                await loadStock();
             }
         }
 
-        // 3. ΣΥΝΑΡΤΗΣΗ ΔΙΑΓΡΑΦΗΣ (Η ΔΙΟΡΘΩΣΗ)
         async function deleteCar(carId) {
             if (!carId) {
-                alert("Σφάλμα: Δεν βρέθηκε έγκυρο ID οχήματος.");
+                alert("Σφάλμα: Δεν βρέθηκε ID οχήματος.");
                 return;
             }
 
-            if (!confirm("Είστε σίγουρος ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα από το στοκ;")) {
+            if (!confirm("Θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα;")) {
                 return;
             }
 
-            // Στέλνουμε τη διαγραφή βάσει του ID
             const { error } = await sbClient
                 .from('cars')
                 .delete()
@@ -214,12 +206,10 @@
             if (error) {
                 alert("Αποτυχία διαγραφής: " + error.message);
             } else {
-                // Φορτώνει αμέσως ξανά τη λίστα για να εξαφανιστεί από τα μάτια σου
                 await loadStock();
             }
         }
 
-        // Φόρτωση με το που ανοίγει η σελίδα
         window.onload = loadStock;
     </script>
 </body>
