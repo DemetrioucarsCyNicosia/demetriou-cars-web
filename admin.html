@@ -18,116 +18,79 @@
         body {
             background: linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.95)), 
                         url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1800&q=95') no-repeat center center fixed;
-            background-size: cover; color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 40px 20px;
+            background-size: cover; color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 40px 20px;
         }
-        
-        .login-card { background: var(--card-bg); border: 1px solid var(--line-color); padding: 40px; border-radius: 4px; width: 100%; max-width: 400px; text-align: center; backdrop-filter: blur(10px); }
-        .login-card h2 { font-family: "Times New Roman", serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 30px; font-weight: 400; text-transform: uppercase; }
-        
-        .dashboard-container { display: none; width: 100%; max-width: 900px; background: var(--card-bg); border: 1px solid var(--line-color); padding: 40px; border-radius: 4px; backdrop-filter: blur(10px); }
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line-color); padding-bottom: 20px; margin-bottom: 30px; }
-        .dashboard-header h2 { font-family: "Times New Roman", serif; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 400; }
-        
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px; }
-        .input-group input, .input-group select { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--line-color); color: #fff; border-radius: 2px; outline: none; font-size: 14px; }
-        .input-group input:focus, .input-group select:focus { border-color: var(--accent); }
-        .input-group select option { background: #14141c; color: #fff; }
-        
+        .admin-box { background: var(--card-bg); border: 1px solid var(--line-color); border-radius: 4px; padding: 40px; width: 100%; max-width: 700px; backdrop-filter: blur(10px); }
+        h2 { font-family: "Times New Roman", serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 30px; text-transform: uppercase; font-size: 22px; }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .full-width { grid-column: span 2; }
+        .field-group { display: flex; flex-direction: column; }
+        .field-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; }
+        .field-group input, .field-group select { background: #14141c; border: 1px solid var(--line-color); color: #fff; padding: 12px; font-size: 14px; outline: none; border-radius: 2px; }
+        .field-group input:focus, .field-group select:focus { border-color: var(--accent); }
+        .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 15px; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%; transition: background 0.3s; }
+        .btn-submit:hover { background: #d4b882; }
         
-        .btn-action { width: 100%; background: var(--accent); color: #0d0d12; border: none; padding: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 11px; cursor: pointer; border-radius: 2px; transition: all 0.3s; }
-        .btn-action:hover { background: #fff; }
-        .btn-logout { background: transparent; color: var(--text-muted); border: 1px solid var(--line-color); padding: 8px 15px; font-size: 11px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; }
-        .btn-logout:hover { color: #ff4a4a; border-color: #ff4a4a; }
-        
-        /* LIST STYLES */
-        .stock-management { margin-top: 50px; border-top: 1px solid var(--line-color); padding-top: 30px; }
-        .stock-management h3 { font-family: "Times New Roman", serif; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: 400; }
+        .stock-section { margin-top: 40px; border-top: 1px solid var(--line-color); padding-top: 30px; }
         .car-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 15px; border: 1px solid var(--line-color); margin-bottom: 10px; border-radius: 2px; }
-        .car-info h4 { font-size: 14px; margin-bottom: 4px; }
-        .car-info p { font-size: 12px; color: var(--text-muted); }
-        .btn-delete { background: transparent; color: #ff4a4a; border: 1px solid rgba(255, 74, 74, 0.3); padding: 6px 12px; font-size: 11px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; border-radius: 2px; transition: all 0.3s; }
-        .btn-delete:hover { background: #ff4a4a; color: #fff; }
-
-        .error-msg { color: #ff4a4a; font-size: 13px; margin-top: 15px; display: none; }
-        .success-msg { color: #4aff4a; font-size: 13px; margin-top: 15px; display: none; text-align: center; }
+        .car-info h4 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .car-info p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .btn-delete { background: transparent; border: 1px solid #dc3545; color: #dc3545; padding: 6px 14px; font-size: 11px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .btn-delete:hover { background: #dc3545; color: #fff; }
+        .msg { color: #ff4a4a; font-size: 12px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
-    <!-- 1. ΦΟΡΜΑ LOGIN -->
-    <div class="login-card" id="loginBlock">
-        <h2>Admin Portal</h2>
-        <div class="input-group">
-            <label>Email Address</label>
-            <input type="email" id="loginEmail" placeholder="aris@example.com">
-        </div>
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="loginPassword" placeholder="••••••••">
-        </div>
-        <button class="btn-action" onclick="handleLogin()">Sign In</button>
-        <div class="error-msg" id="errorBlock">Λάθος στοιχεία σύνδεσης. Προσπαθήστε ξανά.</div>
-    </div>
+    <div class="admin-box">
+        <h2>Προσθήκη Νέου Οχήματος</h2>
+        <form id="carForm" onsubmit="saveCar(event)">
+            <div class="form-grid">
+                <div class="field-group full-width">
+                    <label>Μάρκα & Μοντέλο</label>
+                    <input type="text" id="brandModel" placeholder="π.χ. Toyota RAV4" required>
+                </div>
+                <div class="field-group">
+                    <label>Έτος</label>
+                    <input type="number" id="year" placeholder="2023" required>
+                </div>
+                <div class="field-group">
+                    <label>Χιλιόμετρα</label>
+                    <input type="text" id="mileage" placeholder="12,450 km">
+                </div>
+                <div class="field-group">
+                    <label>Χρώμα</label>
+                    <input type="text" id="color" placeholder="Pearl White">
+                </div>
+                <div class="field-group">
+                    <label>Προέλευση / Χώρα</label>
+                    <input type="text" id="country" placeholder="Japan">
+                </div>
+                <div class="field-group">
+                    <label>Κατάσταση (Status)</label>
+                    <select id="status">
+                        <option value="Stock">Stock (Σε απόθεμα)</option>
+                        <option value="Pre-order">Pre-order</option>
+                        <option value="Coming soon">Coming soon</option>
+                        <option value="Sold">Sold</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Τιμή (π.χ. 24500 ή άσε κενό για On Request)</label>
+                    <input type="text" id="price" placeholder="24500">
+                </div>
+                <div class="field-group full-width">
+                    <label>Link Φωτογραφίας (Image URL)</label>
+                    <input type="url" id="imageUrl" placeholder="https://images.unsplash.com/...">
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Καταχώρηση στο Στοκ</button>
+            <div id="errorMsg" class="msg"></div>
+        </form>
 
-    <!-- 2. ΠΑΝΕΛ ΔΙΑΧΕΙΡΙΣΗΣ -->
-    <div class="dashboard-container" id="dashboardBlock">
-        <div class="dashboard-header">
-            <h2>Προσθήκη Νέου Οχήματος</h2>
-            <button class="btn-logout" onclick="handleLogout()">Έξοδος</button>
-        </div>
-        
-        <div class="form-grid">
-            <div class="input-group full-width">
-                <label>Μάρκα & Μοντέλο</label>
-                <input type="text" id="carModel" placeholder="π.χ. Toyota RAV4 Black Edition">
-            </div>
-            <div class="input-group">
-                <label>Έτος</label>
-                <input type="number" id="carYear" placeholder="2023">
-            </div>
-            <div class="input-group">
-                <label>Χιλιόμετρα</label>
-                <input type="text" id="carMileage" placeholder="12,450 km">
-            </div>
-            <div class="input-group">
-                <label>Χρώμα</label>
-                <input type="text" id="carColor" placeholder="Pearl White">
-            </div>
-            <div class="input-group">
-                <label>Προέλευση / Χώρα</label>
-                <input type="text" id="carCountry" placeholder="Japan">
-            </div>
-            <div class="input-group">
-                <label>Κατάσταση (Status)</label>
-                <select id="carStatus">
-                    <option value="Stock">Stock</option>
-                    <option value="Sold">Sold</option>
-                    <option value="Coming soon">Coming soon</option>
-                    <option value="Pre-order">Pre-order</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Τιμή (π.χ. 24500 ή "On Request")</label>
-                <input type="text" id="carPrice" placeholder="π.χ. 24500">
-            </div>
-            <div class="input-group full-width">
-                <label>Link Φωτογραφίας (Image URL)</label>
-                <input type="text" id="carImg" placeholder="https://images.unsplash.com/...">
-            </div>
-            <div class="full-width" style="margin-top: 10px;">
-                <button class="btn-action" onclick="submitNewCar()">Καταχώρηση Στο Στοκ</button>
-            </div>
-        </div>
-        <div class="success-msg" id="successBlock">Το αυτοκίνητο προστέθηκε επιτυχώς στο Showroom!</div>
-        <div class="error-msg" id="dashErrorBlock">Κάτι πήγε στραβά.</div>
-
-        <!-- ΛΙΣΤΑ ΔΙΑΧΕΙΡΙΣΗΣ ΣΤΟΚ (DELETE) -->
-        <div class="stock-management">
-            <h3>Τρέχον Στοκ & Διαγραφή</h3>
-            <div id="stockList">Φόρτωση οχημάτων...</div>
+        <div class="stock-section">
+            <h2>Τρέχον Στοκ & Διαγραφή</h2>
+            <div id="stockList"></div>
         </div>
     </div>
 
@@ -137,116 +100,69 @@
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw"
         );
 
-        window.onload = function() {
-            if (localStorage.getItem('sb-admin-session') === 'true') {
-                showDashboard();
-            }
-        };
-
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const err = document.getElementById('errorBlock');
-            err.style.display = "none";
-
-            const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                err.innerText = "Αποτυχία σύνδεσης: " + error.message;
-                err.style.display = "block";
-            } else {
-                localStorage.setItem('sb-admin-session', 'true');
-                showDashboard();
-            }
-        }
-
-        function showDashboard() {
-            document.getElementById('loginBlock').style.display = 'none';
-            document.getElementById('dashboardBlock').style.display = 'block';
-            fetchCurrentStock();
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('sb-admin-session');
-            window.location.reload();
-        }
-
-        // ΦΟΡΤΩΣΗ ΟΛΩΝ ΤΩΝ ΑΥΤΟΚΙΝΗΤΩΝ ΜΕ ΚΟΥΜΠΙ DELETE
-        async function fetchCurrentStock() {
-            const listContainer = document.getElementById('stockList');
+        async function loadStock() {
             const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
+            if (error) { console.error(error); return; }
 
-            if (error) {
-                listContainer.innerText = "Σφάλμα κατά τη φόρτωση του στόλου.";
+            const container = document.getElementById('stockList');
+            if(!cars || cars.length === 0) {
+                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px;'>Δεν υπάρχουν οχήματα στη βάση.</p>";
                 return;
             }
 
-            if(cars.length === 0) {
-                listContainer.innerText = "Δεν υπάρχουν οχήματα στο στοκ αυτή τη στιγμή.";
-                return;
-            }
-
-            listContainer.innerHTML = cars.map(car => `
-                <div class="car-item" id="car-${car.id}">
-                    <div class="car-info">
-                        <h4>${car.brand_model} (${car.year})</h4>
-                        <p>Status: <strong>${car.status || 'Stock'}</strong> | Τιμή: <strong>${car.price ? car.price + ' €' : 'On Request'}</strong></p>
+            container.innerHTML = cars.map(car => {
+                let pText = car.price ? car.price + " €" : "On Request";
+                return `
+                    <div class="car-item">
+                        <div class="car-info">
+                            <h4>${car.brand_model} (${car.year || '-'})</h4>
+                            <p>Status: <strong>${car.status || 'Stock'}</strong> | Τιμή: ${pText}</p>
+                        </div>
+                        <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
                     </div>
-                    <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        async function submitNewCar() {
-            const brand_model = document.getElementById('carModel').value;
-            const year = parseInt(document.getElementById('carYear').value);
-            const mileage = document.getElementById('carMileage').value;
-            const color = document.getElementById('carColor').value;
-            const country = document.getElementById('carCountry').value;
-            const status = document.getElementById('carStatus').value;
-            const price = document.getElementById('carPrice').value;
-            const image_url = document.getElementById('carImg').value;
+        async function saveCar(e) {
+            e.preventDefault();
+            document.getElementById('errorMsg').style.display = 'none';
 
-            const sBlock = document.getElementById('successBlock');
-            const eBlock = document.getElementById('dashErrorBlock');
-            sBlock.style.display = "none"; eBlock.style.display = "none";
+            const payload = {
+                brand_model: document.getElementById('brandModel').value,
+                year: parseInt(document.getElementById('year').value),
+                mileage: document.getElementById('mileage').value,
+                color: document.getElementById('color').value,
+                country: document.getElementById('country').value,
+                status: document.getElementById('status').value,
+                price: document.getElementById('price').value,
+                image_url: document.getElementById('imageUrl').value
+            };
 
-            if(!brand_model || !year) {
-                eBlock.innerText = "Τα πεδία Μάρκα/Μοντέλο και Έτος είναι υποχρεωτικά.";
-                eBlock.style.display = "block"; return;
-            }
-
-            const { data, error } = await sbClient.from('cars').insert([
-                { brand_model, year, mileage, color, country, status, price, image_url }
-            ]);
-
-            if (error) {
-                eBlock.innerText = "Σφάλμα: " + error.message; eBlock.style.display = "block";
+            const { error } = await sbClient.from('cars').insert([payload]);
+            if(error) {
+                const errBox = document.getElementById('errorMsg');
+                errBox.innerText = "Σφάλμα κατά την αποθήκευση: " + error.message;
+                errBox.style.display = 'block';
             } else {
-                sBlock.style.display = "block";
-                document.getElementById('carModel').value = '';
-                document.getElementById('carYear').value = '';
-                document.getElementById('carMileage').value = '';
-                document.getElementById('carColor').value = '';
-                document.getElementById('carCountry').value = '';
-                document.getElementById('carPrice').value = '';
-                document.getElementById('carImg').value = '';
-                fetchCurrentStock(); // Ανανέωση λίστας
+                document.getElementById('carForm').reset();
+                loadStock();
             }
         }
 
-        // ΛΕΙΤΟΥΡΓΙΑ ΔΙΑΓΡΑΦΗΣ
         async function deleteCar(id) {
-            if(confirm("Είσαι σίγουρος ότι θέλεις να διαγράψεις οριστικά αυτό το αυτοκίνητο από το στοκ;")) {
-                const { error } = await sbClient.from('cars').delete().eq('id', id);
-                if (error) {
-                    alert("Αποτυχία διαγραφής: " + error.message);
-                } else {
-                    const element = document.getElementById(`car-${id}`);
-                    if(element) element.remove();
-                }
+            if(!confirm("Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το όχημα;")) return;
+
+            const { error } = await sbClient.from('cars').delete().eq('id', id);
+            if(error) {
+                alert("Σφάλμα κατά τη διαγραφή: " + error.message);
+            } else {
+                // Φορτώνει αμέσως ξανά τη λίστα για να εξαφανιστεί από την οθόνη
+                loadStock();
             }
         }
+
+        window.onload = loadStock;
     </script>
 </body>
 </html>
