@@ -3,92 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C.J. Demetriou Motors | Nicosia Location</title>
+    <title>Showroom | C.J. Demetriou Motors</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-dark: #0d0d12;
-            --accent: #bfa36a;
-            --text-light: #ffffff;
-            --text-muted: #90909a;
-            --card-bg: rgba(20, 20, 28, 0.6);
-            --line-color: rgba(255, 255, 255, 0.1);
+            --bg-card: rgba(20, 20, 28, 0.85); 
+            --text-main: #ffffff;     
+            --text-muted: #90909a;    
+            --accent: #bfa36a;        
+            --line-color: rgba(255, 255, 255, 0.1);    
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            overflow-x: hidden;
+            background: linear-gradient(rgba(11, 11, 15, 0.75), rgba(11, 11, 15, 0.85)), 
+                        url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1800&q=95') no-repeat center center fixed;
+            background-size: cover; color: var(--text-main); padding-bottom: 60px;
         }
 
-        /* HERO BG */
-        .hero-video-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; overflow: hidden;
-        }
-        .hero-video-container::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(11, 11, 15, 0.65), rgba(11, 11, 15, 0.85));
-        }
-        .hero-video-container img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* HEADER */
         header {
             padding: 15px 50px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--line-color); background: rgba(11, 11, 15, 0.6); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--line-color); background: rgba(11, 11, 15, 0.85); backdrop-filter: blur(10px);
             position: sticky; top: 0; z-index: 1000;
         }
+
         .logo-block { display: flex; align-items: center; cursor: pointer; width: 160px; }
         .logo-block svg { width: 100%; height: auto; }
 
-        nav a { color: var(--text-light); text-decoration: none; margin-left: 40px; font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 500; }
+        nav a { color: var(--text-main); text-decoration: none; margin-left: 40px; font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 500; }
         nav a:hover, nav a.active-link { color: var(--accent); }
 
-        /* HERO CONTENT */
-        .hero-content {
-            height: calc(100vh - 90px); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px;
-        }
-        .hero-content h1 { font-family: "Times New Roman", Times, serif; font-size: 13px; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; font-weight: 400; }
+        .filter-dock { max-width: 1140px; margin: 40px auto; padding: 40px 20px; background: var(--bg-card); border: 1px solid var(--line-color); border-radius: 4px; backdrop-filter: blur(5px); }
+        .filter-headline { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 25px; text-align: center; font-weight: 600; }
+        .filter-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .field-group { display: flex; flex-direction: column; }
+        .field-group label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-muted); }
+        .filter-row select { width: 100%; padding: 12px 5px; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); background: transparent; font-size: 14px; color: var(--text-main); outline: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M0 3l5 5 5-5z' fill='%23bfa36a'/></svg>"); background-repeat: no-repeat; background-position: right center; }
+        .filter-row select option { background-color: #14141c; color: #fff; }
+        .action-container { grid-column: span 3; display: flex; justify-content: flex-end; gap: 20px; margin-top: 25px; }
+        .btn-search { background: var(--accent); color: #0d0d12; border: none; padding: 12px 45px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; }
+        .btn-reset { background: transparent; color: var(--text-muted); border: none; padding: 12px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+
+        .showroom-section { max-width: 1200px; margin: 0 auto 60px auto; padding: 0 20px; min-height: 400px; }
+        .showroom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 40px 30px; }
         
-        /* QUICK DOCK */
-        .quick-dock {
-            width: 100%; max-width: 800px; padding: 30px; background: rgba(20, 20, 28, 0.85); border: 1px solid var(--line-color); border-radius: 4px; backdrop-filter: blur(10px); margin-top: 20px;
-        }
-        .dock-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .dock-field { display: flex; flex-direction: column; text-align: left; }
-        .dock-field label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 6px; }
-        .dock-field span { font-size: 13px; color: var(--text-light); font-weight: 500; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .dock-btn-box { display: flex; align-items: flex-end; }
-        .btn-dock-search { width: 100%; background: var(--accent); color: #0d0d12; border: none; padding: 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; cursor: pointer; border-radius: 2px; text-align: center; text-decoration: none; }
+        .car-card { background: var(--bg-card); border: 1px solid var(--line-color); border-radius: 4px; overflow: hidden; backdrop-filter: blur(5px); }
+        .img-container { position: relative; width: 100%; height: 240px; overflow: hidden; background: #14141c; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .car-card:hover .img-container img { transform: scale(1.03); }
+        .badge-status { position: absolute; bottom: 15px; left: 15px; background: var(--accent); color: #0d0d12; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 12px; font-weight: 600; }
+        
+        .card-details { padding: 25px 20px; }
+        .car-title { font-family: "Times New Roman", Times, serif; font-size: 21px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+        .car-specs { font-size: 12px; color: var(--text-muted); margin: 6px 0 14px 0; }
+        .card-footer-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .car-price { font-size: 18px; font-weight: 600; }
+        .car-tag { font-size: 11px; text-transform: uppercase; color: var(--accent); letter-spacing: 1px; }
 
-        /* VALUE SECTION */
-        .value-section { max-width: 1140px; margin: 100px auto; padding: 0 20px; text-align: center; }
-        .section-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 15px; font-weight: 600; }
-        .value-card { max-width: 700px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--line-color); padding: 50px 40px; border-radius: 4px; backdrop-filter: blur(5px); }
-        .value-card p { font-size: 14px; line-height: 1.8; color: #d1d1d6; margin-bottom: 20px; text-align: justify; }
-
-        /* FOOTER & CONTACT */
-        footer { background: #07070a; border-top: 1px solid var(--line-color); padding: 60px 20px 40px 20px; text-align: center; }
-        .footer-grid { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 40px; margin-bottom: 30px; }
-        .footer-col h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 15px; }
-        .footer-col p { font-size: 13px; color: #fff; line-height: 1.6; }
-        .footer-col a { color: var(--accent); text-decoration: none; }
-        .footer-bottom { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
-
-        @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            nav a { margin-left: 20px; font-size: 10px; letter-spacing: 1.5px; }
-            .dock-grid { grid-template-columns: 1fr; gap: 15px; }
-            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
-        }
+        @media (max-width: 900px) { .filter-row { grid-template-columns: 1fr; gap: 20px; } .action-container { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
-    <div class="hero-video-container">
-        <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1800&q=95" alt="Mercedes AMG Background">
-    </div>
-
+    <!-- HEADER -->
     <header>
         <div class="logo-block" onclick="window.location.href='index.html';">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240">
@@ -99,7 +77,6 @@
                     <path d="M 35 30 Q 55 12 75 12 Q 95 12 115 30 Q 120 40 120 48 L 30 48 Q 30 40 35 30 Z" fill="#bfa36a"/>
                     <path d="M 42 32 Q 55 18 75 18 Q 95 18 108 32 Z" fill="#000000"/>
                     <path d="M 22 48 L 128 48 Q 135 48 135 58 L 130 85 Q 128 92 115 92 L 35 92 Q 22 92 20 85 L 15 58 Q 15 48 22 48 Z" fill="#bfa36a"/>
-                    <path d="M 50 68 L 100 68 Q 102 78 75 78 Q 48 78 50 68 Z" fill="#000000"/>
                 </g>
                 <path d="M 40 125 L 460 125 L 445 175 L 55 175 Z" fill="#0d0d12"/>
                 <text x="250" y="160" font-family="'Arial Black', sans-serif" font-size="29" font-weight="900" fill="#ffffff" text-anchor="middle">C.J. DEMETRIOU MOTORS</text>
@@ -108,51 +85,139 @@
             </svg>
         </div>
         <nav>
-            <a href="index.html" class="active-link">Home</a>
-            <a href="cars.html">Cars</a>
-            <a href="#concierge">Contact</a>
+            <a href="index.html">Home</a>
+            <a href="cars.html" class="active-link">Cars</a>
+            <a href="index.html#concierge">Contact</a>
         </nav>
     </header>
 
-    <section class="hero-content">
-        <h1>Dream Vehicles</h1>
-        <div class="quick-dock">
-            <div class="dock-grid">
-                <div class="dock-field"><label>Τοποθεσία</label><span>Λευκωσία (Χαλεπιανές)</span></div>
-                <div class="dock-field"><label>Προέλευση</label><span>Japan & UK Imports</span></div>
-                <div class="dock-field"><label>Ποιότητα</label><span>Premium Επιλογές</span></div>
-                <div class="dock-btn-box">
-                    <a href="cars.html" class="btn-dock-search">Showroom</a>
-                </div>
+    <!-- FILTER DOCK -->
+    <div class="filter-dock">
+        <div class="filter-headline">Filter Our Showroom</div>
+        <div class="filter-row">
+            <div class="field-group">
+                <label>Μάρκα / Μοντέλο</label>
+                <select id="selectBrandModel">
+                    <option value="all">Όλα τα Οχήματα</option>
+                    <option value="toyota rav4">Toyota RAV4</option>
+                    <option value="rav4">Rav4</option>
+                    <option value="ra4">Ra4</option>
+                </select>
             </div>
+            <div class="field-group">
+                <label>Προέλευση / Χώρα</label>
+                <select id="selectCountry">
+                    <option value="all">Όλες οι Χώρες</option>
+                    <option value="japan">Japan / Iaponia</option>
+                    <option value="uk">UK Import</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>Έτος</label>
+                <select id="selectYear">
+                    <option value="all">Όλα τα Έτη</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                </select>
+            </div>
+            <div class="action-container">
+                <button class="btn-reset" onclick="resetShowroomFilters()">Καθαρισμος</button>
+                <button class="btn-search" onclick="runShowroomFilter()">Αναζήτηση</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTOMATIC SHOWROOM GRID -->
+    <section class="showroom-section">
+        <div class="showroom-grid" id="mainGrid">
+            <!-- Φορτώνει αυτόματα από το Supabase με βάση τις στήλες σου -->
         </div>
     </section>
 
-    <section class="value-section" id="brand">
-        <div class="section-tag">15+ Years of Trust</div>
-        <div class="value-card">
-            <p>Καλωσήρθατε στην <strong>C.J. Demetriou Motors (Κατάστημα Λευκωσίας)</strong>. Με μια σταθερή και αξιόπιστη πορεία 15 ετών στον χώρο του αυτοκινήτου, επεκτεινόμαστε δυναμικά παρέχοντας κορυφαίες επιλογές οχημάτων στη Λευκωσία και σε όλη την Κύπρο.</p>
-            <p>Στο ολοκαίνουργιο showroom μας στις <strong>Χαλεπιανές</strong>, μπορείτε να βρείτε μια προσεκτικά επιλεγμένη γκάμα από Premium SUV, Luxury Hatchbacks και αξιόπιστα οχήματα, εισαγμένα απευθείας από την Ιαπωνία και το Ηνωμένο Βασίλειο.</p>
-        </div>
-    </section>
+    <script>
+        const sbClient = supabase.createClient(
+            "https://qwcdqsmoaobmbeaviioh.supabase.co", 
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw"
+        );
 
-    <footer id="concierge">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>Sales & Showroom</h4>
-                <p>Λευκωσία (Περιοχή Χαλεπιανές), Κύπρος</p>
-                <p style="margin-top: 5px;">📍 Νέο Κατάστημα</p>
-            </div>
-            <div class="footer-col">
-                <h4>Contact Us</h4>
-                <p>Τηλέφωνο: <a href="tel:+35799000000">+357 99 000000</a></p>
-                <p>Email: <a href="mailto:info@demetrioucarscynicosia.com">info@demetrioucarscynicosia.com</a></p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 C.J. Demetriou Motors (Nicosia). All Rights Reserved.
-        </div>
-    </footer>
+        async function fetchCars() {
+            const { data: cars, error } = await sbClient.from('cars').select('*');
+            if (error) { console.error(error); return; }
+            
+            const grid = document.getElementById('mainGrid');
+            grid.innerHTML = ""; 
 
+            if(!cars || cars.length === 0) {
+                grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: #90909a; padding-top: 50px;'>Δεν υπάρχουν διαθέσιμα οχήματα αυτή τη στιγμή.</p>";
+                return;
+            }
+
+            cars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                
+                // Αντιστοίχιση με τις στήλες του δικού σου Supabase
+                const name = car.brand_model ? car.brand_model : 'Premium Vehicle';
+                const country = car.country ? car.country.toLowerCase() : '';
+                const mileage = car.mileage ? car.mileage : 'N/A';
+                const year = car.year ? car.year : 'N/A';
+                const color = car.color ? car.color : '';
+                const fallbackImg = 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80';
+                const img = car.image_url ? car.image_url : fallbackImg;
+
+                card.setAttribute('data-brandmodel', name.toLowerCase());
+                card.setAttribute('data-country', country);
+                card.setAttribute('data-year', year.toString());
+
+                card.innerHTML = `
+                    <div class="img-container">
+                        <span class="badge-status">Σε απόθεμα</span>
+                        <img src="${img}" alt="${name}">
+                    </div>
+                    <div class="card-details">
+                        <div class="car-title">${name}</div>
+                        <div class="car-specs">Έτος: ${year} • Χιλιόμετρα: ${mileage} • Χρώμα: ${color}</div>
+                        <div class="card-footer-row">
+                            <span class="car-price">Διαθέσιμο</span>
+                            <span class="car-tag">${car.country || ''}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function runShowroomFilter() {
+            const bm = document.getElementById('selectBrandModel').value;
+            const c = document.getElementById('selectCountry').value;
+            const y = document.getElementById('selectYear').value;
+
+            document.querySelectorAll('.car-card').forEach(card => {
+                const cardBm = card.getAttribute('data-brandmodel');
+                const cardC = card.getAttribute('data-country');
+                const cardY = card.getAttribute('data-year');
+
+                const matchBm = (bm === 'all' || cardBm.includes(bm));
+                
+                let matchC = false;
+                if (c === 'all') matchC = true;
+                else if (c === 'japan' && (cardC.includes('iaponia') || cardC.includes('japan') || cardC.includes('japab'))) matchC = true;
+                else if (c === 'uk' && cardC.includes('uk')) matchC = true;
+
+                const matchY = (y === 'all' || cardY === y);
+
+                card.style.display = (matchBm && matchC && matchY) ? 'block' : 'none';
+            });
+        }
+
+        function resetShowroomFilters() {
+            document.getElementById('selectBrandModel').value = 'all';
+            document.getElementById('selectCountry').value = 'all';
+            document.getElementById('selectYear').value = 'all';
+            document.querySelectorAll('.car-card').forEach(c => c.style.display = 'block');
+        }
+
+        window.onload = async function() { await fetchCars(); };
+    </script>
 </body>
 </html>
