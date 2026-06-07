@@ -25,7 +25,7 @@
         .login-card { background: var(--card-bg); border: 1px solid var(--line-color); padding: 40px; border-radius: 4px; width: 100%; max-width: 400px; text-align: center; backdrop-filter: blur(10px); }
         .login-card h2 { font-family: "Times New Roman", serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 30px; font-weight: 400; text-transform: uppercase; }
         
-        /* DASHBOARD (HIDDEN BY DEFAULT) */
+        /* DASHBOARD */
         .dashboard-container { display: none; width: 100%; max-width: 800px; background: var(--card-bg); border: 1px solid var(--line-color); padding: 40px; border-radius: 4px; backdrop-filter: blur(10px); }
         .dashboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line-color); padding-bottom: 20px; margin-bottom: 30px; }
         .dashboard-header h2 { font-family: "Times New Roman", serif; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: 400; }
@@ -34,7 +34,8 @@
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px; }
         .input-group input, .input-group select { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--line-color); color: #fff; border-radius: 2px; outline: none; font-size: 14px; }
-        .input-group input:focus { border-color: var(--accent); }
+        .input-group input:focus, .input-group select:focus { border-color: var(--accent); }
+        .input-group select option { background: #14141c; color: #fff; }
         
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .full-width { grid-column: span 2; }
@@ -50,6 +51,7 @@
 </head>
 <body>
 
+    <!-- 1. ΦΟΡΜΑ LOGIN -->
     <div class="login-card" id="loginBlock">
         <h2>Admin Portal</h2>
         <div class="input-group">
@@ -64,6 +66,7 @@
         <div class="error-msg" id="errorBlock">Λάθος στοιχεία σύνδεσης. Προσπαθήστε ξανά.</div>
     </div>
 
+    <!-- 2. ΠΑΝΕΛ ΔΙΑΧΕΙΡΙΣΗΣ -->
     <div class="dashboard-container" id="dashboardBlock">
         <div class="dashboard-header">
             <h2>Προσθήκη Νέου Οχήματος</h2>
@@ -72,15 +75,15 @@
         
         <div class="form-grid">
             <div class="input-group full-width">
-                <label>Μάρκα & Μοντέλο (π.χ. Toyota RAV4 Black Edition)</label>
-                <input type="text" id="carModel" placeholder="π.χ. Toyota RAV4">
+                <label>Μάρκα & Μοντέλο</label>
+                <input type="text" id="carModel" placeholder="π.χ. Toyota RAV4 Black Edition">
             </div>
             <div class="input-group">
-                <label>Έτος (π.χ. 2023)</label>
+                <label>Έτος</label>
                 <input type="number" id="carYear" placeholder="2023">
             </div>
             <div class="input-group">
-                <label>Χιλιόμετρα (π.χ. 12,450 km)</label>
+                <label>Χιλιόμετρα</label>
                 <input type="text" id="carMileage" placeholder="12,450 km">
             </div>
             <div class="input-group">
@@ -91,6 +94,24 @@
                 <label>Προέλευση / Χώρα</label>
                 <input type="text" id="carCountry" placeholder="Japan">
             </div>
+            
+            <!-- ΝΕΟ ΠΕΔΙΟ: STATUS -->
+            <div class="input-group">
+                <label>Κατάσταση (Status)</label>
+                <select id="carStatus">
+                    <option value="Stock">Stock</option>
+                    <option value="Sold">Sold</option>
+                    <option value="Coming soon">Coming soon</option>
+                    <option value="Pre-order">Pre-order</option>
+                </select>
+            </div>
+            
+            <!-- ΝΕΟ ΠΕΔΙΟ: ΤΙΜΗ -->
+            <div class="input-group">
+                <label>Τιμή (π.χ. 24500 ή "On Request")</label>
+                <input type="text" id="carPrice" placeholder="π.χ. 24500">
+            </div>
+            
             <div class="input-group full-width">
                 <label>Link Φωτογραφίας (Image URL)</label>
                 <input type="text" id="carImg" placeholder="https://images.unsplash.com/...">
@@ -109,7 +130,6 @@
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw"
         );
 
-        // Έλεγχος αν είναι ήδη συνδεδεμένος
         window.onload = function() {
             if (localStorage.getItem('sb-admin-session') === 'true') {
                 showDashboard();
@@ -149,6 +169,8 @@
             const mileage = document.getElementById('carMileage').value;
             const color = document.getElementById('carColor').value;
             const country = document.getElementById('carCountry').value;
+            const status = document.getElementById('carStatus').value;
+            const price = document.getElementById('carPrice').value;
             const image_url = document.getElementById('carImg').value;
 
             const sBlock = document.getElementById('successBlock');
@@ -163,7 +185,7 @@
             }
 
             const { data, error } = await sbClient.from('cars').insert([
-                { brand_model, year, mileage, color, country, image_url }
+                { brand_model, year, mileage, color, country, status, price, image_url }
             ]);
 
             if (error) {
@@ -171,12 +193,13 @@
                 eBlock.style.display = "block";
             } else {
                 sBlock.style.display = "block";
-                // Καθαρισμός φόρμας
+                // Καθαρισμός
                 document.getElementById('carModel').value = '';
                 document.getElementById('carYear').value = '';
                 document.getElementById('carMileage').value = '';
                 document.getElementById('carColor').value = '';
                 document.getElementById('carCountry').value = '';
+                document.getElementById('carPrice').value = '';
                 document.getElementById('carImg').value = '';
             }
         }
