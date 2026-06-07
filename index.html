@@ -115,7 +115,7 @@
 
         .hero-car-row {
             position: relative;
-            min-height: 520px; /* Αυξήθηκε για να πιάνει περισσότερο πίσω μέρος στην σελίδα */
+            min-height: 520px; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,7 +129,6 @@
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            /* Έγινε πιο φωτεινό το background (από 0.4 σε 0.2 το overlay) */
             background: linear-gradient(rgba(11,11,15,0.2), rgba(11,11,15,0.85)), 
                         url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1800&q=95') no-repeat center 35%/cover;
             z-index: 1;
@@ -610,7 +609,7 @@
     <section class="showroom-section" id="showroom">
         <div class="showroom-grid" id="mainGrid">
             
-            <!-- ΜΟΝΟ ΤΟ 1 ΣΩΣΤΟ TOYOTA RAV4 ΜΕ ΦΩΤΟΓΡΑΦΙΑ (Τα κενά αφαιρέθηκαν) -->
+            <!-- ΜΟΝΟ ΤΟ 1 ΣΩΣΤΟ TOYOTA RAV4 ΜΕ ΦΩΤΟΓΡΑΦΙΑ -->
             <div class="car-card" data-brand="toyota" data-model="rav4" data-type="suv" data-origin="japan">
                 <div class="img-container">
                     <span class="badge-status">In Stock</span>
@@ -660,9 +659,8 @@
                 <a href="https://maps.app.goo.gl/cXNVMjQUNiRPnshDA" target="_blank" class="btn-maps">Open Google Maps</a>
             </div>
 
-            <!-- ΦΟΡΜΑ ΕΤΟΙΜΗ ΓΙΑ FORMSPREE ΩΣΤΕ ΝΑ ΣΟΥ ΕΡΧΟΝΤΑΙ ΕΙΔΟΠΟΙΗΣΕΙΣ -->
-            <!-- Αντικατάστησε το link στο action με το δικό σου Formspree ID -->
-            <form class="minimal-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID_HERE" method="POST">
+            <!-- ΦΟΡΜΑ ΜΕ ΤΟ ΔΙΚΟ ΣΟΥ ΣΥΝΔΕΣΜΟ FORMSPREE -->
+            <form class="minimal-form" id="contactForm" action="https://formspree.io/f/mgobazja" method="POST">
                 <input type="text" name="name" placeholder="Oνοματεπώνυμο" required>
                 <input type="tel" name="phone" placeholder="Τηλέφωνο Επικοινωνίας" required>
                 <input type="text" name="car_model" placeholder="Μοντέλο που σας ενδιαφέρει" required>
@@ -715,7 +713,6 @@
                 return;
             }
             
-            // Φιλτράρουμε ώστε να έρχονται μόνο αυτοκίνητα που έχουν έγκυρη εικόνα
             if (cars && cars.length > 0) {
                 const grid = document.getElementById('mainGrid');
                 
@@ -776,6 +773,28 @@
             document.getElementById('selectOrigin').value = 'all';
             document.querySelectorAll('.car-card').forEach(c => c.style.display = 'block');
         }
+
+        // AJAX Υποβολή ώστε να δείχνει το Alert Pop-up χωρίς να κάνει reload η σελίδα
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const data = new FormData(form);
+            
+            fetch(form.action, {
+                method: form.method,
+                body: data,
+                headers: { 'Accept': 'application/json' }
+            }).then(response => {
+                if (response.ok) {
+                    alert("Ευχαριστούμε! Το μήνυμά σας στάλθηκε.");
+                    form.reset();
+                } else {
+                    alert("Προέκυψε κάποιο πρόβλημα. Παρακαλώ δοκιμάστε ξανά.");
+                }
+            }).catch(error => {
+                alert("Προέκυψε κάποιο πρόβλημα. Παρακαλώ δοκιμάστε ξανά.");
+            });
+        });
 
         window.onload = async function() { 
             syncModels(); 
