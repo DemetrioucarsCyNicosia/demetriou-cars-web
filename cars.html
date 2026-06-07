@@ -227,4 +227,47 @@
             Array.from(countries).sort().forEach(c => {
                 let displayCountry = c;
                 if(c.toLowerCase() === 'japan' || c.toLowerCase() === 'iaponia') displayCountry = "Japan";
-                if(c.
+                if(c.toLowerCase() === 'uk') displayCountry = "UK Import";
+                countrySelect.innerHTML += `<option value="${c.toLowerCase()}">${displayCountry}</option>`;
+            });
+
+            Array.from(years).sort((a,b) => b - a).forEach(y => {
+                yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+            });
+        }
+
+        function runShowroomFilter() {
+            const bm = document.getElementById('selectBrandModel').value;
+            const c = document.getElementById('selectCountry').value;
+            const y = document.getElementById('selectYear').value;
+
+            document.querySelectorAll('.car-card').forEach(card => {
+                const cardBm = card.getAttribute('data-brandmodel');
+                const cardC = card.getAttribute('data-country');
+                const cardY = card.getAttribute('data-year');
+
+                const matchBm = (bm === 'all' || cardBm.includes(bm));
+                
+                let matchC = false;
+                if (c === 'all') matchC = true;
+                else if (c === 'japan' && (cardC.includes('iaponia') || cardC.includes('japan'))) matchC = true;
+                else if (c === 'uk' && cardC.includes('uk')) matchC = true;
+                else if (cardC === c) matchC = true;
+
+                const matchY = (y === 'all' || cardY === y);
+
+                card.style.display = (matchBm && matchC && matchY) ? 'block' : 'none';
+            });
+        }
+
+        function resetShowroomFilters() {
+            document.getElementById('selectBrandModel').value = 'all';
+            document.getElementById('selectCountry').value = 'all';
+            document.getElementById('selectYear').value = 'all';
+            document.querySelectorAll('.car-card').forEach(c => c.style.display = 'block');
+        }
+
+        window.onload = async function() { await fetchCars(); };
+    </script>
+</body>
+</html>
