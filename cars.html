@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
+            --bg-dark: #0d0d12;
             --bg-card: rgba(20, 20, 28, 0.85); 
             --text-main: #ffffff;     
             --text-muted: #90909a;    
@@ -99,25 +100,21 @@
                 <label>Μάρκα / Μοντέλο</label>
                 <select id="selectBrandModel">
                     <option value="all">Όλα τα Οχήματα</option>
-                    <option value="toyota rav4">Toyota RAV4</option>
-                    <option value="rav4">Rav4</option>
-                    <option value="ra4">Ra4</option>
+                    <!-- Γεμίζει αυτόματα -->
                 </select>
             </div>
             <div class="field-group">
                 <label>Προέλευση / Χώρα</label>
                 <select id="selectCountry">
                     <option value="all">Όλες οι Χώρες</option>
-                    <option value="japan">Japan / Iaponia</option>
-                    <option value="uk">UK Import</option>
+                    <!-- Γεμίζει αυτόματα -->
                 </select>
             </div>
             <div class="field-group">
                 <label>Έτος</label>
                 <select id="selectYear">
                     <option value="all">Όλα τα Έτη</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
+                    <!-- Γεμίζει αυτόματα -->
                 </select>
             </div>
             <div class="action-container">
@@ -130,7 +127,7 @@
     <!-- AUTOMATIC SHOWROOM GRID -->
     <section class="showroom-section">
         <div class="showroom-grid" id="mainGrid">
-            <!-- Φορτώνει αυτόματα από το Supabase με βάση τις στήλες σου -->
+            <!-- Φορτώνει αυτόματα από το Supabase -->
         </div>
     </section>
 
@@ -152,21 +149,30 @@
                 return;
             }
 
+            // Set-up για να μαζεύουμε τα μοναδικά φίλτρα δυναμικά
+            const brands = new Set();
+            const countries = new Set();
+            const years = new Set();
+
             cars.forEach(car => {
                 const card = document.createElement('div');
                 card.className = 'car-card';
                 
-                // Αντιστοίχιση με τις στήλες του δικού σου Supabase
                 const name = car.brand_model ? car.brand_model : 'Premium Vehicle';
-                const country = car.country ? car.country.toLowerCase() : '';
+                const country = car.country ? car.country.trim() : '';
                 const mileage = car.mileage ? car.mileage : 'N/A';
                 const year = car.year ? car.year : 'N/A';
                 const color = car.color ? car.color : '';
                 const fallbackImg = 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80';
                 const img = car.image_url ? car.image_url : fallbackImg;
 
+                // Προσθήκη στα Sets για τα φίλτρα
+                if(car.brand_model) brands.add(car.brand_model.trim());
+                if(country) countries.add(country);
+                if(car.year) years.add(car.year.toString());
+
                 card.setAttribute('data-brandmodel', name.toLowerCase());
-                card.setAttribute('data-country', country);
+                card.setAttribute('data-country', country.toLowerCase());
                 card.setAttribute('data-year', year.toString());
 
                 card.innerHTML = `
@@ -179,11 +185,36 @@
                         <div class="car-specs">Έτος: ${year} • Χιλιόμετρα: ${mileage} • Χρώμα: ${color}</div>
                         <div class="card-footer-row">
                             <span class="car-price">Διαθέσιμο</span>
-                            <span class="car-tag">${car.country || ''}</span>
+                            <span class="car-tag">${country}</span>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
+            });
+
+            // Αυτόματο χτίσιμο των Dropdowns
+            buildDropdownFilters(brands, countries, years);
+        }
+
+        function buildDropdownFilters(brands, countries, years) {
+            const brandSelect = document.getElementById('selectBrandModel');
+            const countrySelect = document.getElementById('selectCountry');
+            const yearSelect = document.getElementById('selectYear');
+
+            // Ταξινόμηση και προσθήκη επιλογών
+            Array.from(brands).sort().forEach(b => {
+                brandSelect.innerHTML += `<option value="${b.toLowerCase()}">${b}</option>`;
+            });
+
+            Array.from(countries).sort().forEach(c => {
+                let displayCountry = c;
+                if(c.toLowerCase() === 'japan' || c.toLowerCase() === 'iaponia') displayCountry = "Japan / Iaponia";
+                if(c.toLowerCase() === 'uk') displayCountry = "UK Import";
+                countrySelect.innerHTML += `<option value="${c.toLowerCase()}">${displayCountry}</option>`;
+            });
+
+            Array.from(years).sort((a,b) => b - a).forEach(y => {
+                yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
             });
         }
 
@@ -203,6 +234,7 @@
                 if (c === 'all') matchC = true;
                 else if (c === 'japan' && (cardC.includes('iaponia') || cardC.includes('japan') || cardC.includes('japab'))) matchC = true;
                 else if (c === 'uk' && cardC.includes('uk')) matchC = true;
+                else if (cardC === c) matchC = true;
 
                 const matchY = (y === 'all' || cardY === y);
 
