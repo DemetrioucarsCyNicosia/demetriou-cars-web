@@ -53,13 +53,19 @@
         .img-container { position: relative; width: 100%; height: 240px; overflow: hidden; background: #14141c; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .car-card:hover .img-container img { transform: scale(1.03); }
-        .badge-status { position: absolute; bottom: 15px; left: 15px; background: var(--accent); color: #0d0d12; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 12px; font-weight: 600; }
+        
+        /* ΔΥΝΑΜΙΚΑ BADGES ΣΤΑΤΟΥΣ */
+        .badge-status { position: absolute; bottom: 15px; left: 15px; color: #0d0d12; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 12px; font-weight: 600; }
+        .badge-stock { background: var(--accent); color: #0d0d12; }
+        .badge-sold { background: #ff4a4a; color: #ffffff; }
+        .badge-coming { background: #2e71f2; color: #ffffff; }
+        .badge-preorder { background: #28a745; color: #ffffff; }
         
         .card-details { padding: 25px 20px; }
         .car-title { font-family: "Times New Roman", Times, serif; font-size: 21px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
         .car-specs { font-size: 12px; color: var(--text-muted); margin: 6px 0 14px 0; }
         .card-footer-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
-        .car-price { font-size: 18px; font-weight: 600; }
+        .car-price { font-size: 18px; font-weight: 600; color: #fff; }
         .car-tag { font-size: 11px; text-transform: uppercase; color: var(--accent); letter-spacing: 1px; }
 
         @media (max-width: 900px) { .filter-row { grid-template-columns: 1fr; gap: 20px; } .action-container { grid-column: span 1; } }
@@ -100,21 +106,18 @@
                 <label>Μάρκα / Μοντέλο</label>
                 <select id="selectBrandModel">
                     <option value="all">Όλα τα Οχήματα</option>
-                    <!-- Γεμίζει αυτόματα -->
                 </select>
             </div>
             <div class="field-group">
                 <label>Προέλευση / Χώρα</label>
                 <select id="selectCountry">
                     <option value="all">Όλες οι Χώρες</option>
-                    <!-- Γεμίζει αυτόματα -->
                 </select>
             </div>
             <div class="field-group">
                 <label>Έτος</label>
                 <select id="selectYear">
                     <option value="all">Όλα τα Έτη</option>
-                    <!-- Γεμίζει αυτόματα -->
                 </select>
             </div>
             <div class="action-container">
@@ -138,7 +141,8 @@
         );
 
         async function fetchCars() {
-            const { data: cars, error } = await sbClient.from('cars').select('*');
+            // Προσθήκη cache-buster για να αναγκάζει το Supabase να δίνει πάντα τα ολόφρεσκα δεδομένα
+            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
             if (error) { console.error(error); return; }
             
             const grid = document.getElementById('mainGrid');
@@ -149,7 +153,6 @@
                 return;
             }
 
-            // Set-up για να μαζεύουμε τα μοναδικά φίλτρα δυναμικά
             const brands = new Set();
             const countries = new Set();
             const years = new Set();
@@ -166,7 +169,26 @@
                 const fallbackImg = 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80';
                 const img = car.image_url ? car.image_url : fallbackImg;
 
-                // Προσθήκη στα Sets για τα φίλτρα
+                // 1. ΡΥΘΜΙΣΗ STATUS BADGE
+                let statusText = car.status ? car.status.trim() : 'Stock';
+                let badgeClass = 'badge-stock';
+                
+                if(statusText.toLowerCase() === 'sold') { badgeClass = 'badge-sold'; statusText = 'Sold'; }
+                else if(statusText.toLowerCase() === 'coming soon') { badgeClass = 'badge-coming'; statusText = 'Coming Soon'; }
+                else if(statusText.toLowerCase() === 'pre-order') { badgeClass = 'badge-preorder'; statusText = 'Pre-Order'; }
+                else { statusText = 'Σε απόθεμα'; }
+
+                // 2. ΡΥΘΜΙΣΗ ΔΥΝΑΜΙΚΗΣ ΤΙΜΗΣ
+                let priceText = "On Request";
+                if(car.price && car.price.trim() !== "") {
+                    // Αν είναι καθαρός αριθμός, μορφοποίησέ τον με τελείες (π.χ. 100000 -> 100.000 €)
+                    if(!isNaN(car.price.replace(/[^0-9]/g, ''))) {
+                        priceText = parseInt(car.price).toLocaleString('el-GR') + " €";
+                    } else {
+                        priceText = car.price; // Αν έγραψες κείμενο, άφησέ το όπως είναι
+                    }
+                }
+
                 if(car.brand_model) brands.add(car.brand_model.trim());
                 if(country) countries.add(country);
                 if(car.year) years.add(car.year.toString());
@@ -177,14 +199,14 @@
 
                 card.innerHTML = `
                     <div class="img-container">
-                        <span class="badge-status">Σε απόθεμα</span>
+                        <span class="badge-status ${badgeClass}">${statusText}</span>
                         <img src="${img}" alt="${name}">
                     </div>
                     <div class="card-details">
                         <div class="car-title">${name}</div>
                         <div class="car-specs">Έτος: ${year} • Χιλιόμετρα: ${mileage} • Χρώμα: ${color}</div>
                         <div class="card-footer-row">
-                            <span class="car-price">Διαθέσιμο</span>
+                            <span class="car-price">${priceText}</span>
                             <span class="car-tag">${country}</span>
                         </div>
                     </div>
@@ -192,7 +214,6 @@
                 grid.appendChild(card);
             });
 
-            // Αυτόματο χτίσιμο των Dropdowns
             buildDropdownFilters(brands, countries, years);
         }
 
@@ -201,7 +222,10 @@
             const countrySelect = document.getElementById('selectCountry');
             const yearSelect = document.getElementById('selectYear');
 
-            // Ταξινόμηση και προσθήκη επιλογών
+            brandSelect.innerHTML = '<option value="all">Όλα τα Οχήματα</option>';
+            countrySelect.innerHTML = '<option value="all">Όλες οι Χώρες</option>';
+            yearSelect.innerHTML = '<option value="all">Όλα τα Έτη</option>';
+
             Array.from(brands).sort().forEach(b => {
                 brandSelect.innerHTML += `<option value="${b.toLowerCase()}">${b}</option>`;
             });
