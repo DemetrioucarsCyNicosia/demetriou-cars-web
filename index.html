@@ -609,7 +609,7 @@
     <section class="showroom-section" id="showroom">
         <div class="showroom-grid" id="mainGrid">
             
-            <!-- ΜΟΝΟ ΤΟ 1 ΣΩΣΤΟ TOYOTA RAV4 ΜΕ ΦΩΤΟΓΡΑΦΙΑ -->
+            <!-- ΜΟΝΟ ΤΟ 1 ΣΩΣΤΟ TOYOTA RAV4 ΜΕ ΦΩΤΟΓΡΑΦΙΑ (ΚΑΝΕΝΑ ΑΛΛΟ ΑΥΤΟΚΙΝΗΤΟ) -->
             <div class="car-card" data-brand="toyota" data-model="rav4" data-type="suv" data-origin="japan">
                 <div class="img-container">
                     <span class="badge-status">In Stock</span>
@@ -706,48 +706,9 @@
             });
         }
 
+        // Απενεργοποίηση αυτόματου fetch ώστε να μην τραβάει τα κενά/διπλότυπα κουτιά από τη βάση
         async function fetchCars() {
-            const { data: cars, error } = await sbClient.from('cars').select('*');
-            if (error) {
-                console.error("Error fetching cars from Supabase:", error);
-                return;
-            }
-            
-            if (cars && cars.length > 0) {
-                const grid = document.getElementById('mainGrid');
-                
-                const newCarsHtml = cars
-                    .filter(car => car.image_url && car.image_url.trim() !== "")
-                    .map(car => {
-                        let originText = "Japan Import 🇯🇵";
-                        if (car.origin && car.origin.toLowerCase() === 'uk') {
-                            originText = "UK Import 🇬🇧";
-                        }
-
-                        return `
-                            <div class="car-card" 
-                                 data-brand="${(car.brand || '').toLowerCase()}" 
-                                 data-model="${(car.model || '').toLowerCase()}" 
-                                 data-type="${(car.type || '').toLowerCase()}" 
-                                 data-origin="${(car.origin || '').toLowerCase()}">
-                                <div class="img-container">
-                                    <span class="badge-status">In Stock</span>
-                                    <img src="${car.image_url}" alt="${car.brand_model}">
-                                </div>
-                                <div class="card-details">
-                                    <div class="car-title">${car.brand_model}</div>
-                                    <div class="car-specs">${car.year || ''} • ${car.mileage ? car.mileage.toLocaleString() : ''} KM • Automatic</div>
-                                    <div class="card-footer-row">
-                                        <span class="car-price">€${car.price ? car.price.toLocaleString() : ''}</span>
-                                        <span class="car-tag">${originText}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                
-                grid.innerHTML += newCarsHtml;
-            }
+            // Έχει αφαιρεθεί η αυτόματη εισαγωγή για να εμφανίζεται μόνο το 1 RAV4
         }
 
         function runShowroomFilter() {
@@ -774,7 +735,7 @@
             document.querySelectorAll('.car-card').forEach(c => c.style.display = 'block');
         }
 
-        // AJAX Υποβολή ώστε να δείχνει το Alert Pop-up χωρίς να κάνει reload η σελίδα
+        // AJAX Υποβολή Formspree με Alert Pop-up
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const form = this;
