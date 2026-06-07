@@ -15,47 +15,34 @@
             --text-muted: #90909a;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        
         body {
             background: linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.95)), 
                         url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1800&q=95') no-repeat center center fixed;
             background-size: cover; color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 40px 20px;
         }
-        
         .admin-box { background: var(--card-bg); border: 1px solid var(--line-color); border-radius: 4px; padding: 40px; width: 100%; max-width: 750px; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        
         h2 { font-family: "Times New Roman", serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; font-size: 20px; border-bottom: 1px solid var(--line-color); padding-bottom: 10px; }
-        
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .full-width { grid-column: span 2; }
-        
         .field-group { display: flex; flex-direction: column; }
         .field-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
-        
         .field-group input, .field-group select { background: #14141c; border: 1px solid var(--line-color); color: #fff; padding: 12px; font-size: 14px; outline: none; border-radius: 2px; transition: border 0.3s; }
         .field-group input:focus, .field-group select:focus { border-color: var(--accent); }
-        
+        .file-label { background: #14141c; border: 1px dashed var(--accent); color: var(--accent); padding: 15px; text-align: center; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; font-weight: bold; transition: all 0.3s; }
+        .file-label:hover { background: rgba(191, 163, 106, 0.1); }
+        #fileInput { display: none; }
         .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 15px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; transition: background 0.3s; }
         .btn-submit:hover { background: #d4b882; }
-        
+        .btn-submit:disabled { background: #555; color: #888; cursor: not-allowed; }
         .error-container { color: #ff4a4a; font-size: 12px; margin-top: 10px; display: none; font-weight: bold; }
-
-        /* STOCK LIST SECTION */
+        .status-msg { color: var(--accent); font-size: 13px; margin-top: 10px; font-weight: bold; text-align: center; display: none; }
         .stock-section { margin-top: 40px; }
         .stock-list { display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
-        
-        .stock-list::-webkit-scrollbar { width: 6px; }
-        .stock-list::-webkit-scrollbar-thumb { background: var(--line-color); border-radius: 3px; }
-        
-        .car-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 16px 20px; border: 1px solid var(--line-color); border-radius: 4px; transition: background 0.3s; }
-        .car-item:hover { background: rgba(255,255,255,0.06); }
-        
-        .car-info h4 { font-size: 15px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+        .car-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 16px 20px; border: 1px solid var(--line-color); border-radius: 4px; }
+        .car-info h4 { font-size: 15px; font-weight: 500; text-transform: uppercase; color: #fff; }
         .car-info p { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
-        .car-info strong { color: var(--accent); }
-        
-        .btn-delete { background: transparent; border: 1px solid #ff4a4a; color: #ff4a4a; padding: 8px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-radius: 2px; font-weight: 600; transition: all 0.3s ease; }
-        .btn-delete:hover { background: #ff4a4a; color: #fff; box-shadow: 0 0 10px rgba(255,74,74,0.3); }
+        .btn-delete { background: transparent; border: 1px solid #ff4a4a; color: #ff4a4a; padding: 8px 16px; font-size: 11px; text-transform: uppercase; cursor: pointer; border-radius: 2px; font-weight: 600; transition: all 0.3s; }
+        .btn-delete:hover { background: #ff4a4a; color: #fff; }
     </style>
 </head>
 <body>
@@ -65,7 +52,7 @@
         <form id="carForm" onsubmit="saveCar(event)">
             <div class="form-grid">
                 <div class="field-group full-width">
-                    <label>Μάρκα & Μοντέλο (π.χ. MERCEDES)</label>
+                    <label>Μάρκα & Μοντέλο</label>
                     <input type="text" id="brandModel" placeholder="π.χ. MERCEDES AMG GT" required>
                 </div>
                 <div class="field-group">
@@ -73,7 +60,7 @@
                     <input type="number" id="year" placeholder="2023" required>
                 </div>
                 <div class="field-group">
-                    <label>Χιλιόμετρα (π.χ. 50.000)</label>
+                    <label>Χιλιόμετρα</label>
                     <input type="text" id="mileage" placeholder="50.000">
                 </div>
                 <div class="field-group">
@@ -93,16 +80,18 @@
                         <option value="Sold">Sold</option>
                     </select>
                 </div>
-                <div class="field-group">
-                    <label>Τιμή (Γράψε π.χ. 90000 ή άσε κενό)</label>
+                <div class="field-group full-width">
+                    <label>Τιμή (Αφήστε κενό για On Request)</label>
                     <input type="text" id="price" placeholder="90000">
                 </div>
                 <div class="field-group full-width">
-                    <label>Link Φωτογραφίας (Image URL)</label>
-                    <input type="url" id="imageUrl" placeholder="https://images.unsplash.com/...">
+                    <label>Φωτογραφίες Οχήματος (Μπορείς να επιλέξεις ΠΟΛΛΕΣ μαζί)</label>
+                    <label for="fileInput" class="file-label" id="fileLabel">📸 Επιλογή Φωτογραφιών</label>
+                    <input type="file" id="fileInput" accept="image/*" multiple onchange="updateFileLabel()">
                 </div>
             </div>
-            <button type="submit" class="btn-submit">Καταχώρηση στο Στοκ</button>
+            <button type="submit" id="submitBtn" class="btn-submit">Καταχώρηση στο Στοκ</button>
+            <div id="statusMsg" class="status-msg"></div>
             <div id="errorMsg" class="error-container"></div>
         </form>
 
@@ -119,22 +108,27 @@
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
         const sbClient = supabase.createClient(sbUrl, sbKey);
 
+        function updateFileLabel() {
+            const input = document.getElementById('fileInput');
+            const label = document.getElementById('fileLabel');
+            if(input.files.length > 0) {
+                label.innerText = `📁 Επιλέχθηκαν ${input.files.length} φωτογραφίες`;
+                label.style.borderWith = "2px";
+            } else {
+                label.innerText = "📸 Επιλογή Φωτογραφιών";
+            }
+        }
+
         async function loadStock() {
             const container = document.getElementById('stockList');
-            
-            const { data: cars, error } = await sbClient
-                .from('cars')
-                .select('*')
-                .order('id', { ascending: false });
+            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
 
             if (error) {
-                console.error(error);
-                container.innerHTML = `<p style='color: #ff4a4a; font-size: 13px;'>Σφάλμα φόρτωσης: ${error.message}</p>`;
+                container.innerHTML = `<p style='color: #ff4a4a;'>Σφάλμα: ${error.message}</p>`;
                 return;
             }
-
             if (!cars || cars.length === 0) {
-                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px;'>Δεν υπάρχουν οχήματα στη βάση.</p>";
+                container.innerHTML = "<p style='color: var(--text-muted);'>Δεν υπάρχουν οχήματα.</p>";
                 return;
             }
 
@@ -142,18 +136,14 @@
                 let displayPrice = "On Request";
                 if (car.price && car.price.trim() !== "") {
                     let cleanPrice = car.price.replace(/[^0-9]/g, '');
-                    if (cleanPrice !== "") {
-                        displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
-                    } else {
-                        displayPrice = car.price;
-                    }
+                    if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                 }
-
+                let imgCount = car.images ? car.images.length : 0;
                 return `
                     <div class="car-item">
                         <div class="car-info">
-                            <h4>${car.brand_model || 'Premium Vehicle'} (${car.year || 'N/A'})</h4>
-                            <p>Status: <strong>${car.status || 'Stock'}</strong> | Τιμή: ${displayPrice}</p>
+                            <h4>${car.brand_model} (${car.year})</h4>
+                            <p>Τιμή: ${displayPrice} | Φωτογραφίες: ${imgCount}</p>
                         </div>
                         <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
                     </div>
@@ -163,8 +153,39 @@
 
         async function saveCar(e) {
             e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const statusMsg = document.getElementById('statusMsg');
             const errBox = document.getElementById('errorMsg');
+            
+            submitBtn.disabled = true;
             errBox.style.display = 'none';
+            statusMsg.style.display = 'block';
+            
+            const files = document.getElementById('fileInput').files;
+            let uploadedUrls = [];
+
+            // Ανέβασμα φωτογραφιών μία-μία
+            for(let i=0; i<files.length; i++) {
+                statusMsg.innerText = `Ανέβασμα φωτογραφίας ${i+1} από ${files.length}...`;
+                const file = files[i];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}_${i}.${fileExt}`;
+                
+                const { data, error: uploadError } = await sbClient.storage
+                    .from('car-images')
+                    .upload(fileName, file);
+                
+                if (!uploadError) {
+                    const { data: publicData } = sbClient.storage
+                        .from('car-images')
+                        .getPublicUrl(fileName);
+                    uploadedUrls.push(publicData.publicUrl);
+                } else {
+                    console.error(uploadError);
+                }
+            }
+
+            statusMsg.innerText = "Αποθήκευση στοιχείων οχήματος...";
 
             const payload = {
                 brand_model: document.getElementById('brandModel').value.trim(),
@@ -174,40 +195,31 @@
                 country: document.getElementById('country').value.trim(),
                 status: document.getElementById('status').value,
                 price: document.getElementById('price').value.trim(),
-                image_url: document.getElementById('imageUrl').value.trim()
+                image_url: uploadedUrls[0] || "", // για συμβατότητα
+                images: uploadedUrls
             };
 
             const { error } = await sbClient.from('cars').insert([payload]);
             
+            submitBtn.disabled = false;
+            statusMsg.style.display = 'none';
+
             if (error) {
-                errBox.innerText = "Σφάλμα κατά την αποθήκευση: " + error.message;
+                errBox.innerText = "Σφάλμα: " + error.message;
                 errBox.style.display = 'block';
             } else {
                 document.getElementById('carForm').reset();
+                document.getElementById('fileLabel').innerText = "📸 Επιλογή Φωτογραφιών";
                 await loadStock();
+                alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με τις φωτογραφίες του!");
             }
         }
 
         async function deleteCar(carId) {
-            if (!carId) {
-                alert("Σφάλμα: Δεν βρέθηκε ID οχήματος.");
-                return;
-            }
-
-            if (!confirm("Θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα;")) {
-                return;
-            }
-
-            const { error } = await sbClient
-                .from('cars')
-                .delete()
-                .eq('id', carId);
-
-            if (error) {
-                alert("Αποτυχία διαγραφής: " + error.message);
-            } else {
-                await loadStock();
-            }
+            if (!confirm("Θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα;")) return;
+            const { error } = await sbClient.from('cars').delete().eq('id', carId);
+            if (error) alert("Αποτυχία: " + error.message);
+            else await loadStock();
         }
 
         window.onload = loadStock;
