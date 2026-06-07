@@ -7,33 +7,45 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary-color: #1a1a1a; --accent-color: #e50914; --text-light: #ffffff; --bg-light: #f4f4f4; --card-bg: #ffffff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-light); color: #333; }
-        header { background-color: var(--primary-color); color: var(--text-light); padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        header { background-color: var(--primary-color); color: var(--text-light); padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; }
         .logo h1 { font-size: 24px; font-weight: 800; }
         .logo span { color: var(--accent-color); }
+        nav a { color: var(--text-light); text-decoration: none; margin-left: 20px; font-weight: 600; }
         .showroom { max-width: 1200px; margin: 40px auto; padding: 20px; }
         .showroom h2 { text-align: center; margin-bottom: 30px; font-size: 28px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
         .car-card { background-color: var(--card-bg); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .car-img { width: 100%; height: 200px; object-fit: cover; }
         .car-details { padding: 20px; }
-        .car-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
-        .car-price { font-size: 22px; color: var(--accent-color); font-weight: bold; }
-        footer { background-color: #111; color: #666; text-align: center; padding: 20px; margin-top: 50px; }
+        .car-price { font-size: 22px; color: var(--accent-color); font-weight: bold; margin-top: 10px; }
+        .contact-section { max-width: 800px; margin: 50px auto; padding: 40px; background: white; border-radius: 8px; text-align: center; }
+        footer { background-color: #111; color: #666; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo"><h1>Demetriou <span>CarsCy</span></h1></div>
+        <nav>
+            <a href="#">The Brand</a>
+            <a href="#">Showroom</a>
+            <a href="#">Contact</a>
+        </nav>
     </header>
 
     <section class="showroom">
         <h2>Διαθέσιμα Οχήματα</h2>
-        <div class="grid" id="carGrid">
-            <!-- Τα αυτοκίνητα θα εμφανιστούν εδώ αυτόματα -->
-        </div>
+        <div class="grid" id="carGrid"></div>
+    </section>
+
+    <section class="contact-section">
+        <h2>Επικοινωνία</h2>
+        <p>Συμπληρώστε το αίτημά σας για το μοντέλο που σας ενδιαφέρει:</p>
+        <!-- Εδώ θα μπει το embed code από το Typeform -->
+        <div data-tf-live="YOUR_TYPEFORM_ID" style="margin-top: 20px;"></div>
+        <script src="//embed.typeform.com/next/embed.js"></script>
     </section>
 
     <footer>
@@ -47,25 +59,20 @@
         );
 
         async function fetchCars() {
-            const { data: cars, error } = await sbClient.from('cars').select('*');
-            
+            const { data: cars } = await sbClient.from('cars').select('*');
             if (cars) {
                 const grid = document.getElementById('carGrid');
-                grid.innerHTML = '';
-                cars.forEach(car => {
-                    grid.innerHTML += `
-                        <div class="car-card">
-                            <img src="${car.image_url}" alt="${car.brand_model}" class="car-img">
-                            <div class="car-details">
-                                <div class="car-title">${car.brand_model}</div>
-                                <div class="car-price">€${car.price}</div>
-                            </div>
+                grid.innerHTML = cars.map(car => `
+                    <div class="car-card">
+                        <img src="${car.image_url}" alt="${car.brand_model}" class="car-img">
+                        <div class="car-details">
+                            <div class="car-title"><b>${car.brand_model}</b></div>
+                            <div class="car-price">€${car.price}</div>
                         </div>
-                    `;
-                });
+                    </div>
+                `).join('');
             }
         }
-
         fetchCars();
     </script>
 </body>
