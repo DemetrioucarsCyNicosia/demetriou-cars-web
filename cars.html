@@ -54,8 +54,7 @@
         .img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .car-card:hover .img-container img { transform: scale(1.03); }
         
-        /* ΔΥΝΑΜΙΚΑ BADGES ΣΤΑΤΟΥΣ */
-        .badge-status { position: absolute; bottom: 15px; left: 15px; color: #0d0d12; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 12px; font-weight: 600; }
+        .badge-status { position: absolute; bottom: 15px; left: 15px; color: #0d0d12; font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 12px; font-weight: 600; z-index: 10; }
         .badge-stock { background: var(--accent); color: #0d0d12; }
         .badge-sold { background: #ff4a4a; color: #ffffff; }
         .badge-coming { background: #2e71f2; color: #ffffff; }
@@ -73,7 +72,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <header>
         <div class="logo-block" onclick="window.location.href='index.html';">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240">
@@ -98,7 +96,6 @@
         </nav>
     </header>
 
-    <!-- FILTER DOCK -->
     <div class="filter-dock">
         <div class="filter-headline">Filter Our Showroom</div>
         <div class="filter-row">
@@ -127,11 +124,8 @@
         </div>
     </div>
 
-    <!-- AUTOMATIC SHOWROOM GRID -->
     <section class="showroom-section">
-        <div class="showroom-grid" id="mainGrid">
-            <!-- Φορτώνει αυτόματα από το Supabase -->
-        </div>
+        <div class="showroom-grid" id="mainGrid"></div>
     </section>
 
     <script>
@@ -141,7 +135,7 @@
         );
 
         async function fetchCars() {
-            // Προσθήκη cache-buster για να αναγκάζει το Supabase να δίνει πάντα τα ολόφρεσκα δεδομένα
+            // URL parameter για αποφυγή cache
             const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
             if (error) { console.error(error); return; }
             
@@ -169,7 +163,7 @@
                 const fallbackImg = 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80';
                 const img = car.image_url ? car.image_url : fallbackImg;
 
-                // 1. ΡΥΘΜΙΣΗ STATUS BADGE
+                // STATUS BADGES
                 let statusText = car.status ? car.status.trim() : 'Stock';
                 let badgeClass = 'badge-stock';
                 
@@ -178,14 +172,14 @@
                 else if(statusText.toLowerCase() === 'pre-order') { badgeClass = 'badge-preorder'; statusText = 'Pre-Order'; }
                 else { statusText = 'Σε απόθεμα'; }
 
-                // 2. ΡΥΘΜΙΣΗ ΔΥΝΑΜΙΚΗΣ ΤΙΜΗΣ
+                // ΔΙΟΡΘΩΣΗ ΤΙΜΗΣ (Καθαρίζει τελείες/κόμματα για να μην μπερδεύεται το σύστημα)
                 let priceText = "On Request";
                 if(car.price && car.price.trim() !== "") {
-                    // Αν είναι καθαρός αριθμός, μορφοποίησέ τον με τελείες (π.χ. 100000 -> 100.000 €)
-                    if(!isNaN(car.price.replace(/[^0-9]/g, ''))) {
-                        priceText = parseInt(car.price).toLocaleString('el-GR') + " €";
+                    let cleanPrice = car.price.replace(/[^0-9]/g, '');
+                    if(cleanPrice !== "") {
+                        priceText = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                     } else {
-                        priceText = car.price; // Αν έγραψες κείμενο, άφησέ το όπως είναι
+                        priceText = car.price; 
                     }
                 }
 
@@ -232,48 +226,5 @@
 
             Array.from(countries).sort().forEach(c => {
                 let displayCountry = c;
-                if(c.toLowerCase() === 'japan' || c.toLowerCase() === 'iaponia') displayCountry = "Japan / Iaponia";
-                if(c.toLowerCase() === 'uk') displayCountry = "UK Import";
-                countrySelect.innerHTML += `<option value="${c.toLowerCase()}">${displayCountry}</option>`;
-            });
-
-            Array.from(years).sort((a,b) => b - a).forEach(y => {
-                yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
-            });
-        }
-
-        function runShowroomFilter() {
-            const bm = document.getElementById('selectBrandModel').value;
-            const c = document.getElementById('selectCountry').value;
-            const y = document.getElementById('selectYear').value;
-
-            document.querySelectorAll('.car-card').forEach(card => {
-                const cardBm = card.getAttribute('data-brandmodel');
-                const cardC = card.getAttribute('data-country');
-                const cardY = card.getAttribute('data-year');
-
-                const matchBm = (bm === 'all' || cardBm.includes(bm));
-                
-                let matchC = false;
-                if (c === 'all') matchC = true;
-                else if (c === 'japan' && (cardC.includes('iaponia') || cardC.includes('japan') || cardC.includes('japab'))) matchC = true;
-                else if (c === 'uk' && cardC.includes('uk')) matchC = true;
-                else if (cardC === c) matchC = true;
-
-                const matchY = (y === 'all' || cardY === y);
-
-                card.style.display = (matchBm && matchC && matchY) ? 'block' : 'none';
-            });
-        }
-
-        function resetShowroomFilters() {
-            document.getElementById('selectBrandModel').value = 'all';
-            document.getElementById('selectCountry').value = 'all';
-            document.getElementById('selectYear').value = 'all';
-            document.querySelectorAll('.car-card').forEach(c => c.style.display = 'block');
-        }
-
-        window.onload = async function() { await fetchCars(); };
-    </script>
-</body>
-</html>
+                if(c.toLowerCase() === 'japan' || c.toLowerCase() === 'iaponia') displayCountry = "Japan";
+                if(c.
