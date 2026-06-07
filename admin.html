@@ -9,35 +9,54 @@
         :root {
             --bg-dark: #0d0d12;
             --accent: #bfa36a;
-            --card-bg: rgba(20, 20, 28, 0.85);
+            --card-bg: rgba(20, 20, 28, 0.95);
             --line-color: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
             --text-muted: #90909a;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        
         body {
             background: linear-gradient(rgba(11, 11, 15, 0.85), rgba(11, 11, 15, 0.95)), 
                         url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1800&q=95') no-repeat center center fixed;
             background-size: cover; color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 40px 20px;
         }
-        .admin-box { background: var(--card-bg); border: 1px solid var(--line-color); border-radius: 4px; padding: 40px; width: 100%; max-width: 700px; backdrop-filter: blur(10px); }
-        h2 { font-family: "Times New Roman", serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 30px; text-transform: uppercase; font-size: 22px; }
+        
+        .admin-box { background: var(--card-bg); border: 1px solid var(--line-color); border-radius: 4px; padding: 40px; width: 100%; max-width: 750px; backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        
+        h2 { font-family: "Times New Roman", serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; font-size: 20px; border-bottom: 1px solid var(--line-color); padding-bottom: 10px; }
+        
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .full-width { grid-column: span 2; }
+        
         .field-group { display: flex; flex-direction: column; }
-        .field-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; }
-        .field-group input, .field-group select { background: #14141c; border: 1px solid var(--line-color); color: #fff; padding: 12px; font-size: 14px; outline: none; border-radius: 2px; }
+        .field-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
+        
+        .field-group input, .field-group select { background: #14141c; border: 1px solid var(--line-color); color: #fff; padding: 12px; font-size: 14px; outline: none; border-radius: 2px; transition: border 0.3s; }
         .field-group input:focus, .field-group select:focus { border-color: var(--accent); }
-        .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 15px; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%; transition: background 0.3s; }
+        
+        .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 15px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; transition: background 0.3s; }
         .btn-submit:hover { background: #d4b882; }
         
-        .stock-section { margin-top: 40px; border-top: 1px solid var(--line-color); padding-top: 30px; }
-        .car-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 15px; border: 1px solid var(--line-color); margin-bottom: 10px; border-radius: 2px; }
-        .car-info h4 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .car-info p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-        .btn-delete { background: transparent; border: 1px solid #dc3545; color: #dc3545; padding: 6px 14px; font-size: 11px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .btn-delete:hover { background: #dc3545; color: #fff; }
-        .msg { color: #ff4a4a; font-size: 12px; margin-top: 10px; display: none; }
+        .error-container { color: #ff4a4a; font-size: 12px; margin-top: 10px; display: none; font-weight: bold; }
+
+        /* STOCK LIST SECTION */
+        .stock-section { margin-top: 40px; }
+        .stock-list { display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        
+        /* Custom Scrollbar για το stock list */
+        .stock-list::-webkit-scrollbar { width: 6px; }
+        .stock-list::-webkit-scrollbar-thumb { background: var(--line-color); border-radius: 3px; }
+        
+        .car-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 16px 20px; border: 1px solid var(--line-color); border-radius: 4px; transition: background 0.3s; }
+        .car-item:hover { background: rgba(255,255,255,0.06); }
+        
+        .car-info h4 { font-size: 15px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+        .car-info p { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+        .car-info strong { color: var(--accent); }
+        
+        .btn-delete { background: transparent; border: 1px solid #ff4a4a; color: #ff4a4a; padding: 8px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-radius: 2px; font-weight: 600; transition: all 0.3s ease; }
+        .btn-delete:hover { background: #ff4a4a; color: #fff; box-shadow: 0 0 10px rgba(255,74,74,0.3); }
     </style>
 </head>
 <body>
@@ -47,37 +66,37 @@
         <form id="carForm" onsubmit="saveCar(event)">
             <div class="form-grid">
                 <div class="field-group full-width">
-                    <label>Μάρκα & Μοντέλο</label>
-                    <input type="text" id="brandModel" placeholder="π.χ. Toyota RAV4" required>
+                    <label>Μάρκα & Μοντέλο (π.χ. MERCEDES)</label>
+                    <input type="text" id="brandModel" placeholder="π.χ. MERCEDES AMG GT" required>
                 </div>
                 <div class="field-group">
                     <label>Έτος</label>
                     <input type="number" id="year" placeholder="2023" required>
                 </div>
                 <div class="field-group">
-                    <label>Χιλιόμετρα</label>
-                    <input type="text" id="mileage" placeholder="12,450 km">
+                    <label>Χιλιόμετρα (π.χ. 50.000)</label>
+                    <input type="text" id="mileage" placeholder="50.000">
                 </div>
                 <div class="field-group">
                     <label>Χρώμα</label>
-                    <input type="text" id="color" placeholder="Pearl White">
+                    <input type="text" id="color" placeholder="Silver">
                 </div>
                 <div class="field-group">
                     <label>Προέλευση / Χώρα</label>
-                    <input type="text" id="country" placeholder="Japan">
+                    <input type="text" id="country" placeholder="UK">
                 </div>
                 <div class="field-group">
                     <label>Κατάσταση (Status)</label>
                     <select id="status">
-                        <option value="Stock">Stock (Σε απόθεμα)</option>
+                        <option value="Stock">Σε απόθεμα</option>
                         <option value="Pre-order">Pre-order</option>
                         <option value="Coming soon">Coming soon</option>
                         <option value="Sold">Sold</option>
                     </select>
                 </div>
                 <div class="field-group">
-                    <label>Τιμή (π.χ. 24500 ή άσε κενό για On Request)</label>
-                    <input type="text" id="price" placeholder="24500">
+                    <label>Τιμή (Γράψε π.χ. 90000 ή άσε κενό)</label>
+                    <input type="text" id="price" placeholder="90000">
                 </div>
                 <div class="field-group full-width">
                     <label>Link Φωτογραφίας (Image URL)</label>
@@ -85,38 +104,61 @@
                 </div>
             </div>
             <button type="submit" class="btn-submit">Καταχώρηση στο Στοκ</button>
-            <div id="errorMsg" class="msg"></div>
+            <div id="errorMsg" class="error-container"></div>
         </form>
 
         <div class="stock-section">
             <h2>Τρέχον Στοκ & Διαγραφή</h2>
-            <div id="stockList"></div>
+            <div class="stock-list" id="stockList">
+                <p style="color: var(--text-muted); font-size: 13px;">Φόρτωση οχημάτων...</p>
+            </div>
         </div>
     </div>
 
     <script>
-        const sbClient = supabase.createClient(
-            "https://qwcdqsmoaobmbeaviioh.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw"
-        );
+        // Σωστά αρχεία σύνδεσης Supabase
+        const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
+        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
+        const sbClient = supabase.createClient(sbUrl, sbKey);
 
+        // 1. ΣΥΝΑΡΤΗΣΗ ΦΟΡΤΩΣΗΣ ΣΤΟΚ
         async function loadStock() {
-            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
-            if (error) { console.error(error); return; }
-
             const container = document.getElementById('stockList');
-            if(!cars || cars.length === 0) {
-                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px;'>Δεν υπάρχουν οχήματα στη βάση.</p>";
+            
+            const { data: cars, error } = await sbClient
+                .from('cars')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error("Σφάλμα ανάκτησης:", error);
+                container.innerHTML = `<p style='color: #ff4a4a; font-size: 13px;'>Σφάλμα φόρτωσης: ${error.message}</p>`;
                 return;
             }
 
+            if (!cars || cars.length === 0) {
+                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px;'>Δεν υπάρχουν οχήματα στη βάση δεδομένων.</p>";
+                return;
+            }
+
+            // Χτίσιμο της λίστας
             container.innerHTML = cars.map(car => {
-                let pText = car.price ? car.price + " €" : "On Request";
+                // Διαμόρφωση εμφάνισης τιμής
+                let displayPrice = "On Request";
+                if (car.price && car.price.trim() !== "") {
+                    let cleanPrice = car.price.replace(/[^0-9]/g, '');
+                    if (cleanPrice !== "") {
+                        displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
+                    } else {
+                        displayPrice = car.price;
+                    }
+                }
+
                 return `
                     <div class="car-item">
                         <div class="car-info">
-                            <h4>${car.brand_model} (${car.year || '-'})</h4>
-                            <p>Status: <strong>${car.status || 'Stock'}</strong> | Τιμή: ${pText}</p>
+                            <h4>${car.brand_model || 'Premium Vehicle'} (${car.year || 'N/A'})</h4>
+                            <p>Status: <strong>${car.status || 'Stock'}</strong> | Τιμή: ${displayPrice}</p>
                         </div>
                         <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
                     </div>
@@ -124,44 +166,60 @@
             }).join('');
         }
 
+        // 2. ΣΥΝΑΡΤΗΣΗ ΑΠΟΘΗΚΕΥΣΗΣ
         async function saveCar(e) {
             e.preventDefault();
-            document.getElementById('errorMsg').style.display = 'none';
+            const errBox = document.getElementById('errorMsg');
+            errBox.style.display = 'none';
 
             const payload = {
-                brand_model: document.getElementById('brandModel').value,
+                brand_model: document.getElementById('brandModel').value.trim(),
                 year: parseInt(document.getElementById('year').value),
-                mileage: document.getElementById('mileage').value,
-                color: document.getElementById('color').value,
-                country: document.getElementById('country').value,
+                mileage: document.getElementById('mileage').value.trim(),
+                color: document.getElementById('color').value.trim(),
+                country: document.getElementById('country').value.trim(),
                 status: document.getElementById('status').value,
-                price: document.getElementById('price').value,
-                image_url: document.getElementById('imageUrl').value
+                price: document.getElementById('price').value.trim(),
+                image_url: document.getElementById('imageUrl').value.trim()
             };
 
             const { error } = await sbClient.from('cars').insert([payload]);
-            if(error) {
-                const errBox = document.getElementById('errorMsg');
+            
+            if (error) {
                 errBox.innerText = "Σφάλμα κατά την αποθήκευση: " + error.message;
                 errBox.style.display = 'block';
             } else {
                 document.getElementById('carForm').reset();
-                loadStock();
+                await loadStock(); // Φρεσκάρισμα
             }
         }
 
-        async function deleteCar(id) {
-            if(!confirm("Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το όχημα;")) return;
+        // 3. ΣΥΝΑΡΤΗΣΗ ΔΙΑΓΡΑΦΗΣ (Η ΔΙΟΡΘΩΣΗ)
+        async function deleteCar(carId) {
+            if (!carId) {
+                alert("Σφάλμα: Δεν βρέθηκε έγκυρο ID οχήματος.");
+                return;
+            }
 
-            const { error } = await sbClient.from('cars').delete().eq('id', id);
-            if(error) {
-                alert("Σφάλμα κατά τη διαγραφή: " + error.message);
+            if (!confirm("Είστε σίγουρος ότι θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα από το στοκ;")) {
+                return;
+            }
+
+            // Στέλνουμε τη διαγραφή βάσει του ID
+            const { error } = await sbClient
+                .from('cars')
+                .delete()
+                .eq('id', carId);
+
+            if (error) {
+                alert("Αποτυχία διαγραφής: " + error.message);
             } else {
-                // Φορτώνει αμέσως ξανά τη λίστα για να εξαφανιστεί από την οθόνη
-                loadStock();
+                // Φορτώνει αμέσως ξανά τη λίστα για να εξαφανιστεί από τα μάτια σου
+                await loadStock();
             }
         }
 
+        // Φόρτωση με το που ανοίγει η σελίδα
         window.onload = loadStock;
     </script>
 </body>
