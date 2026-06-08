@@ -128,31 +128,31 @@
                 if(car.status === 'Pre-order') { statusClass = 'status-preorder'; statusText = 'Pre-Order'; }
                 else if(car.status === 'Coming soon') { statusClass = 'status-coming'; statusText = 'Coming Soon'; }
                 else if(car.status === 'Sold') { statusClass = 'status-sold'; statusText = 'Sold'; }
-
-                let msg = encodeURIComponent(`Γεια σας! Ενδιαφέρομαι για το ${car.brand_model} (${car.year}).`);
                 
                 return `
-                    <div class="car-card">
-                        <div class="image-slider-container">
-                            <span class="status-badge ${statusClass}">${statusText}</span>
-                            <div class="slider-wrapper" id="slider-${carIdx}" data-current="0">
-                                ${carImages.map(img => `<img src="${img}" alt="${car.brand_model}">`).join('')}
+                    <a href="details.html?id=${car.id}" style="text-decoration:none; color:inherit; display:block;">
+                        <div class="car-card">
+                            <div class="image-slider-container">
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                                <div class="slider-wrapper" id="slider-${carIdx}" data-current="0">
+                                    ${carImages.map(img => `<img src="${img}" alt="${car.brand_model}">`).join('')}
+                                </div>
+                                ${carImages.length > 1 ? `<button class="slider-btn prev" onclick="event.preventDefault(); moveSlider(${carIdx}, -1, ${carImages.length})"><i class="fa-solid fa-chevron-left"></i></button><button class="slider-btn next" onclick="event.preventDefault(); moveSlider(${carIdx}, 1, ${carImages.length})"><i class="fa-solid fa-chevron-right"></i></button>` : ''}
                             </div>
-                            ${carImages.length > 1 ? `<button class="slider-btn prev" onclick="moveSlider(${carIdx}, -1, ${carImages.length})"><i class="fa-solid fa-chevron-left"></i></button><button class="slider-btn next" onclick="moveSlider(${carIdx}, 1, ${carImages.length})"><i class="fa-solid fa-chevron-right"></i></button>` : ''}
+                            <div class="car-details">
+                                <h4>${car.brand_model}</h4>
+                                <div class="car-specs">
+                                    <div><i class="fa-solid fa-calendar-days" style="color:var(--accent);"></i> Έτος: ${car.year || 'N/A'}</div>
+                                    <div><i class="fa-solid fa-gauge-high" style="color:var(--accent);"></i> Χιλιόμετρα: ${car.mileage || 'N/A'} km</div>
+                                </div>
+                                <div style="font-weight:bold; font-size:18px; margin-bottom:15px;">${displayPrice}</div>
+                                <div class="btn-container">
+                                    <div class="btn-inquire"><i class="fa-brands fa-whatsapp"></i> WhatsApp</div>
+                                    <div class="btn-inquire viber-btn"><i class="fa-brands fa-viber"></i> Viber</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="car-details">
-                            <h4>${car.brand_model}</h4>
-                            <div class="car-specs">
-                                <div><i class="fa-solid fa-calendar-days" style="color:var(--accent);"></i> Έτος: ${car.year || 'N/A'}</div>
-                                <div><i class="fa-solid fa-gauge-high" style="color:var(--accent);"></i> Χιλιόμετρα: ${car.mileage || 'N/A'} km</div>
-                            </div>
-                            <div style="font-weight:bold; font-size:18px; margin-bottom:15px;">${displayPrice}</div>
-                            <div class="btn-container">
-                                <a href="https://wa.me/${whatsappNumber}?text=${msg}" target="_blank" class="btn-inquire"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
-                                <a href="viber://chat?number=%2B${whatsappNumber}" class="btn-inquire viber-btn"><i class="fa-brands fa-viber"></i> Viber</a>
-                            </div>
-                        </div>
-                    </div>
+                    </a>
                 `;
             }).join('');
         }
