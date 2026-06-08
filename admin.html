@@ -34,7 +34,7 @@
         .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 15px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; transition: background 0.3s; }
         .btn-submit:hover { background: #d4b882; }
         .btn-submit:disabled { background: #555; color: #888; cursor: not-allowed; }
-        .error-container { color: #ff4a4a; font-size: 12px; margin-top: 10px; display: none; font-weight: bold; }
+        .error-container { color: #ff4a4a; font-size: 12px; margin-top: 10px; display: none; font-weight: bold; text-align: center; }
         .status-msg { color: var(--accent); font-size: 13px; margin-top: 10px; font-weight: bold; text-align: center; display: none; }
         .stock-section { margin-top: 40px; }
         .stock-list { display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
@@ -60,20 +60,20 @@
                     <input type="text" id="model" placeholder="π.χ. RX350 H VERSION L" required>
                 </div>
                 <div class="field-group">
-                    <label>Έτος Κατασκευής</label>
-                    <input type="number" id="year" placeholder="2022" required>
+                    <label>Έτος</label>
+                    <input type="number" id="year" placeholder="2024" required>
                 </div>
                 <div class="field-group">
                     <label>Χιλιόμετρα</label>
-                    <input type="text" id="mileage" placeholder="300.000">
+                    <input type="text" id="mileage" placeholder="50.000">
                 </div>
                 <div class="field-group">
                     <label>Χρώμα</label>
-                    <input type="text" id="color" placeholder="White PEARL">
+                    <input type="text" id="color" placeholder="Silver">
                 </div>
                 <div class="field-group">
                     <label>Προέλευση / Χώρα</label>
-                    <input type="text" id="country" placeholder="Japan">
+                    <input type="text" id="country" placeholder="UK">
                 </div>
                 <div class="field-group full-width">
                     <label>Κατάσταση (Status)</label>
@@ -85,8 +85,8 @@
                     </select>
                 </div>
                 <div class="field-group full-width">
-                    <label>Τιμή (Μόνο αριθμό, π.χ. 59000)</label>
-                    <input type="text" id="price" placeholder="59000">
+                    <label>Τιμή (Αφήστε κενό για On Request)</label>
+                    <input type="text" id="price" placeholder="90000">
                 </div>
                 <div class="field-group full-width">
                     <label>Φωτογραφίες Οχήματος (Μπορείς να επιλέξεις ΠΟΛΛΕΣ μαζί)</label>
@@ -137,112 +137,4 @@
 
             container.innerHTML = cars.map(car => {
                 let displayPrice = "On Request";
-                if (car.price) {
-                    let cleanPrice = String(car.price).replace(/[^0-9]/g, '');
-                    if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
-                }
-                
-                let imgCount = 0;
-                if (car.images) {
-                    if (Array.isArray(car.images)) imgCount = car.images.length;
-                    else if (typeof car.images === 'string') {
-                        imgCount = car.images.replace(/[\{\}\"\']/g, '').split(',').filter(s => s.trim() !== '').length;
-                    }
-                }
-                
-                // Εμφάνιση brand και model συνδυαστικά για τη λίστα διαχείρισης
-                const carTitle = `${car.brand || ''} ${car.model || car.brand_model || ''}`.trim();
-
-                return `
-                    <div class="car-item">
-                        <div class="car-info">
-                            <h4>${carTitle} (${car.year || 'N/A'})</h4>
-                            <p>Τιμή: ${displayPrice} | Φωτογραφίες: ${imgCount}</p>
-                        </div>
-                        <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function saveCar(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            const statusMsg = document.getElementById('statusMsg');
-            const errBox = document.getElementById('errorMsg');
-            
-            submitBtn.disabled = true;
-            errBox.style.display = 'none';
-            statusMsg.style.display = 'block';
-            
-            const files = document.getElementById('fileInput').files;
-            let uploadedUrls = [];
-
-            // Ανέβασμα φωτογραφιών
-            for(let i=0; i<files.length; i++) {
-                statusMsg.innerText = `Ανέβασμα φωτογραφίας ${i+1} από ${files.length}...`;
-                const file = files[i];
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Date.now()}_${i}.${fileExt}`;
-                
-                const { data, error: uploadError } = await sbClient.storage
-                    .from('car-images')
-                    .upload(fileName, file);
-                
-                if (!uploadError) {
-                    const { data: publicData } = sbClient.storage
-                        .from('car-images')
-                        .getPublicUrl(fileName);
-                    uploadedUrls.push(publicData.publicUrl);
-                } else {
-                    console.error("Σφάλμα Upload:", uploadError);
-                }
-            }
-
-            statusMsg.innerText = "Αποθήκευση στοιχείων οχήματος...";
-
-            // Καθαρισμός τιμής και χιλιομέτρων από γράμματα/τελείες για αποφυγή σφαλμάτων
-            const cleanPrice = document.getElementById('price').value.replace(/[^0-9]/g, '');
-            const cleanMileage = document.getElementById('mileage').value.replace(/[^0-9]/g, '');
-
-            const payload = {
-                brand: document.getElementById('brand').value.trim(),
-                model: document.getElementById('model').value.trim(),
-                brand_model: `${document.getElementById('brand').value.trim()} ${document.getElementById('model').value.trim()}`, // Για συμβατότητα παλιών στηλών
-                year: parseInt(document.getElementById('year').value) || new Date().getFullYear(),
-                mileage: cleanMileage,
-                color: document.getElementById('color').value.trim(),
-                country: document.getElementById('country').value.trim(),
-                status: document.getElementById('status').value,
-                price: cleanPrice,
-                image_url: uploadedUrls[0] || "", 
-                images: uploadedUrls
-            };
-
-            const { error } = await sbClient.from('cars').insert([payload]);
-            
-            submitBtn.disabled = false;
-            statusMsg.style.display = 'none';
-
-            if (error) {
-                errBox.innerText = "Σφάλμα Supabase: " + error.message;
-                errBox.style.display = 'block';
-            } else {
-                document.getElementById('carForm').reset();
-                document.getElementById('fileLabel').innerText = "📸 Επιλογή Φωτογραφιών";
-                await loadStock();
-                alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με όλες τις φωτογραφίες του!");
-            }
-        }
-
-        async function deleteCar(carId) {
-            if (!confirm("Θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα;")) return;
-            const { error } = await sbClient.from('cars').delete().eq('id', carId);
-            if (error) alert("Αποτυχία: " + error.message);
-            else await loadStock();
-        }
-
-        window.onload = loadStock;
-    </script>
-</body>
-</html>
+                if (car.price && String(car.price).
