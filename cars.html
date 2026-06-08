@@ -1,4 +1,296 @@
-<script>
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Showroom | C.J. Demetriou Motors</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #0d0d12;
+            --accent: #bfa36a;
+            --card-bg: rgba(20, 20, 28, 0.95);
+            --line-color: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #90909a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 5%;
+            border-bottom: 1px solid var(--line-color);
+            background: #0b0b0f;
+        }
+
+        .logo {
+            font-family: "Times New Roman", serif;
+            color: var(--accent);
+            font-size: 20px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-family: "Times New Roman", serif;
+            font-size: 32px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            color: #fff;
+        }
+
+        /* Filters Box */
+        .filters-box {
+            background: var(--card-bg);
+            border: 1px solid var(--line-color);
+            padding: 30px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+        }
+
+        .filters-box h2 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .filter-group select {
+            background: #14141c;
+            border: 1px solid var(--line-color);
+            color: #fff;
+            padding: 12px;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
+        .filter-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* Showroom Grid */
+        .showroom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px;
+        }
+
+        /* Car Card */
+        .car-card {
+            background: var(--card-bg);
+            border: 1px solid var(--line-color);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .car-image-container {
+            position: relative;
+            height: 230px;
+            background: #14141c;
+        }
+
+        .car-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--accent);
+            color: #0d0d12;
+            padding: 6px 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 2px;
+        }
+
+        .car-details {
+            padding: 25px;
+        }
+
+        .car-title {
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .car-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+
+        .car-specs span {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .car-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .car-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .btn-interest {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 16px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .btn-interest:hover {
+            background: var(--accent);
+            color: #0d0d12;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">C.J. DEMETRIOU MOTORS</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="cars.html" class="active">Cars</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">Our Showroom</h1>
+
+        <div class="filters-box">
+            <h2>Φιλτραρισμα Showroom</h2>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Μαρκα / Μοντελο</label>
+                    <select id="filterBrand">
+                        <option value="all">Όλα τα Οχήματα</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Προελευση / Χωρα</label>
+                    <select id="filterCountry">
+                        <option value="all">Όλες οι Χώρες</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Έτος Κατασκευης</label>
+                    <select id="filterYear">
+                        <option value="all">Όλα τα Έτη</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="showroom-grid" id="showroomGrid">
+            <div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Φόρτωση showroom...</div>
+        </div>
+    </div>
+
+    <script>
         const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
         const sbClient = supabase.createClient(sbUrl, sbKey);
@@ -6,17 +298,21 @@
         let allCars = [];
 
         async function loadShowroom() {
-            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
-            
-            if (error) {
-                console.error("Σφάλμα Supabase:", error);
-                document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Αποτυχία φόρτωσης οχημάτων.</p>";
-                return;
-            }
+            try {
+                const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
+                
+                if (error) {
+                    console.error("Σφάλμα Supabase:", error);
+                    document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Αποτυχία φόρτωσης οχημάτων.</p>";
+                    return;
+                }
 
-            allCars = cars || [];
-            setupFilters();
-            renderCars(allCars);
+                allCars = cars || [];
+                setupFilters();
+                renderCars(allCars);
+            } catch (err) {
+                console.error("Γενικό Σφάλμα:", err);
+            }
         }
 
         function setupFilters() {
@@ -25,39 +321,31 @@
             const years = new Set();
 
             allCars.forEach(car => {
-                if (car.brand_model) {
-                    // Παίρνουμε την πρώτη λέξη σαν Μάρκα για το φίλτρο
+                if (car.brand_model && car.brand_model.trim() !== "") {
                     const mainBrand = car.brand_model.split(' ')[0].toUpperCase();
                     brands.add(mainBrand);
                 }
-                if (car.country) countries.add(car.country.toUpperCase());
+                if (car.country && car.country.trim() !== "") countries.add(car.country.toUpperCase());
                 if (car.year) years.add(car.year);
             });
 
-            // Γέμισμα Φίλτρου Μάρκας
             const brandSelect = document.getElementById('filterBrand');
             brandSelect.innerHTML = '<option value="all">Όλα τα Οχήματα</option>';
             Array.from(brands).sort().forEach(b => {
                 brandSelect.innerHTML += `<option value="${b}">${b}</option>`;
             });
 
-            // Γέμισμα Φίλτρου Χώρας
             const countrySelect = document.getElementById('filterCountry');
-            if (countrySelect) {
-                countrySelect.innerHTML = '<option value="all">Όλες οι Χώρες</option>';
-                Array.from(countries).sort().forEach(c => {
-                    countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
-                });
-            }
+            countrySelect.innerHTML = '<option value="all">Όλες οι Χώρες</option>';
+            Array.from(countries).sort().forEach(c => {
+                countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
 
-            // Γέμισμα Φίλτρου Έτους
             const yearSelect = document.getElementById('filterYear');
-            if (yearSelect) {
-                yearSelect.innerHTML = '<option value="all">Όλα τα Έτη</option>';
-                Array.from(years).sort((a,b)=>b-a).forEach(y => {
-                    yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
-                });
-            }
+            yearSelect.innerHTML = '<option value="all">Όλα τα Έτη</option>';
+            Array.from(years).sort((a,b)=>b-a).forEach(y => {
+                yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+            });
         }
 
         function renderCars(carsToDisplay) {
@@ -65,32 +353,34 @@
             if (!container) return;
 
             if (carsToDisplay.length === 0) {
-                container.innerHTML = `<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα με τα συγκεκριμένα κριτήρια.</div>`;
+                container.innerHTML = `<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα.</div>`;
                 return;
             }
 
             container.innerHTML = carsToDisplay.map(car => {
-                // Διαχείριση Τιμής
                 let displayPrice = "ON REQUEST";
                 if (car.price && String(car.price).trim() !== "") {
                     let cleanPrice = String(car.price).replace(/[^0-9]/g, '');
                     if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                 }
 
-                // Διαχείριση Φωτογραφίας (Κύρια Εικόνα)
                 let mainImg = "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80"; 
                 if (car.image_url) {
                     mainImg = car.image_url;
                 } else if (car.images) {
-                    if (Array.isArray(car.images) && car.images.length > 0) mainImg = car.images[0];
-                    else if (typeof car.images === 'string' && car.images.trim() !== "") {
+                    if (Array.isArray(car.images) && car.images.length > 0) {
+                        mainImg = car.images[0];
+                    } else if (typeof car.images === 'string' && car.images.trim() !== "") {
                         let cleanImgs = car.images.replace(/[\{\}\"\']/g, '').split(',');
                         if (cleanImgs[0]) mainImg = cleanImgs[0].trim();
                     }
                 }
 
-                // Μήνυμα Χιλιομέτρων
-                let kmText = car.mileage ? parseInt(String(car.mileage).replace(/[^0-9]/g, '') || 0).toLocaleString('el-GR') + " KM" : "0 KM";
+                let kmText = "N/A";
+                if (car.mileage && String(car.mileage).trim() !== "") {
+                    let cleanKm = String(car.mileage).replace(/[^0-9]/g, '');
+                    kmText = cleanKm !== "" ? parseInt(cleanKm).toLocaleString('el-GR') + " KM" : car.mileage;
+                }
 
                 return `
                     <div class="car-card">
@@ -114,42 +404,3 @@
                     </div>
                 `;
             }).join('');
-        }
-
-        function filterCars() {
-            const brandVal = document.getElementById('filterBrand').value;
-            const countrySelect = document.getElementById('filterCountry');
-            const yearSelect = document.getElementById('filterYear');
-
-            const countryVal = countrySelect ? countrySelect.value : 'all';
-            const yearVal = yearSelect ? yearSelect.value : 'all';
-
-            let filtered = allCars.filter(car => {
-                let matchBrand = true;
-                let matchCountry = true;
-                let matchYear = true;
-
-                if (brandVal !== 'all' && car.brand_model) {
-                    const mainBrand = car.brand_model.split(' ')[0].toUpperCase();
-                    if (mainBrand !== brandVal) matchBrand = false;
-                }
-                if (countryVal !== 'all' && car.country && car.country.toUpperCase() !== countryVal) {
-                    matchCountry = false;
-                }
-                if (yearVal !== 'all' && car.year && String(car.year) !== yearVal) {
-                    matchYear = false;
-                }
-
-                return matchBrand && matchCountry && matchYear;
-            });
-
-            renderCars(filtered);
-        }
-
-        // Σύνδεση των αλλαγών στα φίλτρα
-        document.getElementById('filterBrand').addEventListener('change', filterCars);
-        if (document.getElementById('filterCountry')) document.getElementById('filterCountry').addEventListener('change', filterCars);
-        if (document.getElementById('filterYear')) document.getElementById('filterYear').addEventListener('change', filterCars);
-
-        window.onload = loadShowroom;
-    </script>
