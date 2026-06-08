@@ -2,19 +2,12 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showroom | C.J. Demetriou Motors</title>
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --bg-dark: #0f0f0f; --accent: #c5a059; --text-main: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 20px; }
-        h1 { color: var(--accent); text-align: center; }
-        #cars-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
-        .car-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 10px; transition: 0.3s; }
-        .car-card:hover { border-color: var(--accent); }
-        .car-card h3 { color: var(--accent); margin-top: 0; }
-        .car-card p { margin: 5px 0; }
+        body { background-color: #0f0f0f; color: #fff; font-family: sans-serif; padding: 20px; }
+        .car-card { background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; border: 1px solid #c5a059; }
+        h1 { color: #c5a059; text-align: center; }
     </style>
 </head>
 <body>
@@ -23,14 +16,13 @@
     <div id="cars-container">Φόρτωση οχημάτων...</div>
 
     <script>
-        // Αντικατάστησε με τα δικά σου στοιχεία
-        const supabase = supabase.createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_KEY');
+        // ΠΡΟΣΟΧΗ: Βάλε εδώ τα δικά σου κλειδιά!
+        const supabase = supabase.createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY');
 
-        async function fetchCars() {
+        async function loadCars() {
             const container = document.getElementById('cars-container');
             
             try {
-                // Fetch δεδομένα από τον πίνακα 'cars'
                 const { data, error } = await supabase
                     .from('cars')
                     .select('*');
@@ -38,31 +30,28 @@
                 if (error) throw error;
 
                 if (!data || data.length === 0) {
-                    container.innerHTML = "<p style='text-align:center;'>Δεν υπάρχουν οχήματα αυτή τη στιγμή.</p>";
+                    container.innerHTML = "Δεν βρέθηκαν οχήματα στο στοκ.";
                     return;
                 }
 
-                container.innerHTML = '';
+                container.innerHTML = ''; // Καθαρισμός του "Φόρτωση..."
                 data.forEach(car => {
-                    const card = document.createElement('div');
-                    card.className = 'car-card';
-                    card.innerHTML = `
-                        <h3>${car.brand_model || 'Αγνωστο Μοντέλο'}</h3>
-                        <p><strong>Χώρα:</strong> ${car.country || 'N/A'}</p>
-                        <p><strong>Έτος:</strong> ${car.year || 'N/A'}</p>
-                        <p><strong>Χιλιόμετρα:</strong> ${car.mileage || 'N/A'}</p>
-                        <p><strong>Χρώμα:</strong> ${car.color || 'N/A'}</p>
-                        <p><strong>Τιμή:</strong> ${car.price ? car.price + ' €' : 'Κατόπιν συνεννόησης'}</p>
+                    const div = document.createElement('div');
+                    div.className = 'car-card';
+                    div.innerHTML = `
+                        <h3>${car.brand_model || 'Αγνωστο'}</h3>
+                        <p>Χώρα: ${car.country || 'N/A'}</p>
+                        <p>Τιμή: ${car.price || 'N/A'}</p>
                     `;
-                    container.appendChild(card);
+                    container.appendChild(div);
                 });
             } catch (err) {
-                container.innerHTML = "Σφάλμα φόρτωσης: " + err.message;
-                console.error(err);
+                container.innerHTML = "Σφάλμα σύνδεσης: " + err.message;
+                console.error("Supabase Error:", err);
             }
         }
 
-        fetchCars();
+        loadCars();
     </script>
 </body>
 </html>
