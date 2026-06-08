@@ -49,11 +49,11 @@
 
     <div class="admin-box">
         <h2>Προσθήκη Νέου Οχήματος</h2>
-        <form id="carForm" onsubmit="saveCar(event)">
+        <form id="carForm" onsubmit="executeCarSave(event)">
             <div class="form-grid">
                 <div class="field-group full-width">
                     <label>Μάρκα & Μοντέλο</label>
-                    <input type="text" id="brandModel" placeholder="π.χ. MERCEDES AMG GT" required>
+                    <input type="text" id="brandModel" placeholder="π.χ. LEXUS RX350 H VERSION L" required>
                 </div>
                 <div class="field-group">
                     <label>Έτος Κατασκευής</label>
@@ -87,7 +87,7 @@
                 <div class="field-group full-width">
                     <label>Φωτογραφίες Οχήματος (Μπορείς να επιλέξεις ΠΟΛΛΕΣ μαζί)</label>
                     <label for="fileInput" class="file-label" id="fileLabel">📸 Επιλογή Φωτογραφιών</label>
-                    <input type="file" id="fileInput" accept="image/*" multiple onchange="updateFileLabel()">
+                    <input type="file" id="fileInput" accept="image/*" multiple onchange="refreshFileLabel()">
                 </div>
             </div>
             <button type="submit" id="submitBtn" class="btn-submit">Καταχώρηση στο Στοκ</button>
@@ -108,7 +108,7 @@
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
         const sbClient = supabase.createClient(sbUrl, sbKey);
 
-        function updateFileLabel() {
+        function refreshFileLabel() {
             const input = document.getElementById('fileInput');
             const label = document.getElementById('fileLabel');
             if(input.files.length > 0) {
@@ -118,7 +118,7 @@
             }
         }
 
-        async function loadStock() {
+        async function fetchAndRenderStock() {
             const container = document.getElementById('stockList');
             try {
                 const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
@@ -139,7 +139,6 @@
                         if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                     }
                     
-                    // Απόλυτα ασφαλής μέτρηση φωτογραφιών για να μην κρασάρει ΠΟΤΕ η JS
                     let imgCount = 0;
                     if (car.images) {
                         if (Array.isArray(car.images)) {
@@ -160,17 +159,17 @@
                                 <h4>${car.brand_model || 'Χωρίς Όνομα'} (${car.year || 'N/A'})</h4>
                                 <p>Τιμή: ${displayPrice} | Φωτογραφίες: ${imgCount}</p>
                             </div>
-                            <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
+                            <button class="btn-delete" onclick="executeCarDelete(${car.id})">Διαγραφή</button>
                         </div>
                     `;
                 }).join('');
             } catch (globalError) {
-                console.error("Σφάλμα κατά τη φόρτωση:", globalError);
-                container.innerHTML = `<p style='color: #ff4a4a;'>Κάτι πήγε στραβά κατά τη φόρτωση της λίστας.</p>`;
+                console.error(globalError);
+                container.innerHTML = `<p style='color: #ff4a4a;'>Σφάλμα κατά τη φόρτωση της λίστας.</p>`;
             }
         }
 
-        async function saveCar(e) {
+        async function executeCarSave(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             const statusMsg = document.getElementById('statusMsg');
@@ -184,7 +183,6 @@
             let uploadedUrls = [];
 
             try {
-                // Ανέβασμα φωτογραφιών μία-μία
                 for(let i=0; i<files.length; i++) {
                     statusMsg.innerText = `Ανέβασμα φωτογραφίας ${i+1} από ${files.length}...`;
                     const file = files[i];
@@ -200,14 +198,10 @@
                             .from('car-images')
                             .getPublicUrl(fileName);
                         uploadedUrls.push(publicData.publicUrl);
-                    } else {
-                        console.error("Σφάλμα upload εικόνας:", uploadError);
                     }
                 }
 
                 statusMsg.innerText = "Αποθήκευση στοιχείων οχήματος...";
-
-                // Καθαρισμός τιμής από τελείες/γράμματα για σωστή αποθήκευση
                 const cleanPrice = document.getElementById('price').value.replace(/[^0-9]/g, '');
 
                 const payload = {
@@ -230,12 +224,11 @@
                 } else {
                     document.getElementById('carForm').reset();
                     document.getElementById('fileLabel').innerText = "📸 Επιλογή Φωτογραφιών";
-                    await loadStock();
-                    alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με τις φωτογραφίες του!");
+                    await fetchAndRenderStock();
+                    alert("Το όχημα καταχωρήθηκε με επιτυχία!");
                 }
             } catch (err) {
-                console.error(err);
-                errBox.innerText = "Προέκυψε απρόσμενο σφάλμα: " + err.message;
+                errBox.innerText = "Σφάλμα: " + err.message;
                 errBox.style.display = 'block';
             } finally {
                 submitBtn.disabled = false;
@@ -243,14 +236,14 @@
             }
         }
 
-        async function deleteCar(carId) {
+        async function executeCarDelete(carId) {
             if (!confirm("Θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα;")) return;
             const { error } = await sbClient.from('cars').delete().eq('id', carId);
             if (error) alert("Αποτυχία: " + error.message);
-            else await loadStock();
+            else await fetchAndRenderStock();
         }
 
-        window.onload = loadStock;
+        window.onload = fetchAndRenderStock;
     </script>
 </body>
 </html>
