@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showroom | C.J. Demetriou Motors</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <!-- Supabase Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase.js"></script>
-    <script src="supabase.js"></script>
 
     <style>
         :root {
@@ -34,6 +32,7 @@
             padding-bottom: 60px;
         }
 
+        /* Header Navigation */
         nav {
             display: flex;
             justify-content: space-between;
@@ -71,6 +70,7 @@
             color: var(--accent);
         }
 
+        /* Main Container */
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -87,6 +87,7 @@
             color: #fff;
         }
 
+        /* Filters Box */
         .filters-box {
             background: var(--card-bg);
             border: 1px solid var(--line-color);
@@ -133,12 +134,18 @@
             border-radius: 2px;
         }
 
+        .filter-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* Showroom Grid */
         .showroom-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 30px;
         }
 
+        /* Car Card */
         .car-card {
             background: var(--card-bg);
             border: 1px solid var(--line-color);
@@ -254,4 +261,198 @@
 <body>
 
     <nav>
-        <a href="index.html" class="logo">C.J. DEMETRIOU MOT
+        <a href="index.html" class="logo">C.J. DEMETRIOU MOTORS</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="cars.html" class="active">Cars</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title">Our Showroom</h1>
+
+        <!-- Φίλτρα -->
+        <div class="filters-box">
+            <h2>Φιλτραρισμα Showroom</h2>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Μάρκα / Μοντέλο</label>
+                    <select id="filterBrand">
+                        <option value="all">Όλα τα Οχήματα</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Προέλευση / Χώρα</label>
+                    <select id="filterCountry">
+                        <option value="all">Όλες οι Χώρες</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Έτος Κατασκευής</label>
+                    <select id="filterYear">
+                        <option value="all">Όλα τα Έτη</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Πλέγμα Οχημάτων -->
+        <div class="showroom-grid" id="showroomGrid">
+            <div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Φόρτωση showroom...</div>
+        </div>
+    </div>
+
+    <script>
+        const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
+        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
+        
+        const sbClient = supabase.createClient(sbUrl, sbKey);
+        let allCars = [];
+
+        function getCarTitle(car) {
+            return car.brand_model || car.model || car.brand || car.title || "UNKNOWN VEHICLE";
+        }
+
+        async function loadShowroom() {
+            const container = document.getElementById('showroomGrid');
+            try {
+                const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
+                
+                if (error) {
+                    console.error(error);
+                    container.innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Αποτυχία σύνδεσης με τη βάση.</div>";
+                    return;
+                }
+
+                allCars = cars || [];
+                setupFilters();
+                renderCars(allCars);
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Σφάλμα κατά τη φόρτωση.</div>";
+            }
+        }
+
+        function setupFilters() {
+            const brands = new Set();
+            const countries = new Set();
+            const years = new Set();
+
+            allCars.forEach(car => {
+                let title = getCarTitle(car);
+                if (title && title !== "UNKNOWN VEHICLE" && title.trim() !== "") {
+                    brands.add(title.trim().split(' ')[0].toUpperCase());
+                }
+                if (car.country && String(car.country).trim() !== "") {
+                    countries.add(String(car.country).trim().toUpperCase());
+                }
+                if (car.year && String(car.year).trim() !== "") {
+                    years.add(String(car.year).trim());
+                }
+            });
+
+            document.getElementById('filterBrand').innerHTML = '<option value="all">Όλα τα Οχήματα</option>' + 
+                Array.from(brands).sort().map(b => `<option value="${b}">${b}</option>`).join('');
+
+            document.getElementById('filterCountry').innerHTML = '<option value="all">Όλες οι Χώρες</option>' + 
+                Array.from(countries).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+
+            document.getElementById('filterYear').innerHTML = '<option value="all">Όλα τα Έτη</option>' + 
+                Array.from(years).sort((a,b)=>b-a).map(y => `<option value="${y}">${y}</option>`).join('');
+        }
+
+        function renderCars(carsToDisplay) {
+            const container = document.getElementById('showroomGrid');
+            if (!container) return;
+
+            if (carsToDisplay.length === 0) {
+                container.innerHTML = `<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Δεν υπάρχουν διαθέσιμα οχήματα.</div>`;
+                return;
+            }
+
+            container.innerHTML = carsToDisplay.map(car => {
+                let displayPrice = "ON REQUEST";
+                if (car.price && String(car.price).trim() !== "") {
+                    let cleanPrice = String(car.price).replace(/[^0-9]/g, '');
+                    if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
+                }
+
+                let carTitle = getCarTitle(car);
+                let imgTagHtml = `<div class="no-image-placeholder">📸 NO IMAGES AVAILABLE</div>`;
+                let foundUrl = "";
+
+                if (car.image_url && String(car.image_url).trim() !== "") {
+                    foundUrl = String(car.image_url).trim();
+                } else if (car.images) {
+                    if (Array.isArray(car.images) && car.images.length > 0) {
+                        foundUrl = car.images[0];
+                    } else if (typeof car.images === 'string' && car.images.trim() !== "") {
+                        try {
+                            let parsed = JSON.parse(car.images);
+                            if (Array.isArray(parsed) && parsed.length > 0) foundUrl = parsed[0];
+                        } catch(e) {
+                            let cleanImgs = car.images.replace(/[\{\}\"\']/g, '').split(',');
+                            if (cleanImgs[0] && cleanImgs[0].trim() !== "") foundUrl = cleanImgs[0].trim();
+                        }
+                    }
+                }
+
+                if (foundUrl && foundUrl.startsWith("http")) {
+                    imgTagHtml = `<img src="${foundUrl}" alt="${carTitle}" class="car-image">`;
+                }
+
+                let kmText = "N/A";
+                if (car.mileage && String(car.mileage).trim() !== "") {
+                    let cleanKm = String(car.mileage).replace(/[^0-9]/g, '');
+                    kmText = cleanKm !== "" ? parseInt(cleanKm).toLocaleString('el-GR') + " KM" : car.mileage;
+                }
+
+                return `
+                    <div class="car-card">
+                        <div class="car-image-container">
+                            ${imgTagHtml}
+                            <span class="status-badge">${car.status || 'Stock'}</span>
+                        </div>
+                        <div class="car-details">
+                            <h3 class="car-title">${carTitle}</h3>
+                            <div class="car-specs">
+                                <span>📅 ${car.year || 'N/A'}</span>
+                                <span>🛣️ ${kmText}</span>
+                                <span>🎨 ${car.color || 'N/A'}</span>
+                                <span>📍 ${car.country || 'N/A'}</span>
+                            </div>
+                            <div class="car-footer">
+                                <span class="car-price">${displayPrice}</span>
+                                <a href="contact.html?car=${encodeURIComponent(carTitle)}" class="btn-interest">ΕΚΔΗΛΩΣΗ ΕΝΔΙΑΦΕΡΟΝΤΟΣ</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterCars() {
+            const brandVal = document.getElementById('filterBrand').value;
+            const countryVal = document.getElementById('filterCountry').value;
+            const yearVal = document.getElementById('filterYear').value;
+
+            let filtered = allCars.filter(car => {
+                let title = getCarTitle(car);
+                let matchBrand = (brandVal === 'all') || (title && title.trim().split(' ')[0].toUpperCase() === brandVal);
+                let matchCountry = (countryVal === 'all') || (car.country && String(car.country).toUpperCase().trim() === countryVal);
+                let matchYear = (yearVal === 'all') || (car.year && String(car.year).trim() === yearVal);
+                return matchBrand && matchCountry && matchYear;
+            });
+
+            renderCars(filtered);
+        }
+
+        document.getElementById('filterBrand').addEventListener('change', filterCars);
+        document.getElementById('filterCountry').addEventListener('change', filterCars);
+        document.getElementById('filterYear').addEventListener('change', filterCars);
+
+        window.onload = loadShowroom;
+    </script>
+</body>
+</html>
