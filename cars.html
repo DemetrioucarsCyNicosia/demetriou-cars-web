@@ -4,153 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showroom | C.J. Demetriou Motors</title>
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --bg-dark: #0d0d12; --accent: #bfa36a; --card-bg: rgba(20, 20, 28, 0.95); --line-color: rgba(255, 255, 255, 0.1); --text-main: #ffffff; --text-muted: #90909a; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding-bottom: 60px; }
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 30px 5%; border-bottom: 1px solid var(--line-color); background: #0b0b0f; }
-        .logo { font-family: "Times New Roman", serif; color: var(--accent); font-size: 20px; letter-spacing: 2px; font-weight: bold; text-decoration: none; }
-        .nav-links { display: flex; gap: 30px; list-style: none; }
-        .nav-links a { color: var(--text-main); text-decoration: none; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; transition: color 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: var(--accent); }
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .page-title { text-align: center; font-family: "Times New Roman", serif; font-size: 32px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; color: #fff; }
-        .filters-box { background: var(--card-bg); border: 1px solid var(--line-color); padding: 30px; border-radius: 4px; margin-bottom: 40px; }
-        .filters-box h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 20px; }
-        .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .filter-group { display: flex; flex-direction: column; }
-        .filter-group label { font-size: 9px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px; }
-        .filter-group select { background: #14141c; border: 1px solid var(--line-color); color: #fff; padding: 12px; font-size: 13px; outline: none; cursor: pointer; border-radius: 2px; }
-        .showroom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 30px; }
-        .car-card { background: var(--card-bg); border: 1px solid var(--line-color); border-radius: 4px; overflow: hidden; transition: transform 0.3s, border-color 0.3s; }
-        .car-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .car-image-container { position: relative; height: 230px; background: #14141c; display: flex; align-items: center; justify-content: center; }
-        .car-image { width: 100%; height: 100%; object-fit: cover; }
-        .no-image-placeholder { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
-        .status-badge { position: absolute; top: 15px; left: 15px; background: var(--accent); color: #0d0d12; padding: 6px 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-radius: 2px; }
-        .car-details { padding: 25px; }
-        .car-title { font-size: 17px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; color: #fff; min-height: 42px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .car-specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
-        .car-specs span { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
-        .car-footer { display: flex; justify-content: space-between; align-items: center; }
-        .car-price { font-size: 18px; font-weight: 700; color: var(--accent); }
-        .btn-interest { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 10px 16px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; font-weight: bold; transition: all 0.3s; border-radius: 2px; }
-        .btn-interest:hover { background: var(--accent); color: #0d0d12; }
+        :root { --bg-dark: #0f0f0f; --accent: #c5a059; --text-main: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 20px; }
+        h1 { color: var(--accent); text-align: center; }
+        #cars-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
+        .car-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 10px; transition: 0.3s; }
+        .car-card:hover { border-color: var(--accent); }
+        .car-card h3 { color: var(--accent); margin-top: 0; }
+        .car-card p { margin: 5px 0; }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="index.html" class="logo">C.J. DEMETRIOU MOTORS</a>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="cars.html" class="active">Cars</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
-    <div class="container">
-        <h1 class="page-title">Our Showroom</h1>
-        <div class="filters-box">
-            <h2>Φιλτραρισμα Showroom</h2>
-            <div class="filters-grid">
-                <div class="filter-group"><label>Μάρκα / Μοντέλο</label><select id="filterBrand"><option value="all">Όλα τα Οχήματα</option></select></div>
-                <div class="filter-group"><label>Προέλευση / Χώρα</label><select id="filterCountry"><option value="all">Όλες οι Χώρες</option></select></div>
-                <div class="filter-group"><label>Έτος Κατασκευής</label><select id="filterYear"><option value="all">Όλα τα Έτη</option></select></div>
-            </div>
-        </div>
-        <div class="showroom-grid" id="showroomGrid">
-            <div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Φόρτωση showroom...</div>
-        </div>
-    </div>
+
+    <h1>Το Στοκ μας</h1>
+    <div id="cars-container">Φόρτωση οχημάτων...</div>
+
     <script>
-        const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
-        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
-        const sbClient = supabase.createClient(sbUrl, sbKey);
-        let allCars = [];
+        // Αντικατάστησε με τα δικά σου στοιχεία
+        const supabase = supabase.createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_KEY');
 
-        async function loadShowroom() {
-            const container = document.getElementById('showroomGrid');
+        async function fetchCars() {
+            const container = document.getElementById('cars-container');
+            
             try {
-                const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
-                if (error) { container.innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Αποτυχία σύνδεσης με τη βάση.</div>"; return; }
-                allCars = cars || [];
-                setupFilters();
-                renderCars(allCars);
-            } catch (err) { container.innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Σφάλμα κατά τη φόρτωση.</div>"; }
-        }
+                // Fetch δεδομένα από τον πίνακα 'cars'
+                const { data, error } = await supabase
+                    .from('cars')
+                    .select('*');
 
-        function setupFilters() {
-            const brands = new Set(); const countries = new Set(); const years = new Set();
-            allCars.forEach(car => {
-                let title = car.brand_model || "UNKNOWN VEHICLE";
-                if (title && title !== "UNKNOWN VEHICLE") brands.add(title.split(' ')[0].toUpperCase());
-                if (car.country) countries.add(String(car.country).trim().toUpperCase());
-                if (car.year) years.add(String(car.year).trim());
-            });
-            document.getElementById('filterBrand').innerHTML = '<option value="all">Όλα τα Οχήματα</option>' + Array.from(brands).sort().map(b => `<option value="${b}">${b}</option>`).join('');
-            document.getElementById('filterCountry').innerHTML = '<option value="all">Όλες οι Χώρες</option>' + Array.from(countries).sort().map(c => `<option value="${c}">${c}</option>`).join('');
-            document.getElementById('filterYear').innerHTML = '<option value="all">Όλα τα Έτη</option>' + Array.from(years).sort((a,b)=>b-a).map(y => `<option value="${y}">${y}</option>`).join('');
-        }
+                if (error) throw error;
 
-        function renderCars(carsToDisplay) {
-            const container = document.getElementById('showroomGrid');
-            if (carsToDisplay.length === 0) { container.innerHTML = `<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Δεν υπάρχουν διαθέσιμα οχήματα.</div>`; return; }
-            container.innerHTML = carsToDisplay.map(car => {
-                let displayPrice = "ON REQUEST";
-                if (car.price) { displayPrice = parseInt(String(car.price)).toLocaleString('el-GR') + " €"; }
-                let carTitle = car.brand_model || "UNKNOWN VEHICLE";
-                let imgTagHtml = `<div class="no-image-placeholder">📸 NO IMAGES AVAILABLE</div>`;
-                let foundUrl = "";
-
-                // Εξασφάλιση ανάγνωσης των εικόνων είτε είναι String (με κόμματα) είτε Array/JSON
-                if (car.images) {
-                    if (typeof car.images === 'string' && car.images.trim() !== "") {
-                        if (car.images.startsWith('[')) {
-                            try { let parsed = JSON.parse(car.images); if (Array.isArray(parsed) && parsed.length > 0) foundUrl = parsed[0]; }
-                            catch(e) { foundUrl = car.images.split(',')[0].trim(); }
-                        } else {
-                            foundUrl = car.images.split(',')[0].trim();
-                        }
-                    } else if (Array.isArray(car.images) && car.images.length > 0) {
-                        foundUrl = car.images[0];
-                    }
-                } else if (car.image_url) { 
-                    foundUrl = car.image_url.trim(); 
+                if (!data || data.length === 0) {
+                    container.innerHTML = "<p style='text-align:center;'>Δεν υπάρχουν οχήματα αυτή τη στιγμή.</p>";
+                    return;
                 }
 
-                if (foundUrl && foundUrl.startsWith("http")) { imgTagHtml = `<img src="${foundUrl}" alt="${carTitle}" class="car-image">`; }
-                let kmText = car.mileage ? parseInt(String(car.mileage)).toLocaleString('el-GR') + " KM" : "N/A";
-
-                return `
-                    <div class="car-card">
-                        <div class="car-image-container">${imgTagHtml}<span class="status-badge">${car.status || 'Stock'}</span></div>
-                        <div class="car-details">
-                            <h3 class="car-title">${carTitle}</h3>
-                            <div class="car-specs"><span>📅 ${car.year || 'N/A'}</span><span>🛣️ ${kmText}</span><span>🎨 ${car.color || 'N/A'}</span><span>📍 ${car.country || 'N/A'}</span></div>
-                            <div class="car-footer"><span class="car-price">${displayPrice}</span><a href="contact.html?car=${encodeURIComponent(carTitle)}" class="btn-interest">ΕΚΔΗΛΩΣΗ ΕΝΔΙΑΦΕΡΟΝΤΟΣ</a></div>
-                        </div>
-                    </div>`;
-            }).join('');
+                container.innerHTML = '';
+                data.forEach(car => {
+                    const card = document.createElement('div');
+                    card.className = 'car-card';
+                    card.innerHTML = `
+                        <h3>${car.brand_model || 'Αγνωστο Μοντέλο'}</h3>
+                        <p><strong>Χώρα:</strong> ${car.country || 'N/A'}</p>
+                        <p><strong>Έτος:</strong> ${car.year || 'N/A'}</p>
+                        <p><strong>Χιλιόμετρα:</strong> ${car.mileage || 'N/A'}</p>
+                        <p><strong>Χρώμα:</strong> ${car.color || 'N/A'}</p>
+                        <p><strong>Τιμή:</strong> ${car.price ? car.price + ' €' : 'Κατόπιν συνεννόησης'}</p>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                container.innerHTML = "Σφάλμα φόρτωσης: " + err.message;
+                console.error(err);
+            }
         }
 
-        function filterCars() {
-            const brandVal = document.getElementById('filterBrand').value;
-            const countryVal = document.getElementById('filterCountry').value;
-            const yearVal = document.getElementById('filterYear').value;
-            let filtered = allCars.filter(car => {
-                let title = car.brand_model || "";
-                let matchBrand = (brandVal === 'all') || (title && title.trim().split(' ')[0].toUpperCase() === brandVal);
-                let matchCountry = (countryVal === 'all') || (car.country && String(car.country).toUpperCase().trim() === countryVal);
-                let matchYear = (yearVal === 'all') || (car.year && String(car.year).trim() === yearVal);
-                return matchBrand && matchCountry && matchYear;
-            });
-            renderCars(filtered);
-        }
-
-        document.getElementById('filterBrand').addEventListener('change', filterCars);
-        document.getElementById('filterCountry').addEventListener('change', filterCars);
-        document.getElementById('filterYear').addEventListener('change', filterCars);
-        window.onload = loadShowroom;
+        fetchCars();
     </script>
 </body>
 </html>
