@@ -102,13 +102,21 @@
                 let imgTagHtml = `<div class="no-image-placeholder">📸 NO IMAGES AVAILABLE</div>`;
                 let foundUrl = "";
 
+                // Εξασφάλιση ανάγνωσης των εικόνων είτε είναι String (με κόμματα) είτε Array/JSON
                 if (car.images) {
-                    if (Array.isArray(car.images) && car.images.length > 0) foundUrl = car.images[0];
-                    else if (typeof car.images === 'string' && car.images.trim() !== "") {
-                        try { let parsed = JSON.parse(car.images); if (Array.isArray(parsed) && parsed.length > 0) foundUrl = parsed[0]; }
-                        catch(e) { let cleanImgs = car.images.replace(/[\{\}\"\']/g, '').split(','); if (cleanImgs[0]) foundUrl = cleanImgs[0].trim(); }
+                    if (typeof car.images === 'string' && car.images.trim() !== "") {
+                        if (car.images.startsWith('[')) {
+                            try { let parsed = JSON.parse(car.images); if (Array.isArray(parsed) && parsed.length > 0) foundUrl = parsed[0]; }
+                            catch(e) { foundUrl = car.images.split(',')[0].trim(); }
+                        } else {
+                            foundUrl = car.images.split(',')[0].trim();
+                        }
+                    } else if (Array.isArray(car.images) && car.images.length > 0) {
+                        foundUrl = car.images[0];
                     }
-                } else if (car.image_url) { foundUrl = car.image_url.trim(); }
+                } else if (car.image_url) { 
+                    foundUrl = car.image_url.trim(); 
+                }
 
                 if (foundUrl && foundUrl.startsWith("http")) { imgTagHtml = `<img src="${foundUrl}" alt="${carTitle}" class="car-image">`; }
                 let kmText = car.mileage ? parseInt(String(car.mileage)).toLocaleString('el-GR') + " KM" : "N/A";
