@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showroom | C.J. Demetriou Motors</title>
+    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -135,6 +136,7 @@
             border-radius: 4px;
             outline: none;
             cursor: pointer;
+            width: 100%;
         }
 
         /* Grid & Cards */
@@ -142,6 +144,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 30px;
+            margin-top: 20px;
         }
 
         .car-card {
@@ -329,6 +332,7 @@
     <div class="showroom-container">
         <h1 class="showroom-title">Our Showroom</h1>
 
+        <!-- Φίλτρα -->
         <div class="filter-section">
             <h3>Φιλτράρισμα Showroom</h3>
             <div class="filter-grid">
@@ -339,4 +343,205 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label
+                    <label>Προέλευση / Χώρα</label>
+                    <select id="filterCountry" onchange="applyFilters()">
+                        <option value="all">Όλες οι Χώρες</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Έτος Κατασκευής</label>
+                    <select id="filterYear" onchange="applyFilters()">
+                        <option value="all">Όλα τα Έτη</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Πλέγμα Οχημάτων -->
+        <div class="showroom-grid" id="showroomGrid">
+            <!-- Τα αυτοκίνητα θα φορτωθούν εδώ δυναμικά -->
+        </div>
+    </div>
+
+    <script>
+        const sbUrl = "https://qwcdqsmoabmbeaviioh.supabase.co";
+        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZmYiOiJxd2NkcXNtb2FibWJlYXZpaW9paCIsInJvbGUiOiJhbm9ueW1vdXMiLCJpYXQiOjE3MTU0Mjg0MzMsImV4cCI6MjAzMTAwNDQzM30.gM73vM8HwN0wB19aFvN5b_8ub99Mv0R_g3M1bKM684M";
+        const sbClient = supabase.createClient(sbUrl, sbKey);
+
+        let allCars = [];
+        const whatsappNumber = "35794628922";
+
+        async function fetchShowroom() {
+            try {
+                const { data: cars, error } = await sbClient
+                    .from('cars')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                if (error) {
+                    console.error("Σφάλμα Supabase:", error);
+                    return;
+                }
+
+                allCars = cars || [];
+                buildFilterOptions();
+                renderCars(allCars);
+            } catch (err) {
+                console.error("Απρόσμενο σφάλμα:", err);
+            }
+        }
+
+        function buildFilterOptions() {
+            const brands = new Set();
+            const countries = new Set();
+            const years = new Set();
+
+            allCars.forEach(car => {
+                if (car.brand) brands.add(car.brand);
+                if (car.country) countries.add(car.country);
+                if (car.year) years.add(car.year);
+            });
+
+            const brandSelect = document.getElementById('filterBrand');
+            if (brandSelect) {
+                brandSelect.innerHTML = '<option value="all">Όλα τα Οχήματα</option>';
+                Array.from(brands).sort().forEach(b => {
+                    brandSelect.innerHTML += `<option value="${b}">${b}</option>`;
+                });
+            }
+
+            const countrySelect = document.getElementById('filterCountry');
+            if (countrySelect) {
+                countrySelect.innerHTML = '<option value="all">Όλες οι Χώρες</option>';
+                Array.from(countries).sort().forEach(c => {
+                    countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+            }
+
+            const yearSelect = document.getElementById('filterYear');
+            if (yearSelect) {
+                yearSelect.innerHTML = '<option value="all">Όλα τα Έτη</option>';
+                Array.from(years).sort((a,b)=>b-a).forEach(y => {
+                    yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+                });
+            }
+        }
+
+        function renderCars(carsToDisplay) {
+            const container = document.getElementById('showroomGrid');
+            if (!container) return;
+
+            if (carsToDisplay.length === 0) {
+                container.innerHTML = `<div style="grid-column: span 3; text-align: center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα με τα συγκεκριμένα κριτήρια.</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            carsToDisplay.forEach(car => {
+                let carImages = [];
+                if (Array.isArray(car.images) && car.images.length > 0) {
+                    carImages = car.images;
+                } else if (car.images && typeof car.images === 'string') {
+                    carImages = car.images.replace(/{|}/g, '').split(',').filter(img => img.trim() !== '');
+                }
+                if (carImages.length === 0 && car.image_url) {
+                    carImages = [car.image_url];
+                }
+                if (carImages.length === 0) {
+                    carImages = ['https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'];
+                }
+
+                const formattedPrice = Number(car.price).toLocaleString('el-GR');
+                const formattedKm = Number(car.mileage).toLocaleString('el-GR');
+
+                const message = encodeURIComponent(`Γεια σας, ενδιαφέρομαι για το όχημα: ${car.brand} ${car.model} (${car.year}) - ${formattedPrice} €`);
+                const waLink = `https://wa.me/${whatsappNumber}?text=${message}`;
+                const viberLink = `viber://contact?number=%2B${whatsappNumber}`;
+
+                const carCard = document.createElement('div');
+                carCard.className = 'car-card';
+
+                carCard.innerHTML = `
+                    <div class="image-slider-container">
+                        <span class="status-badge">${car.status || 'ΣΕ ΑΠΟΘΕΜΑ'}</span>
+                        <div class="slider-wrapper" id="slider-${car.id}">
+                            ${carImages.map((img, index) => `
+                                <img src="${img.trim()}" class="slider-img ${index === 0 ? 'active' : ''}" alt="${car.brand} ${car.model}" onerror="this.src='https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'">
+                            `).join('')}
+                        </div>
+                        ${carImages.length > 1 ? `
+                            <button class="slider-btn prev" onclick="moveSlider('${car.id}', -1)">&#10094;</button>
+                            <button class="slider-btn next" onclick="moveSlider('${car.id}', 1)">&#10095;</button>
+                        ` : ''}
+                    </div>
+                    <div class="car-info">
+                        <h3>${car.brand} ${car.model}</h3>
+                        <div class="specs">
+                            <p>📅 Έτος: ${car.year}</p>
+                            <p>🧭 Χιλιόμετρα: ${formattedKm} km</p>
+                            <p>🎨 Χρώμα: ${car.color || 'N/A'}</p>
+                        </div>
+                        <div class="card-footer">
+                            <span class="price">${formattedPrice} €</span>
+                            <span class="country-tag">${car.country || 'JAPAN'}</span>
+                        </div>
+                        <div class="action-buttons">
+                            <a href="${waLink}" target="_blank" class="btn-action btn-whatsapp">
+                                💬 WhatsApp
+                            </a>
+                            <a href="${viberLink}" class="btn-action btn-viber">
+                                💜 Viber
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(carCard);
+            });
+        }
+
+        function moveSlider(carId, direction) {
+            const wrapper = document.getElementById(`slider-${carId}`);
+            if (!wrapper) return;
+            const images = wrapper.getElementsByClassName('slider-img');
+            if (images.length <= 1) return;
+
+            let activeIndex = -1;
+            for (let i = 0; i < images.length; i++) {
+                if (images[i].classList.contains('active')) {
+                    activeIndex = i;
+                    images[i].classList.remove('active');
+                    break;
+                }
+            }
+
+            let newIndex = activeIndex + direction;
+            if (newIndex >= images.length) newIndex = 0;
+            if (newIndex < 0) newIndex = images.length - 1;
+
+            images[newIndex].classList.add('active');
+        }
+
+        function applyFilters() {
+            const brandSelect = document.getElementById('filterBrand');
+            const countrySelect = document.getElementById('filterCountry');
+            const yearSelect = document.getElementById('filterYear');
+
+            const brandVal = brandSelect ? brandSelect.value : 'all';
+            const countryVal = countrySelect ? countrySelect.value : 'all';
+            const yearVal = yearSelect ? yearSelect.value : 'all';
+
+            const filtered = allCars.filter(car => {
+                const matchBrand = (brandVal === 'all' || car.brand === brandVal);
+                const matchCountry = (countryVal === 'all' || car.country === countryVal);
+                const matchYear = (yearVal === 'all' || String(car.year) === yearVal);
+                return matchBrand && matchCountry && matchYear;
+            });
+
+            renderCars(filtered);
+        }
+
+        window.onload = fetchShowroom;
+    </script>
+</body>
+</html>
