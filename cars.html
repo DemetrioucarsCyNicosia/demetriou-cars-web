@@ -34,7 +34,6 @@
             padding-bottom: 60px;
         }
 
-        /* Navbar */
         nav {
             display: flex;
             justify-content: space-between;
@@ -72,7 +71,6 @@
             color: var(--accent);
         }
 
-        /* Main Container */
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -89,7 +87,6 @@
             color: #fff;
         }
 
-        /* Filters Box */
         .filters-box {
             background: var(--card-bg);
             border: 1px solid var(--line-color);
@@ -136,18 +133,12 @@
             border-radius: 2px;
         }
 
-        .filter-group select:focus {
-            border-color: var(--accent);
-        }
-
-        /* Showroom Grid */
         .showroom-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 30px;
         }
 
-        /* Car Card */
         .car-card {
             background: var(--card-bg);
             border: 1px solid var(--line-color);
@@ -209,9 +200,6 @@
             letter-spacing: 0.5px;
             margin-bottom: 15px;
             color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .car-specs {
@@ -319,14 +307,14 @@
                 sbClient = window.supabase.createClient(sbUrl, sbKey);
             }
         } catch(e) {
-            console.error("Supabase Init Error:", e);
+            console.error(e);
         }
 
         let allCars = [];
 
         async function loadShowroom() {
             if (!sbClient) {
-                document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Σφάλμα σύνδεσης (Library Missing).</p>";
+                document.getElementById('showroomGrid').innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Σφάλμα σύνδεσης με τη βάση.</div>";
                 return;
             }
 
@@ -334,7 +322,7 @@
                 const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
                 
                 if (error) {
-                    document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Αποτυχία φόρτωσης οχημάτων.</p>";
+                    document.getElementById('showroomGrid').innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Αποτυχία ανάκτησης δεδομένων.</div>";
                     return;
                 }
 
@@ -342,7 +330,7 @@
                 setupFilters();
                 renderCars(allCars);
             } catch (err) {
-                document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Σφάλμα συστήματος κατά τη φόρτωση.</p>";
+                document.getElementById('showroomGrid').innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Σφάλμα συστήματος.</div>";
             }
         }
 
@@ -352,9 +340,9 @@
             const years = new Set();
 
             allCars.forEach(car => {
-                if (car.brand_model && car.brand_model.trim() !== "") {
-                    const mainBrand = car.brand_model.split(' ')[0].toUpperCase();
-                    brands.add(mainBrand);
+                let title = car.brand_model || car.brand || "";
+                if (title.trim() !== "") {
+                    brands.add(title.split(' ')[0].toUpperCase());
                 }
                 if (car.country && car.country.trim() !== "") countries.add(car.country.toUpperCase());
                 if (car.year) years.add(car.year);
@@ -384,7 +372,7 @@
             if (!container) return;
 
             if (carsToDisplay.length === 0) {
-                container.innerHTML = `<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα.</div>`;
+                container.innerHTML = `<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα στο στοκ.</div>`;
                 return;
             }
 
@@ -395,8 +383,10 @@
                     if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                 }
 
-                // Εύρεση Εικόνας
-                let imgTagHtml = `<div class="no-image-placeholder">📸 No Images Available</div>`; 
+                let carTitle = car.brand_model || car.brand || "UNKNOWN CAR";
+
+                // Διαχείριση εικόνων
+                let imgTagHtml = `<div class="no-image-placeholder">📸 NO IMAGES AVAILABLE</div>`;
                 let foundUrl = "";
 
                 if (car.image_url && car.image_url.trim() !== "") {
@@ -416,7 +406,7 @@
                 }
 
                 if (foundUrl && foundUrl.startsWith("http")) {
-                    imgTagHtml = `<img src="${foundUrl}" alt="${car.brand_model}" class="car-image">`;
+                    imgTagHtml = `<img src="${foundUrl}" alt="${carTitle}" class="car-image">`;
                 }
 
                 let kmText = "N/A";
@@ -432,7 +422,7 @@
                             <span class="status-badge">${car.status || 'Stock'}</span>
                         </div>
                         <div class="car-details">
-                            <h3 class="car-title">${car.brand_model || 'Unknown Car'}</h3>
+                            <h3 class="car-title">${carTitle}</h3>
                             <div class="car-specs">
                                 <span>📅 ${car.year || 'N/A'}</span>
                                 <span>🛣️ ${kmText}</span>
@@ -441,7 +431,7 @@
                             </div>
                             <div class="car-footer">
                                 <span class="car-price">${displayPrice}</span>
-                                <a href="contact.html?car=${encodeURIComponent(car.brand_model)}" class="btn-interest">ΕΚΔΗΛΩΣΗ ΕΝΔΙΑΦΕΡΟΝΤΟΣ</a>
+                                <a href="contact.html?car=${encodeURIComponent(carTitle)}" class="btn-interest">ΕΚΔΗΛΩΣΗ ΕΝΔΙΑΦΕΡΟΝΤΟΣ</a>
                             </div>
                         </div>
                     </div>
@@ -459,8 +449,10 @@
                 let matchCountry = true;
                 let matchYear = true;
 
-                if (brandVal !== 'all' && car.brand_model) {
-                    const mainBrand = car.brand_model.split(' ')[0].toUpperCase();
+                let title = car.brand_model || car.brand || "";
+
+                if (brandVal !== 'all' && title) {
+                    const mainBrand = title.split(' ')[0].toUpperCase();
                     if (mainBrand !== brandVal) matchBrand = false;
                 }
                 if (countryVal !== 'all' && car.country && car.country.toUpperCase() !== countryVal) {
