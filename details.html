@@ -5,19 +5,31 @@
     <title>Λεπτομέρειες Οχήματος | C.J. Demetriou Motors</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #0b0b0f; color: white; font-family: sans-serif; padding: 40px; }
+        body { background-color: #0b0b0f; color: #ffffff; font-family: sans-serif; padding: 40px; }
         .container { max-width: 900px; margin: 0 auto; }
+        
+        .logo-header { text-align: center; margin-bottom: 40px; }
+        .logo-header img { height: 100px; width: auto; }
+
         .main-img { width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; }
-        h1 { color: #bfa36a; }
-        .price { font-size: 24px; font-weight: bold; margin: 20px 0; color: #fff; }
-        .btn-back { display: inline-block; padding: 10px 20px; background: #bfa36a; color: #0b0b0f; text-decoration: none; border-radius: 4px; margin-bottom: 20px; font-weight: bold; }
-        .gallery-container { margin-bottom: 20px; }
+        h1 { color: #bfa36a; text-align: center; margin-bottom: 30px; }
+        .price { font-size: 28px; font-weight: bold; margin: 25px 0; color: #bfa36a; }
+        .btn-back { display: inline-block; padding: 10px 20px; background: transparent; border: 1px solid #bfa36a; color: #bfa36a; text-decoration: none; border-radius: 4px; margin-bottom: 20px; font-weight: bold; }
+        .btn-back:hover { background: #bfa36a; color: #0b0b0f; }
+        
+        .details-box { background: #111116; padding: 30px; border-radius: 8px; border: 1px solid #222; }
+        p { margin-bottom: 15px; font-size: 16px; }
     </style>
 </head>
 <body>
     <div class="container" id="carDetails">
+        <div class="logo-header">
+            <!-- Εδώ βάζεις το link της εικόνας image_964a2f.jpg -->
+            <img src="URL_TO_YOUR_IMAGE_964a2f" alt="C.J. Demetriou Motors">
+        </div>
         <a href="cars.html" class="btn-back">← Επιστροφή</a>
-        <h1>Φόρτωση...</h1>
+        <h1 id="carTitle">Φόρτωση...</h1>
+        <div id="content"></div>
     </div>
 
     <script>
@@ -31,30 +43,27 @@
         async function loadDetails() {
             const { data: car, error } = await sbClient.from('cars').select('*').eq('id', carId).single();
             if (error || !car) {
-                document.getElementById('carDetails').innerHTML = "<h1>Το όχημα δεν βρέθηκε</h1>";
+                document.getElementById('carTitle').innerText = "Το όχημα δεν βρέθηκε";
                 return;
             }
 
-            // Δημιουργία gallery από όλες τις φωτογραφίες
             const imagesHtml = (car.images && car.images.length > 0) 
                 ? car.images.map(img => `<img src="${img}" class="main-img">`).join('')
                 : `<img src="${car.image_url || 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=900&q=80'}" class="main-img">`;
 
-            // Format τιμής
             let displayPrice = (car.price && car.price.trim() !== "") 
                 ? parseInt(car.price.replace(/[^0-9]/g, '')).toLocaleString('el-GR') + " €" 
                 : "On Request";
 
-            document.getElementById('carDetails').innerHTML = `
-                <a href="cars.html" class="btn-back">← Επιστροφή</a>
-                <h1>${car.brand_model}</h1>
-                <div class="gallery-container">
-                    ${imagesHtml}
+            document.getElementById('carTitle').innerText = car.brand_model;
+            document.getElementById('content').innerHTML = `
+                <div class="gallery-container">${imagesHtml}</div>
+                <div class="details-box">
+                    <div class="price">${displayPrice}</div>
+                    <p><strong>Έτος:</strong> ${car.year || 'N/A'}</p>
+                    <p><strong>Χώρα:</strong> ${car.country || 'N/A'}</p>
+                    <p><strong>Χιλιόμετρα:</strong> ${car.mileage || 'N/A'} km</p>
                 </div>
-                <div class="price">${displayPrice}</div>
-                <p><strong>Έτος:</strong> ${car.year || 'N/A'}</p>
-                <p><strong>Χώρα:</strong> ${car.country || 'N/A'}</p>
-                <p><strong>Χιλιόμετρα:</strong> ${car.mileage || 'N/A'} km</p>
             `;
         }
         loadDetails();
