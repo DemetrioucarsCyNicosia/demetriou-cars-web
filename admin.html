@@ -34,9 +34,9 @@
         .car-info h4 { font-size: 14px; text-transform: uppercase; color: #fff; }
         .btn-delete { background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 8px 14px; font-size: 10px; text-transform: uppercase; cursor: pointer; border-radius: 2px; }
         .btn-delete:hover { background: #ff4d4d; color: #fff; }
-        .status-msg { font-size: 12px; margin-top: 15px; text-align: center; font-weight: bold; }
-        .error { color: #ff4d4d; }
-        .success { color: #2ecc71; }
+        .status-msg { font-size: 13px; margin-top: 15px; text-align: center; font-weight: bold; padding: 10px; border-radius: 2px; }
+        .error { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; }
+        .success { color: #2ecc71; background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; }
     </style>
 </head>
 <body>
@@ -61,7 +61,7 @@
                 </div>
             </div>
             <button type="submit" class="btn-submit">Καταχώρηση στο Στοκ</button>
-            <div id="statusMessage" class="status-msg"></div>
+            <div id="statusMessage" class="status-msg" style="display: none;"></div>
         </form>
         <div class="stock-section"><h3 class="stock-title">Τρέχον Στοκ & Διαγραφή</h3><div id="stockList">Φόρτωση οχημάτων...</div></div>
     </div>
@@ -69,6 +69,8 @@
     <script>
         const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
+        
+        // Σωστή αρχικοποίηση χωρίς προβλήματα binding
         const sbClient = supabase.createClient(sbUrl, sbKey);
 
         document.getElementById('carImages').addEventListener('change', function(e) {
@@ -77,26 +79,92 @@
         });
 
         async function fetchStock() {
-            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
-            if (error) { document.getElementById('stockList').innerText = "Σφάλμα φόρτωσης."; return; }
-            document.getElementById('stockList').innerHTML = (cars || []).map(car => `
-                <div class="car-item">
-                    <div class="car-info"><h4>${car.brand_model || 'N/A'}</h4></div>
-                    <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
-                </div>`).join('');
+            try {
+                const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
+                if (error) { document.getElementById('stockList').innerText = "Σφάλμα κατά τη σύνδεση."; return; }
+                
+                if (!cars || cars.length === 0) {
+                    document.getElementById('stockList').innerText = "Δεν υπάρχουν οχήματα στο στοκ.";
+                    return;
+                }
+
+                document.getElementById('stockList').innerHTML = cars.map(car => `
+                    <div class="car-item">
+                        <div class="car-info"><h4>${car.brand_model || 'N/A'}</h4></div>
+                        <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
+                    </div>`).join('');
+            } catch (err) {
+                document.getElementById('stockList').innerText = "Αποτυχία φόρτωσης στοκ.";
+            }
         }
 
         document.getElementById('carForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const statusZone = document.getElementById('statusMessage');
+            statusZone.style.display = "block";
             statusZone.className = "status-msg";
-            statusZone.innerText = "Παρακαλώ περιμένετε, γίνεται μεταφόρτωση...";
+            statusZone.style.color = "#fff";
+            statusZone.innerText = "Γίνεται μεταφόρτωση εικόνων και αποθήκευση... Παρακαλώ περιμένετε.";
 
             const files = document.getElementById('carImages').files;
             let uploadedUrls = [];
 
             try {
+                // 1. Μεταφόρτωση αρχείων στο Storage
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
-                    const fileName = `${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
-                    const { data, error: storageError }
+                    const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, "_");
+                    const fileName = `${Date.now()}_${i}_${cleanName}`;
+                    
+                    const { data, error: storageError } = await sbClient.storage.from('car-images').upload(fileName, file);
+                    if (storageError) throw storageError;
+
+                    const { data: urlData } = sbClient.storage.from('car-images').getPublicUrl(fileName);
+                    if (urlData?.publicUrl) {
+                        uploadedUrls.push(urlData.publicUrl);
+                    }
+                }
+
+                // Μετατροπή του πίνακα URL σε κείμενο χωρισμένο με κόμματα για μέγιστη συμβατότητα στη βάση
+                const imagesString = uploadedUrls.join(',');
+
+                // 2. Προετοιμασία δεδομένων
+                const carData = {
+                    brand_model: document.getElementById('brandModel').value.trim().toUpperCase(),
+                    year: parseInt(document.getElementById('year').value),
+                    mileage: parseInt(document.getElementById('mileage').value.replace(/[^0-9]/g, '')) || 0,
+                    color: document.getElementById('color').value.trim(),
+                    country: document.getElementById('country').value.trim(),
+                    status: document.getElementById('status').value,
+                    price: parseInt(document.getElementById('price').value.replace(/[^0-9]/g, '')) || null,
+                    images: imagesString // Αποθήκευση ως string κειμένου
+                };
+
+                // 3. Εισαγωγή στη βάση δεδομένων
+                const { error: insertError } = await sbClient.from('cars').insert([carData]);
+                if (insertError) throw insertError;
+
+                statusZone.className = "status-msg success";
+                statusZone.innerText = "Το όχημα καταχωρήθηκε με επιτυχία στο Showroom!";
+                document.getElementById('carForm').reset();
+                document.getElementById('uploadLabel').innerText = "📁 Επιλογή Φωτογραφιών";
+                
+                // Ανανέωση της λίστας
+                fetchStock();
+            } catch (err) {
+                statusZone.className = "status-msg error";
+                statusZone.innerText = "Σφάλμα κατά την καταχώρηση: " + (err.message || err);
+            }
+        });
+
+        async function deleteCar(id) { 
+            if(confirm("Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το όχημα;")) { 
+                await sbClient.from('cars').delete().eq('id', id); 
+                fetchStock(); 
+            } 
+        }
+        
+        window.onload = fetchStock;
+    </script>
+</body>
+</html>
