@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showroom | C.J. Demetriou Motors</title>
     
-    <!-- Supabase Libraries (Πολλαπλά Links για σιγουριά ώστε να παίξει 100%) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
@@ -166,12 +165,23 @@
             position: relative;
             height: 230px;
             background: #14141c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .car-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .no-image-placeholder {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
         }
 
         .status-badge {
@@ -255,7 +265,6 @@
 </head>
 <body>
 
-    <!-- Header Navigation -->
     <nav>
         <a href="index.html" class="logo">C.J. DEMETRIOU MOTORS</a>
         <ul class="nav-links">
@@ -265,11 +274,9 @@
         </ul>
     </nav>
 
-    <!-- Main Content -->
     <div class="container">
         <h1 class="page-title">Our Showroom</h1>
 
-        <!-- Filters Section -->
         <div class="filters-box">
             <h2>Φιλτραρισμα Showroom</h2>
             <div class="filters-grid">
@@ -294,37 +301,32 @@
             </div>
         </div>
 
-        <!-- Showroom Grid -->
         <div class="showroom-grid" id="showroomGrid">
             <div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Φόρτωση showroom...</div>
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
     <script>
         const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
         
         let sbClient;
         
-        // Έξυπνη αρχικοποίηση για να παίξει με οποιαδήποτε έκδοση βιβλιοθήκης φορτώθηκε
         try {
             if (typeof supabase !== 'undefined' && supabase.createClient) {
                 sbClient = supabase.createClient(sbUrl, sbKey);
             } else if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
                 sbClient = window.supabase.createClient(sbUrl, sbKey);
-            } else {
-                console.error("Supabase library not initialized correctly.");
             }
         } catch(e) {
-            console.error("Error setting up Supabase client:", e);
+            console.error("Supabase Init Error:", e);
         }
 
         let allCars = [];
 
         async function loadShowroom() {
             if (!sbClient) {
-                document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Σφάλμα σύνδεσης με τη βάση δεδομένων (Library Missing).</p>";
+                document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Σφάλμα σύνδεσης (Library Missing).</p>";
                 return;
             }
 
@@ -332,7 +334,6 @@
                 const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
                 
                 if (error) {
-                    console.error("Σφάλμα Supabase:", error);
                     document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Αποτυχία φόρτωσης οχημάτων.</p>";
                     return;
                 }
@@ -341,7 +342,6 @@
                 setupFilters();
                 renderCars(allCars);
             } catch (err) {
-                console.error("Γενικό Σφάλμα κατά τη φόρτωση:", err);
                 document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Σφάλμα συστήματος κατά τη φόρτωση.</p>";
             }
         }
@@ -395,16 +395,28 @@
                     if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                 }
 
-                let mainImg = "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80"; 
-                if (car.image_url) {
-                    mainImg = car.image_url;
+                // Εύρεση Εικόνας
+                let imgTagHtml = `<div class="no-image-placeholder">📸 No Images Available</div>`; 
+                let foundUrl = "";
+
+                if (car.image_url && car.image_url.trim() !== "") {
+                    foundUrl = car.image_url.trim();
                 } else if (car.images) {
                     if (Array.isArray(car.images) && car.images.length > 0) {
-                        mainImg = car.images[0];
+                        foundUrl = car.images[0];
                     } else if (typeof car.images === 'string' && car.images.trim() !== "") {
-                        let cleanImgs = car.images.replace(/[\{\}\"\']/g, '').split(',');
-                        if (cleanImgs[0]) mainImg = cleanImgs[0].trim();
+                        try {
+                            let parsed = JSON.parse(car.images);
+                            if (Array.isArray(parsed) && parsed.length > 0) foundUrl = parsed[0];
+                        } catch(e) {
+                            let cleanImgs = car.images.replace(/[\{\}\"\']/g, '').split(',');
+                            if (cleanImgs[0] && cleanImgs[0].trim() !== "") foundUrl = cleanImgs[0].trim();
+                        }
                     }
+                }
+
+                if (foundUrl && foundUrl.startsWith("http")) {
+                    imgTagHtml = `<img src="${foundUrl}" alt="${car.brand_model}" class="car-image">`;
                 }
 
                 let kmText = "N/A";
@@ -416,7 +428,7 @@
                 return `
                     <div class="car-card">
                         <div class="car-image-container">
-                            <img src="${mainImg}" alt="${car.brand_model}" class="car-image">
+                            ${imgTagHtml}
                             <span class="status-badge">${car.status || 'Stock'}</span>
                         </div>
                         <div class="car-details">
