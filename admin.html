@@ -2,169 +2,67 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel | C.J. Demetriou Motors</title>
+    <title>Admin Panel | Demetriou Cars</title>
+    <!-- Supabase SDK v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root { 
-            --bg-dark: #0d0d12; 
-            --accent: #bfa36a; 
-            --card-bg: rgba(20, 20, 28, 0.95); 
-            --line-color: rgba(255, 255, 255, 0.1); 
-            --text-main: #ffffff; 
-            --text-muted: #90909a; 
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; padding: 40px 20px; }
-        .admin-container { max-width: 700px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--line-color); padding: 40px; border-radius: 4px; }
-        .form-title { font-family: "Times New Roman", serif; color: var(--accent); font-size: 22px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px; border-bottom: 1px solid var(--line-color); padding-bottom: 15px; }
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; }
-        .full-width { grid-column: span 2; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px; }
-        .form-group input, .form-group select { background: #14141c; border: 1px solid var(--line-color); color: #fff; padding: 12px; font-size: 13px; outline: none; border-radius: 2px; }
-        .form-group .upload-box { border: 1px dashed var(--accent); padding: 20px; text-align: center; background: rgba(20, 20, 28, 0.5); cursor: pointer; border-radius: 2px; }
-        .form-group .upload-box input[type="file"] { display: none; }
-        .upload-label { color: #fff; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
-        .btn-submit { display: block; width: 100%; background: var(--accent); color: #0d0d12; border: none; padding: 15px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; border-radius: 2px; margin-top: 25px; }
-        .btn-submit:hover { background: #d4bc8d; }
-        .stock-section { margin-top: 50px; border-top: 1px solid var(--line-color); padding-top: 30px; }
-        .stock-title { font-family: "Times New Roman", serif; color: var(--accent); font-size: 18px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
-        .car-item { display: flex; justify-content: space-between; align-items: center; background: #14141c; border: 1px solid var(--line-color); padding: 15px 20px; margin-bottom: 10px; border-radius: 2px; }
-        .car-info h4 { font-size: 14px; text-transform: uppercase; color: #fff; }
-        .btn-delete { background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 8px 14px; font-size: 10px; text-transform: uppercase; cursor: pointer; border-radius: 2px; }
-        .btn-delete:hover { background: #ff4d4d; color: #fff; }
-        .status-msg { font-size: 13px; margin-top: 15px; text-align: center; font-weight: bold; padding: 10px; border-radius: 2px; }
-        .error { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); border: 1px solid #ff4d4d; }
-        .success { color: #2ecc71; background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; }
-    </style>
 </head>
 <body>
-    <div class="admin-container">
-        <h2 class="form-title">Προσθήκη Νέου Οχήματος</h2>
-        <form id="carForm">
-            <div class="form-grid">
-                <div class="form-group full-width"><label>Μάρκα & Μοντέλο</label><input type="text" id="brandModel" placeholder="e.g. BMW IX XDRIVE40" required></div>
-                <div class="form-group"><label>Έτος Κατασκευής</label><input type="number" id="year" required></div>
-                <div class="form-group"><label>Χιλιόμετρα</label><input type="text" id="mileage" required></div>
-                <div class="form-group"><label>Χρώμα</label><input type="text" id="color"></div>
-                <div class="form-group"><label>Προέλευση / Χώρα</label><input type="text" id="country"></div>
-                <div class="form-group"><label>Κατάσταση</label><select id="status"><option value="Σε απόθεμα">Σε απόθεμα</option><option value="Coming Soon">Coming Soon</option></select></div>
-                <div class="form-group"><label>Τιμή</label><input type="text" id="price"></div>
-                
-                <div class="form-group full-width">
-                    <label>Φωτογραφίες Οχήματος</label>
-                    <div class="upload-box" onclick="document.getElementById('carImages').click()">
-                        <span class="upload-label" id="uploadLabel">📁 Επιλογή Φωτογραφιών</span>
-                        <input type="file" id="carImages" accept="image/*" multiple>
-                    </div>
-                </div>
-            </div>
-            <button type="submit" class="btn-submit">Καταχώρηση στο Στοκ</button>
-            <div id="statusMessage" class="status-msg" style="display: none;"></div>
-        </form>
-        <div class="stock-section"><h3 class="stock-title">Τρέχον Στοκ & Διαγραφή</h3><div id="stockList">Φόρτωση οχημάτων...</div></div>
-    </div>
+    <h1>Προσθήκη Νέου Οχήματος</h1>
+    <form id="carForm">
+        <input type="text" id="brand_model" placeholder="Μάρκα & Μοντέλο" required><br>
+        <input type="text" id="country" placeholder="Χώρα εισαγωγής" required><br>
+        <input type="number" id="year" placeholder="Έτος"><br>
+        <input type="text" id="mileage" placeholder="Χιλιόμετρα"><br>
+        <input type="text" id="color" placeholder="Χρώμα"><br>
+        <input type="text" id="price" placeholder="Τιμή"><br>
+        <button type="submit" id="submitBtn">Καταχώρηση στο Στοκ</button>
+    </form>
+
+    <div id="statusMessage" style="margin-top: 20px; font-weight: bold;"></div>
 
     <script>
-        const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
-        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
+        // Αντικατάστησε με τα δικά σου στοιχεία από το Supabase Dashboard
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
         
-        // Σωστή αρχικοποίηση χωρίς προβλήματα binding
-        const sbClient = supabase.createClient(sbUrl, sbKey);
-
-        document.getElementById('carImages').addEventListener('change', function(e) {
-            const count = e.target.files.length;
-            document.getElementById('uploadLabel').innerText = count > 0 ? `📸 Επιλέχθηκαν ${count} αρχεία` : "📁 Επιλογή Φωτογραφιών";
-        });
-
-        async function fetchStock() {
-            try {
-                const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
-                if (error) { document.getElementById('stockList').innerText = "Σφάλμα κατά τη σύνδεση."; return; }
-                
-                if (!cars || cars.length === 0) {
-                    document.getElementById('stockList').innerText = "Δεν υπάρχουν οχήματα στο στοκ.";
-                    return;
-                }
-
-                document.getElementById('stockList').innerHTML = cars.map(car => `
-                    <div class="car-item">
-                        <div class="car-info"><h4>${car.brand_model || 'N/A'}</h4></div>
-                        <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
-                    </div>`).join('');
-            } catch (err) {
-                document.getElementById('stockList').innerText = "Αποτυχία φόρτωσης στοκ.";
-            }
-        }
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         document.getElementById('carForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const statusZone = document.getElementById('statusMessage');
-            statusZone.style.display = "block";
-            statusZone.className = "status-msg";
-            statusZone.style.color = "#fff";
-            statusZone.innerText = "Γίνεται μεταφόρτωση εικόνων και αποθήκευση... Παρακαλώ περιμένετε.";
+            
+            const btn = document.getElementById('submitBtn');
+            const msg = document.getElementById('statusMessage');
+            
+            btn.disabled = true;
+            msg.innerText = "Καταχώρηση σε εξέλιξη...";
 
-            const files = document.getElementById('carImages').files;
-            let uploadedUrls = [];
+            const carData = {
+                brand_model: document.getElementById('brand_model').value,
+                country: document.getElementById('country').value,
+                year: parseInt(document.getElementById('year').value) || null,
+                mileage: document.getElementById('mileage').value,
+                color: document.getElementById('color').value,
+                price: document.getElementById('price').value
+            };
 
             try {
-                // 1. Μεταφόρτωση αρχείων στο Storage
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, "_");
-                    const fileName = `${Date.now()}_${i}_${cleanName}`;
-                    
-                    const { data, error: storageError } = await sbClient.storage.from('car-images').upload(fileName, file);
-                    if (storageError) throw storageError;
+                const { data, error } = await supabase
+                    .from('cars')
+                    .insert([carData]);
 
-                    const { data: urlData } = sbClient.storage.from('car-images').getPublicUrl(fileName);
-                    if (urlData?.publicUrl) {
-                        uploadedUrls.push(urlData.publicUrl);
-                    }
-                }
+                if (error) throw error;
 
-                // Μετατροπή του πίνακα URL σε κείμενο χωρισμένο με κόμματα για μέγιστη συμβατότητα στη βάση
-                const imagesString = uploadedUrls.join(',');
-
-                // 2. Προετοιμασία δεδομένων
-                const carData = {
-                    brand_model: document.getElementById('brandModel').value.trim().toUpperCase(),
-                    year: parseInt(document.getElementById('year').value),
-                    mileage: parseInt(document.getElementById('mileage').value.replace(/[^0-9]/g, '')) || 0,
-                    color: document.getElementById('color').value.trim(),
-                    country: document.getElementById('country').value.trim(),
-                    status: document.getElementById('status').value,
-                    price: parseInt(document.getElementById('price').value.replace(/[^0-9]/g, '')) || null,
-                    images: imagesString // Αποθήκευση ως string κειμένου
-                };
-
-                // 3. Εισαγωγή στη βάση δεδομένων
-                const { error: insertError } = await sbClient.from('cars').insert([carData]);
-                if (insertError) throw insertError;
-
-                statusZone.className = "status-msg success";
-                statusZone.innerText = "Το όχημα καταχωρήθηκε με επιτυχία στο Showroom!";
+                msg.style.color = "green";
+                msg.innerText = "Το όχημα καταχωρήθηκε επιτυχώς!";
                 document.getElementById('carForm').reset();
-                document.getElementById('uploadLabel').innerText = "📁 Επιλογή Φωτογραφιών";
-                
-                // Ανανέωση της λίστας
-                fetchStock();
             } catch (err) {
-                statusZone.className = "status-msg error";
-                statusZone.innerText = "Σφάλμα κατά την καταχώρηση: " + (err.message || err);
+                msg.style.color = "red";
+                msg.innerText = "Σφάλμα: " + err.message;
+                console.error("Supabase Error:", err);
+            } finally {
+                btn.disabled = false;
             }
         });
-
-        async function deleteCar(id) { 
-            if(confirm("Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το όχημα;")) { 
-                await sbClient.from('cars').delete().eq('id', id); 
-                fetchStock(); 
-            } 
-        }
-        
-        window.onload = fetchStock;
     </script>
 </body>
 </html>
