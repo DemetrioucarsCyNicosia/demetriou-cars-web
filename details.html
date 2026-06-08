@@ -7,10 +7,11 @@
     <style>
         body { background-color: #0b0b0f; color: white; font-family: sans-serif; padding: 40px; }
         .container { max-width: 900px; margin: 0 auto; }
-        .main-img { width: 100%; border-radius: 8px; margin-bottom: 20px; }
+        .main-img { width: 100%; border-radius: 8px; margin-bottom: 10px; display: block; }
         h1 { color: #bfa36a; }
-        .price { font-size: 24px; font-weight: bold; margin: 20px 0; }
-        .btn-back { display: inline-block; padding: 10px 20px; background: #bfa36a; color: #0b0b0f; text-decoration: none; border-radius: 4px; margin-bottom: 20px; }
+        .price { font-size: 24px; font-weight: bold; margin: 20px 0; color: #fff; }
+        .btn-back { display: inline-block; padding: 10px 20px; background: #bfa36a; color: #0b0b0f; text-decoration: none; border-radius: 4px; margin-bottom: 20px; font-weight: bold; }
+        .gallery-container { margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -34,13 +35,26 @@
                 return;
             }
 
+            // Δημιουργία gallery από όλες τις φωτογραφίες
+            const imagesHtml = (car.images && car.images.length > 0) 
+                ? car.images.map(img => `<img src="${img}" class="main-img">`).join('')
+                : `<img src="${car.image_url || 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=900&q=80'}" class="main-img">`;
+
+            // Format τιμής
+            let displayPrice = (car.price && car.price.trim() !== "") 
+                ? parseInt(car.price.replace(/[^0-9]/g, '')).toLocaleString('el-GR') + " €" 
+                : "On Request";
+
             document.getElementById('carDetails').innerHTML = `
                 <a href="cars.html" class="btn-back">← Επιστροφή</a>
                 <h1>${car.brand_model}</h1>
-                <img src="${(car.images && car.images[0]) ? car.images[0] : car.image_url}" class="main-img">
-                <div class="price">${car.price ? car.price + ' €' : 'On Request'}</div>
-                <p>Έτος: ${car.year}</p>
-                <p>Χώρα: ${car.country || 'N/A'}</p>
+                <div class="gallery-container">
+                    ${imagesHtml}
+                </div>
+                <div class="price">${displayPrice}</div>
+                <p><strong>Έτος:</strong> ${car.year || 'N/A'}</p>
+                <p><strong>Χώρα:</strong> ${car.country || 'N/A'}</p>
+                <p><strong>Χιλιόμετρα:</strong> ${car.mileage || 'N/A'} km</p>
             `;
         }
         loadDetails();
