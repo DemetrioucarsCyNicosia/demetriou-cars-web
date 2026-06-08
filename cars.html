@@ -1,564 +1,131 @@
 <!DOCTYPE html>
-
 <html lang="el">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Showroom | C.J. Demetriou Motors</title>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
-
         :root {
-
             --bg-dark: #0b0b0f;
-
             --card-bg: #111116;
-
             --accent: #bfa36a;
-
             --text-main: #ffffff;
-
             --text-muted: #90909a;
-
             --border-color: rgba(255, 255, 255, 0.05);
-
         }
-
-
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-
         body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 60px; }
 
-
-
-        /* HEADER & LOGO */
-
         header { display: flex; justify-content: space-between; align-items: center; padding: 30px 5%; border-bottom: 1px solid var(--border-color); background: rgba(11, 11, 15, 0.9); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
-
         .logo-container img { height: 50px; }
-
         nav a { color: var(--text-muted); text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-left: 30px; font-weight: 500; transition: color 0.3s; }
-
         nav a:hover, nav a.active { color: var(--accent); }
 
-
-
-        /* FILTER SECTION */
-
         .filter-section { max-width: 1200px; margin: 40px auto; padding: 30px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; }
-
         .filter-section h3 { font-family: "Times New Roman", serif; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 20px; text-align: center; }
-
         .filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-
         .filter-group { display: flex; flex-direction: column; }
-
         .filter-group label { font-size: 9px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
-
         .filter-group select { background: #181822; border: 1px solid var(--border-color); color: #fff; padding: 12px; font-size: 13px; outline: none; border-radius: 2px; transition: border-color 0.3s; cursor: pointer; }
 
-        .filter-group select:focus { border-color: var(--accent); }
-
-
-
-        /* GRID ΣΤΟΚ */
-
         .showroom-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
         
-
-        @media (max-width: 992px) { .showroom-grid { grid-template-columns: repeat(2, 1fr); } .filter-grid { grid-template-columns: 1fr; } }
-
-        @media (max-width: 600px) { .showroom-grid { grid-template-columns: 1fr; } }
-
-
-
-        /* CAR CARD */
-
-        .car-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
-
-        .car-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-
-
-        /* SLIDER / CAROUSEL */
-
+        .car-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s; position: relative; }
         .image-slider-container { width: 100%; aspect-ratio: 16/10; position: relative; overflow: hidden; background: #000; }
-
         .slider-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.4s ease-in-out; }
-
         .slider-wrapper img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; }
-
         
-
-        /* Βελάκια Slider */
-
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: none; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; cursor: pointer; border-radius: 50%; transition: background 0.3s; z-index: 5; font-size: 14px; }
-
-        .slider-btn:hover { background: var(--accent); color: #000; }
-
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: none; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; cursor: pointer; border-radius: 50%; z-index: 5; }
         .slider-btn.prev { left: 10px; }
-
         .slider-btn.next { right: 10px; }
-
         
-
-        /* Badge Κατάστασης */
-
-        .status-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; font-size: 9px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; border-radius: 2px; z-index: 6; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
+        .status-badge { position: absolute; top: 15px; left: 15px; padding: 6px 12px; font-size: 9px; text-transform: uppercase; font-weight: bold; border-radius: 2px; z-index: 6; }
         .status-stock { background: #bfa36a; color: #0b0b0f; }
-
         .status-preorder { background: #2ecc71; color: #fff; }
-
         .status-coming { background: #3498db; color: #fff; }
-
         .status-sold { background: #e74c3c; color: #fff; }
 
-
-
-        /* DETAILS */
-
         .car-details { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
-
-        .car-details h4 { font-family: "Times New Roman", serif; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: #fff; }
-
-        .car-specs { font-size: 12px; color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-
+        .car-details h4 { font-family: "Times New Roman", serif; font-size: 18px; text-transform: uppercase; margin-bottom: 10px; }
+        .car-specs { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         
-
-        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; }
-
-        .price-tag { font-size: 18px; font-weight: 600; color: #fff; }
-
-        .price-tag span { color: var(--accent); }
-
-        .origin-tag { font-size: 10px; text-transform: uppercase; color: var(--text-muted); background: rgba(255,255,255,0.03); padding: 4px 8px; border: 1px solid var(--border-color); letter-spacing: 1px; }
-
-
-
-        /* WHATSAPP INQUIRY BUTTON */
-
-        .btn-inquire { display: flex; justify-content: center; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-decoration: none; margin-top: 20px; border-radius: 2px; }
-
-        .btn-inquire:hover { background: var(--accent); color: #0b0b0f; box-shadow: 0 5px 15px rgba(191, 163, 106, 0.2); }
-
-        .btn-inquire i { font-size: 14px; }
-
+        .btn-container { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-inquire { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 12px; font-size: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; text-decoration: none; border-radius: 2px; }
+        .btn-inquire:hover { background: var(--accent); color: #0b0b0f; }
+        .viber-btn { border-color: #7360f2; color: #7360f2; }
+        .viber-btn:hover { background: #7360f2; color: #fff; }
     </style>
-
 </head>
-
 <body>
 
-
-
     <header>
-
         <div class="logo-container">
-
-            <img src="https://www.demetrioucarscynicosia.com/logo.png" alt="C.J. Demetriou Motors" onerror="this.style.display='none'">
-
-            <h2 style="font-family:'Times New Roman', serif; letter-spacing:2px; font-size:18px; color:var(--accent);">C.J. DEMETRIOU MOTORS</h2>
-
+            <h2 style="font-family:'Times New Roman', serif; letter-spacing:2px; color:var(--accent);">C.J. DEMETRIOU MOTORS</h2>
         </div>
-
         <nav>
-
-          <a href="index.html">Home</a>
-
-
+            <a href="index.html">Home</a>
             <a href="cars.html" class="active">Cars</a>
-
-            <a href="index.html#contact">Contact</a>
-
         </nav>
-
     </header>
 
-
-
     <div class="filter-section">
-
         <h3>Φιλτράρισμα Showroom</h3>
-
         <div class="filter-grid">
-
-            <div class="filter-group">
-
-                <label>Μάρκα / Μοντέλο</label>
-
-                <select id="filterBrand" onchange="applyFilters()">
-
-                    <option value="all">Όλα τα Οχήματα</option>
-
-                </select>
-
-            </div>
-
-            <div class="filter-group">
-
-                <label>Προέλευση / Χώρα</label>
-
-                <select id="filterCountry" onchange="applyFilters()">
-
-                    <option value="all">Όλες οι Χώρες</option>
-
-                </select>
-
-            </div>
-
-            <div class="filter-group">
-
-                <label>Έτος</label>
-
-                <select id="filterYear" onchange="applyFilters()">
-
-                    <option value="all">Όλα τα Έτη</option>
-
-                </select>
-
-            </div>
-
+            <div class="filter-group"><label>Μάρκα / Μοντέλο</label><select id="filterBrand" onchange="applyFilters()"><option value="all">Όλα τα Οχήματα</option></select></div>
+            <div class="filter-group"><label>Προέλευση / Χώρα</label><select id="filterCountry" onchange="applyFilters()"><option value="all">Όλες οι Χώρες</option></select></div>
+            <div class="filter-group"><label>Έτος</label><select id="filterYear" onchange="applyFilters()"><option value="all">Όλα τα Έτη</option></select></div>
         </div>
-
     </div>
 
-
-
-    <div class="showroom-grid" id="showroomGrid">
-
-        </div>
-
-
+    <div class="showroom-grid" id="showroomGrid"></div>
 
     <script>
-
-        // Στοιχεία σύνδεσης Supabase
-
         const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
-
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
-
         const sbClient = supabase.createClient(sbUrl, sbKey);
-
-
-
         let allCars = [];
-
-
-
-        // Αριθμός τηλεφώνου WhatsApp για την εκδήλωση ενδιαφέροντος
-
         const whatsappNumber = "35794628922"; 
 
-
-
         async function fetchShowroom() {
-
-            const { data: cars, error } = await sbClient
-
-                .from('cars')
-
-                .select('*')
-
-                .order('id', { ascending: false });
-
-
-
-            if (error) {
-
-                console.error("Σφάλμα:", error);
-
-                return;
-
-            }
-
-
-
+            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
+            if (error) return;
             allCars = cars || [];
-
             buildFilterOptions();
-
             renderCars(allCars);
-
         }
-
-
-
-        // Δημιουργία επιλογών στα drop-down με βάση τα οχήματα που υπάρχουν
 
         function buildFilterOptions() {
-
-            const brands = new Set();
-
-            const countries = new Set();
-
-            const years = new Set();
-
-
-
+            const brands = new Set(), countries = new Set(), years = new Set();
             allCars.forEach(car => {
-
                 if (car.brand_model) brands.add(car.brand_model.split(' ')[0].toUpperCase());
-
                 if (car.country) countries.add(car.country.toUpperCase());
-
                 if (car.year) years.add(car.year);
-
             });
-
-
-
-            const brandSelect = document.getElementById('filterBrand');
-
-            brands.forEach(b => brandSelect.innerHTML += `<option value="${b}">${b}</option>`);
-
-
-
-            const countrySelect = document.getElementById('filterCountry');
-
-            countries.forEach(c => countrySelect.innerHTML += `<option value="${c}">${c}</option>`);
-
-
-
-            const yearSelect = document.getElementById('filterYear');
-
-            Array.from(years).sort((a,b)=>b-a).forEach(y => yearSelect.innerHTML += `<option value="${y}">${y}</option>`);
-
+            brands.forEach(b => document.getElementById('filterBrand').innerHTML += `<option value="${b}">${b}</option>`);
+            countries.forEach(c => document.getElementById('filterCountry').innerHTML += `<option value="${c}">${c}</option>`);
+            Array.from(years).sort((a,b)=>b-a).forEach(y => document.getElementById('filterYear').innerHTML += `<option value="${y}">${y}</option>`);
         }
-
-
 
         function renderCars(carsToDisplay) {
-
             const container = document.getElementById('showroomGrid');
-
-            if (carsToDisplay.length === 0) {
-
-                container.innerHTML = `<div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα με τα συγκεκριμένα κριτήρια.</div>`;
-
-                return;
-
-            }
-
-
-
             container.innerHTML = carsToDisplay.map((car, carIdx) => {
-
-                // Διαχείριση Φωτογραφιών (images array ή παλιό image_url)
-
-                let carImages = [];
-
-                if (car.images && car.images.length > 0) {
-
-                    carImages = car.images;
-
-                } else if (car.image_url) {
-
-                    carImages = [car.image_url];
-
-                } else {
-
-                    carImages = ['https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'];
-
-                }
-
-
-
-                // Διαμόρφωση Τιμής
-
-                let displayPrice = "On Request";
-
-                if (car.price && car.price.trim() !== "") {
-
-                    let cleanPrice = car.price.replace(/[^0-9]/g, '');
-
-                    if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
-
-                }
-
-
-
-                // Κλάση και κείμενο για το Status Badge
-
-                let statusClass = 'status-stock';
-
-                let statusText = 'Σε Απόθεμα';
-
+                // Χρήση του array images (Original) ή fallback
+                let carImages = (car.images && car.images.length > 0) ? car.images : [car.image_url || 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'];
+                
+                let displayPrice = (car.price && car.price.trim() !== "") ? parseInt(car.price.replace(/[^0-9]/g, '')).toLocaleString('el-GR') + " €" : "On Request";
+                
+                let statusClass = 'status-stock', statusText = 'Σε Απόθεμα';
                 if(car.status === 'Pre-order') { statusClass = 'status-preorder'; statusText = 'Pre-Order'; }
-
                 else if(car.status === 'Coming soon') { statusClass = 'status-coming'; statusText = 'Coming Soon'; }
-
                 else if(car.status === 'Sold') { statusClass = 'status-sold'; statusText = 'Sold'; }
 
-
-
-                // Δημιουργία κειμένου για το WhatsApp μήνυμα
-
-                let messageText = encodeURIComponent(`Γεια σας! Ενδιαφέρομαι για το όχημα ${car.brand_model} (${car.year || 'N/A'}) που είδα στο showroom σας.`);
-
-                let whatsappUrl = `https://wa.me/${whatsappNumber}?text=${messageText}`;
-
-
-
-                // Κατασκευή HTML για τις εικόνες του slider
-
-                let imagesHtml = carImages.map(img => `<img src="${img}" alt="${car.brand_model}">`).join('');
-
+                let msg = encodeURIComponent(`Γεια σας! Ενδιαφέρομαι για το ${car.brand_model} (${car.year}).`);
                 
-
-                // Εμφάνιση βελών μόνο αν υπάρχουν πάνω από 1 φωτογραφίες
-
-                let sliderControls = '';
-
-                if (carImages.length > 1) {
-
-                    sliderControls = `
-
-                        <button class="slider-btn prev" onclick="moveSlider(${carIdx}, -1, ${carImages.length})"><i class="fa-solid fa-chevron-left"></i></button>
-
-                        <button class="slider-btn next" onclick="moveSlider(${carIdx}, 1, ${carImages.length})"><i class="fa-solid fa-chevron-right"></i></button>
-
-                    `;
-
-                }
-
-
-
                 return `
-
-                    <div class="car-card" id="car-card-${carIdx}">
-
+                    <div class="car-card">
                         <div class="image-slider-container">
-
                             <span class="status-badge ${statusClass}">${statusText}</span>
-
-                            <div class="slider-wrapper" id="slider-${carIdx}" data-current="0">
-
-                                ${imagesHtml}
-
-                            </div>
-
-                            ${sliderControls}
-
-                        </div>
-
-                        <div class="car-details">
-
-                            <h4>${car.brand_model || 'Premium Vehicle'}</h4>
-
-                            <div class="car-specs">
-
-                                <div><i class="fa-solid fa-calendar-days" style="color:var(--accent); width:20px;"></i> Έτος: ${car.year || 'N/A'}</div>
-
-                                <div><i class="fa-solid fa-gauge-high" style="color:var(--accent); width:20px;"></i> Χιλιόμετρα: ${car.mileage || 'N/A'} km</div>
-
-                                <div><i class="fa-solid fa-palette" style="color:var(--accent); width:20px;"></i> Χρώμα: ${car.color || 'N/A'}</div>
-
-                            </div>
-
-                            <div class="price-row">
-
-                                <div class="price-tag">${displayPrice}</div>
-
-                                <div class="origin-tag">${car.country || 'Import'}</div>
-
-                            </div>
-
-                            <a href="${whatsappUrl}" target="_blank" class="btn-inquire">
-
-                                <i class="fa-brands fa-whatsapp"></i> Ενδιαφερομαι
-
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }).join('');
-
-        }
-
-
-
-        // Έλεγχος Κίνησης Slider
-
-        function moveSlider(carIdx, direction, totalImages) {
-
-            const wrapper = document.getElementById(`slider-${carIdx}`);
-
-            let current = parseInt(wrapper.getAttribute('data-current'));
-
-            
-
-            current += direction;
-
-            
-
-            if (current >= totalImages) current = 0;
-
-            if (current < 0) current = totalImages - 1;
-
-            
-
-            wrapper.setAttribute('data-current', current);
-
-            wrapper.style.transform = `translateX(-${current * 100}%)`;
-
-        }
-
-
-
-        // Λειτουργία Φιλτραρίσματος σε πραγματικό χρόνο
-
-        function applyFilters() {
-
-            const brandVal = document.getElementById('filterBrand').value;
-
-            const countryVal = document.getElementById('filterCountry').value;
-
-            const yearVal = document.getElementById('filterYear').value;
-
-
-
-            let filtered = allCars.filter(car => {
-
-                let matchBrand = (brandVal === 'all' || (car.brand_model && car.brand_model.toUpperCase().startsWith(brandVal)));
-
-                let matchCountry = (countryVal === 'all' || (car.country && car.country.toUpperCase() === countryVal));
-
-                let matchYear = (yearVal === 'all' || (car.year && car.year.toString() === yearVal));
-
-                
-
-                return matchBrand && matchCountry && matchYear;
-
-            });
-
-
-
-            renderCars(filtered);
-
-        }
-
-
-
-        window.onload = fetchShowroom;
-
-    </script>
-
-</body>
-
-</html>
+                            <div class="slider
