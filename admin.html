@@ -41,4 +41,62 @@
 </head>
 <body>
     <div class="admin-container">
-        <h2 class="form-title">Προσθήκη Νέου Ο
+        <h2 class="form-title">Προσθήκη Νέου Οχήματος</h2>
+        <form id="carForm">
+            <div class="form-grid">
+                <div class="form-group full-width"><label>Μάρκα & Μοντέλο</label><input type="text" id="brandModel" placeholder="e.g. BMW IX XDRIVE40" required></div>
+                <div class="form-group"><label>Έτος Κατασκευής</label><input type="number" id="year" required></div>
+                <div class="form-group"><label>Χιλιόμετρα</label><input type="text" id="mileage" required></div>
+                <div class="form-group"><label>Χρώμα</label><input type="text" id="color"></div>
+                <div class="form-group"><label>Προέλευση / Χώρα</label><input type="text" id="country"></div>
+                <div class="form-group"><label>Κατάσταση</label><select id="status"><option value="Σε απόθεμα">Σε απόθεμα</option><option value="Coming Soon">Coming Soon</option></select></div>
+                <div class="form-group"><label>Τιμή</label><input type="text" id="price"></div>
+                
+                <div class="form-group full-width">
+                    <label>Φωτογραφίες Οχήματος</label>
+                    <div class="upload-box" onclick="document.getElementById('carImages').click()">
+                        <span class="upload-label" id="uploadLabel">📁 Επιλογή Φωτογραφιών</span>
+                        <input type="file" id="carImages" accept="image/*" multiple>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Καταχώρηση στο Στοκ</button>
+            <div id="statusMessage" class="status-msg"></div>
+        </form>
+        <div class="stock-section"><h3 class="stock-title">Τρέχον Στοκ & Διαγραφή</h3><div id="stockList">Φόρτωση οχημάτων...</div></div>
+    </div>
+
+    <script>
+        const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
+        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
+        const sbClient = supabase.createClient(sbUrl, sbKey);
+
+        document.getElementById('carImages').addEventListener('change', function(e) {
+            const count = e.target.files.length;
+            document.getElementById('uploadLabel').innerText = count > 0 ? `📸 Επιλέχθηκαν ${count} αρχεία` : "📁 Επιλογή Φωτογραφιών";
+        });
+
+        async function fetchStock() {
+            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
+            if (error) { document.getElementById('stockList').innerText = "Σφάλμα φόρτωσης."; return; }
+            document.getElementById('stockList').innerHTML = (cars || []).map(car => `
+                <div class="car-item">
+                    <div class="car-info"><h4>${car.brand_model || 'N/A'}</h4></div>
+                    <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
+                </div>`).join('');
+        }
+
+        document.getElementById('carForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const statusZone = document.getElementById('statusMessage');
+            statusZone.className = "status-msg";
+            statusZone.innerText = "Παρακαλώ περιμένετε, γίνεται μεταφόρτωση...";
+
+            const files = document.getElementById('carImages').files;
+            let uploadedUrls = [];
+
+            try {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const fileName = `${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`;
+                    const { data, error: storageError }
