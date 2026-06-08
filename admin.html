@@ -51,17 +51,13 @@
         <h2>Προσθήκη Νέου Οχήματος</h2>
         <form id="carForm" onsubmit="saveCar(event)">
             <div class="form-grid">
-                <div class="field-group">
-                    <label>Μάρκα</label>
-                    <input type="text" id="brand" placeholder="π.χ. LEXUS" required>
-                </div>
-                <div class="field-group">
-                    <label>Μοντέλο</label>
-                    <input type="text" id="model" placeholder="π.χ. RX350 H VERSION L" required>
+                <div class="field-group full-width">
+                    <label>Μάρκα & Μοντέλο</label>
+                    <input type="text" id="brandModel" placeholder="π.χ. MERCEDES AMG GT" required>
                 </div>
                 <div class="field-group">
                     <label>Έτος</label>
-                    <input type="number" id="year" placeholder="2024" required>
+                    <input type="number" id="year" placeholder="2023" required>
                 </div>
                 <div class="field-group">
                     <label>Χιλιόμετρα</label>
@@ -78,7 +74,7 @@
                 <div class="field-group full-width">
                     <label>Κατάσταση (Status)</label>
                     <select id="status">
-                        <option value="Σε απόθεμα">Σε απόθεμα</option>
+                        <option value="Stock">Σε απόθεμα</option>
                         <option value="Pre-order">Pre-order</option>
                         <option value="Coming soon">Coming soon</option>
                         <option value="Sold">Sold</option>
@@ -137,4 +133,104 @@
 
             container.innerHTML = cars.map(car => {
                 let displayPrice = "On Request";
-                if (car.price && String(car.price).
+                if (car.price && String(car.price).trim() !== "") {
+                    let cleanPrice = String(car.price).replace(/[^0-9]/g, '');
+                    if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
+                }
+                
+                let imgCount = 0;
+                if (car.images) {
+                    if (Array.isArray(car.images)) {
+                        imgCount = car.images.length;
+                    } else if (typeof car.images === 'string') {
+                        imgCount = car.images.replace(/[\{\}\"\']/g, '').split(',').filter(s => s.trim() !== '').length;
+                    }
+                }
+
+                return `
+                    <div class="car-item">
+                        <div class="car-info">
+                            <h4>${car.brand_model || 'Χωρίς Όνομα'} (${car.year || ''})</h4>
+                            <p>Τιμή: ${displayPrice} | Φωτογραφίες: ${imgCount}</p>
+                        </div>
+                        <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function saveCar(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            const errBox = document.getElementById('errorMsg');
+            
+            submitBtn.disabled = true;
+            errBox.style.display = 'none';
+            statusMsg.style.display = 'block';
+            
+            const files = document.getElementById('fileInput').files;
+            let uploadedUrls = [];
+
+            // Ανέβασμα φωτογραφιών μία-μία
+            for(let i=0; i<files.length; i++) {
+                statusMsg.innerText = `Ανέβασμα φωτογραφίας ${i+1} από ${files.length}...`;
+                const file = files[i];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}_${i}.${fileExt}`;
+                
+                const { data, error: uploadError } = await sbClient.storage
+                    .from('car-images')
+                    .upload(fileName, file);
+                
+                if (!uploadError) {
+                    const { data: publicData } = sbClient.storage
+                        .from('car-images')
+                        .getPublicUrl(fileName);
+                    uploadedUrls.push(publicData.publicUrl);
+                } else {
+                    console.error("Σφάλμα upload εικόνας:", uploadError);
+                }
+            }
+
+            statusMsg.innerText = "Αποθήκευση στοιχείων οχήματος...";
+
+            const payload = {
+                brand_model: document.getElementById('brandModel').value.trim(),
+                year: parseInt(document.getElementById('year').value) || 2024,
+                mileage: document.getElementById('mileage').value.trim(),
+                color: document.getElementById('color').value.trim(),
+                country: document.getElementById('country').value.trim(),
+                status: document.getElementById('status').value,
+                price: document.getElementById('price').value.trim(),
+                image_url: uploadedUrls[0] || "", 
+                images: uploadedUrls
+            };
+
+            const { error } = await sbClient.from('cars').insert([payload]);
+            
+            submitBtn.disabled = false;
+            statusMsg.style.display = 'none';
+
+            if (error) {
+                errBox.innerText = "Σφάλμα Supabase: " + error.message;
+                errBox.style.display = 'block';
+            } else {
+                document.getElementById('carForm').reset();
+                document.getElementById('fileLabel').innerText = "📸 Επιλογή Φωτογραφιών";
+                await loadStock();
+                alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με τις φωτογραφίες του!");
+            }
+        }
+
+        async function deleteCar(carId) {
+            if (!confirm("Θέλετε να ΔΙΑΓΡΑΨΕΤΕ οριστικά αυτό το όχημα;")) return;
+            const { error } = await sbClient.from('cars').delete().eq('id', carId);
+            if (error) alert("Αποτυχία: " + error.message);
+            else await loadStock();
+        }
+
+        window.onload = loadStock;
+    </script>
+</body>
+</html>
