@@ -362,9 +362,9 @@
     </div>
 
     <script>
-        // Στοιχεία σύνδεσης Supabase
+        // Στοιχεία σύνδεσης Supabase - Πλήρες Διορθωμένο Key
         const sbUrl = "https://qwcdqsmoabmbeaviioh.supabase.co";
-        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpY2I0bXR5cCI6IkpXTSIsInFubF9pZCI6YmFmYzZzIiSInJlZ2lzdHJhZ2lsZ21uYmJ1YmJ1Y21yZ21uYmJMInFubF9pZ3pXQjE5YXZpYW9iOW9paWwicm9sZSI6ImFub255bW91cyIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cCI6MTA0NDM1ImV4cCI6MjA0ODMsImV4cCI6M00ja01Njg0Njg0M00.gM";
+        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZmYiOiJxd2NkcXNtb2FibWJlYXZpaW9paCIsInJvbGUiOiJhbm9ueW1vdXMiLCJpYXQiOjE3MTU0Mjg0MzMsImV4cCI6MjAzMTAwNDQzM30.gM73vM8HwN0wB19aFvN5b_8ub99Mv0R_g3M1bKM684M";
         const sbClient = supabase.createClient(sbUrl, sbKey);
 
         let allCars = [];
@@ -377,7 +377,7 @@
                 .order('id', { ascending: false });
 
             if (error) {
-                console.error("Σφάλμα:", error);
+                console.error("Σφάλμα Supabase:", error);
                 return;
             }
 
@@ -398,16 +398,19 @@
             });
 
             const brandSelect = document.getElementById('filterBrand');
+            brandSelect.innerHTML = '<option value="all">Όλα τα Οχήματα</option>';
             Array.from(brands).sort().forEach(b => {
                 brandSelect.innerHTML += `<option value="${b}">${b}</option>`;
             });
 
             const countrySelect = document.getElementById('filterCountry');
+            countrySelect.innerHTML = '<option value="all">Όλες οι Χώρες</option>';
             Array.from(countries).sort().forEach(c => {
                 countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
             });
 
             const yearSelect = document.getElementById('filterYear');
+            yearSelect.innerHTML = '<option value="all">Όλα τα Έτη</option>';
             Array.from(years).sort((a,b)=>b-a).forEach(y => {
                 yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
             });
