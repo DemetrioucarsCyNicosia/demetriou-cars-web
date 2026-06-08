@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showroom | C.J. Demetriou Motors</title>
-    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -42,12 +41,6 @@
             top: 0;
             z-index: 1000;
             backdrop-filter: blur(10px);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
 
         .logo-container h2 {
@@ -98,12 +91,12 @@
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin-bottom: 40px;
         }
 
         .filter-section h3 {
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
@@ -123,40 +116,39 @@
         }
 
         .filter-group label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .filter-group select {
             background-color: var(--bg-primary);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 10px;
+            padding: 12px;
             border-radius: 4px;
             outline: none;
             cursor: pointer;
-            width: 100%;
+            font-size: 13px;
         }
 
         /* Grid & Cards */
         .showroom-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 30px;
-            margin-top: 20px;
         }
 
         .car-card {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 4px;
             overflow: hidden;
             transition: transform 0.3s, border-color 0.3s;
         }
 
         .car-card:hover {
-            transform: translateY(-5px);
             border-color: var(--accent);
         }
 
@@ -164,7 +156,7 @@
         .image-slider-container {
             position: relative;
             width: 100%;
-            height: 240px;
+            height: 260px;
             background-color: #000;
             overflow: hidden;
         }
@@ -183,7 +175,7 @@
             top: 0;
             left: 0;
             opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.4s ease-in-out;
         }
 
         .slider-img.active {
@@ -195,22 +187,27 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             color: white;
             border: none;
-            padding: 10px 15px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background 0.3s;
         }
 
         .slider-btn:hover {
             background: var(--accent);
+            color: #000;
         }
 
-        .slider-btn.prev { left: 10px; }
-        .slider-btn.next { right: 10px; }
+        .slider-btn.prev { left: 0; }
+        .slider-btn.next { right: 0; }
 
         .status-badge {
             position: absolute;
@@ -218,12 +215,11 @@
             left: 15px;
             background-color: var(--accent);
             color: #000;
-            padding: 5px 10px;
+            padding: 5px 12px;
             font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border-radius: 3px;
             z-index: 5;
         }
 
@@ -233,81 +229,74 @@
 
         .car-info h3 {
             font-family: 'Times New Roman', serif;
-            font-size: 20px;
+            font-size: 22px;
             letter-spacing: 1px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-transform: uppercase;
+            color: var(--text-main);
         }
 
         .specs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
             margin-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
+            padding-bottom: 20px;
         }
 
-        .specs p {
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-size: 13px;
             color: var(--text-muted);
+            margin-bottom: 8px;
         }
 
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
 
         .price {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
             color: var(--text-main);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
         }
 
         .country-tag {
             font-size: 11px;
-            background-color: #222;
-            padding: 3px 8px;
-            border-radius: 3px;
+            background-color: #1a1a1a;
+            padding: 4px 10px;
+            border: 1px solid var(--border-color);
             color: var(--text-muted);
             letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        /* Action Buttons Container */
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn-action {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
+        /* Action Button */
+        .btn-whatsapp {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: opacity 0.3s;
+            gap: 10px;
+            width: 100%;
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 14px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
         }
 
-        .btn-action:hover {
-            opacity: 0.9;
-        }
-
-        .btn-whatsapp {
-            background-color: #25D366;
-            color: white;
-        }
-
-        .btn-viber {
-            background-color: #665CAC;
-            color: white;
+        .btn-whatsapp:hover {
+            background-color: var(--accent);
+            color: #000;
         }
 
         @media (max-width: 768px) {
@@ -320,7 +309,7 @@
 
     <header>
         <div class="logo-container">
-            <h2 style="font-family:'Times New Roman', serif; letter-spacing:2px; font-size:18px; color:var(--accent);">C.J. DEMETRIOU MOTORS</h2>
+            <h2>C.J. DEMETRIOU MOTORS</h2>
         </div>
         <nav>
             <a href="index.html">Home</a>
@@ -332,7 +321,6 @@
     <div class="showroom-container">
         <h1 class="showroom-title">Our Showroom</h1>
 
-        <!-- Φίλτρα -->
         <div class="filter-section">
             <h3>Φιλτράρισμα Showroom</h3>
             <div class="filter-grid">
@@ -357,10 +345,7 @@
             </div>
         </div>
 
-        <!-- Πλέγμα Οχημάτων -->
-        <div class="showroom-grid" id="showroomGrid">
-            <!-- Τα αυτοκίνητα θα φορτωθούν εδώ δυναμικά -->
-        </div>
+        <div class="showroom-grid" id="showroomGrid"></div>
     </div>
 
     <script>
@@ -387,7 +372,7 @@
                 buildFilterOptions();
                 renderCars(allCars);
             } catch (err) {
-                console.error("Απρόσμενο σφάλμα:", err);
+                console.error("Σφάλμα κατά τη φόρτωση:", err);
             }
         }
 
@@ -397,34 +382,29 @@
             const years = new Set();
 
             allCars.forEach(car => {
-                if (car.brand) brands.add(car.brand);
-                if (car.country) countries.add(car.country);
+                if (car.brand) brands.add(car.brand.toUpperCase());
+                if (car.country) countries.add(car.country.toUpperCase());
                 if (car.year) years.add(car.year);
             });
 
-            const brandSelect = document.getElementById('filterBrand');
-            if (brandSelect) {
-                brandSelect.innerHTML = '<option value="all">Όλα τα Οχήματα</option>';
-                Array.from(brands).sort().forEach(b => {
-                    brandSelect.innerHTML += `<option value="${b}">${b}</option>`;
-                });
-            }
+            updateSelectElement('filterBrand', brands, 'Όλα τα Οχήματα');
+            updateSelectElement('filterCountry', countries, 'Όλες οι Χώρες');
+            updateSelectElement('filterYear', years, 'Όλα τα Έτη', true);
+        }
 
-            const countrySelect = document.getElementById('filterCountry');
-            if (countrySelect) {
-                countrySelect.innerHTML = '<option value="all">Όλες οι Χώρες</option>';
-                Array.from(countries).sort().forEach(c => {
-                    countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
-                });
-            }
+        function updateSelectElement(id, set, defaultText, numericSort = false) {
+            const select = document.getElementById(id);
+            if (!select) return;
+            select.innerHTML = `<option value="all">${defaultText}</option>`;
+            
+            const sortedArray = Array.from(set).sort((a, b) => {
+                if (numericSort) return b - a;
+                return String(a).localeCompare(String(b));
+            });
 
-            const yearSelect = document.getElementById('filterYear');
-            if (yearSelect) {
-                yearSelect.innerHTML = '<option value="all">Όλα τα Έτη</option>';
-                Array.from(years).sort((a,b)=>b-a).forEach(y => {
-                    yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
-                });
-            }
+            sortedArray.forEach(val => {
+                select.innerHTML += `<option value="${val}">${val}</option>`;
+            });
         }
 
         function renderCars(carsToDisplay) {
@@ -432,19 +412,23 @@
             if (!container) return;
 
             if (carsToDisplay.length === 0) {
-                container.innerHTML = `<div style="grid-column: span 3; text-align: center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα με τα συγκεκριμένα κριτήρια.</div>`;
+                container.innerHTML = `<div style="grid-column: span 3; text-align: center; color:var(--text-muted); padding:40px;">Δεν βρέθηκαν οχήματα.</div>`;
                 return;
             }
 
             container.innerHTML = '';
 
             carsToDisplay.forEach(car => {
+                // Απόλυτα ασφαλής καθαρισμός και εξαγωγή των URLs των φωτογραφιών από το Array της Supabase
                 let carImages = [];
-                if (Array.isArray(car.images) && car.images.length > 0) {
-                    carImages = car.images;
-                } else if (car.images && typeof car.images === 'string') {
-                    carImages = car.images.replace(/{|}/g, '').split(',').filter(img => img.trim() !== '');
+                if (car.images) {
+                    if (Array.isArray(car.images)) {
+                        carImages = car.images;
+                    } else if (typeof car.images === 'string') {
+                        carImages = car.images.replace(/[\{\}\"\'\[\]]/g, '').split(',').map(s => s.trim()).filter(s => s !== '');
+                    }
                 }
+                
                 if (carImages.length === 0 && car.image_url) {
                     carImages = [car.image_url];
                 }
@@ -452,22 +436,21 @@
                     carImages = ['https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'];
                 }
 
-                const formattedPrice = Number(car.price).toLocaleString('el-GR');
-                const formattedKm = Number(car.mileage).toLocaleString('el-GR');
+                const formattedPrice = car.price ? Number(car.price).toLocaleString('el-GR') : 'On Request';
+                const formattedKm = car.mileage ? Number(car.mileage).toLocaleString('el-GR') : '0';
 
                 const message = encodeURIComponent(`Γεια σας, ενδιαφέρομαι για το όχημα: ${car.brand} ${car.model} (${car.year}) - ${formattedPrice} €`);
                 const waLink = `https://wa.me/${whatsappNumber}?text=${message}`;
-                const viberLink = `viber://contact?number=%2B${whatsappNumber}`;
 
                 const carCard = document.createElement('div');
                 carCard.className = 'car-card';
 
                 carCard.innerHTML = `
                     <div class="image-slider-container">
-                        <span class="status-badge">${car.status || 'ΣΕ ΑΠΟΘΕΜΑ'}</span>
+                        <span class="status-badge">${(car.status || 'ΣΕ ΑΠΟΘΕΜΑ').toUpperCase()}</span>
                         <div class="slider-wrapper" id="slider-${car.id}">
                             ${carImages.map((img, index) => `
-                                <img src="${img.trim()}" class="slider-img ${index === 0 ? 'active' : ''}" alt="${car.brand} ${car.model}" onerror="this.src='https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'">
+                                <img src="${img}" class="slider-img ${index === 0 ? 'active' : ''}" alt="${car.brand}" onerror="this.src='https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'">
                             `).join('')}
                         </div>
                         ${carImages.length > 1 ? `
@@ -478,22 +461,17 @@
                     <div class="car-info">
                         <h3>${car.brand} ${car.model}</h3>
                         <div class="specs">
-                            <p>📅 Έτος: ${car.year}</p>
-                            <p>🧭 Χιλιόμετρα: ${formattedKm} km</p>
-                            <p>🎨 Χρώμα: ${car.color || 'N/A'}</p>
+                            <div class="spec-item">📅 <span>Έτος: ${car.year || 'N/A'}</span></div>
+                            <div class="spec-item">🧭 <span>Χιλιόμετρα: ${formattedKm} km</span></div>
+                            <div class="spec-item">🎨 <span>Χρώμα: ${car.color || 'N/A'}</span></div>
                         </div>
                         <div class="card-footer">
-                            <span class="price">${formattedPrice} €</span>
+                            <span class="price">${formattedPrice} ${car.price ? '€' : ''}</span>
                             <span class="country-tag">${car.country || 'JAPAN'}</span>
                         </div>
-                        <div class="action-buttons">
-                            <a href="${waLink}" target="_blank" class="btn-action btn-whatsapp">
-                                💬 WhatsApp
-                            </a>
-                            <a href="${viberLink}" class="btn-action btn-viber">
-                                💜 Viber
-                            </a>
-                        </div>
+                        <a href="${waLink}" target="_blank" class="btn-whatsapp">
+                            💬 ΕΝΔΙΑΦΕΡΟΜΑΙ
+                        </a>
                     </div>
                 `;
                 container.appendChild(carCard);
@@ -523,17 +501,13 @@
         }
 
         function applyFilters() {
-            const brandSelect = document.getElementById('filterBrand');
-            const countrySelect = document.getElementById('filterCountry');
-            const yearSelect = document.getElementById('filterYear');
-
-            const brandVal = brandSelect ? brandSelect.value : 'all';
-            const countryVal = countrySelect ? countrySelect.value : 'all';
-            const yearVal = yearSelect ? yearSelect.value : 'all';
+            const brandVal = document.getElementById('filterBrand')?.value || 'all';
+            const countryVal = document.getElementById('filterCountry')?.value || 'all';
+            const yearVal = document.getElementById('filterYear')?.value || 'all';
 
             const filtered = allCars.filter(car => {
-                const matchBrand = (brandVal === 'all' || car.brand === brandVal);
-                const matchCountry = (countryVal === 'all' || car.country === countryVal);
+                const matchBrand = (brandVal === 'all' || (car.brand && car.brand.toUpperCase() === brandVal));
+                const matchCountry = (countryVal === 'all' || (car.country && car.country.toUpperCase() === countryVal));
                 const matchYear = (yearVal === 'all' || String(car.year) === yearVal);
                 return matchBrand && matchCountry && matchYear;
             });
