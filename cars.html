@@ -34,7 +34,6 @@
             padding-bottom: 60px;
         }
 
-        /* Navbar */
         nav {
             display: flex;
             justify-content: space-between;
@@ -72,7 +71,6 @@
             color: var(--accent);
         }
 
-        /* Main Container */
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -89,7 +87,6 @@
             color: #fff;
         }
 
-        /* Filters Box */
         .filters-box {
             background: var(--card-bg);
             border: 1px solid var(--line-color);
@@ -136,18 +133,12 @@
             border-radius: 2px;
         }
 
-        .filter-group select:focus {
-            border-color: var(--accent);
-        }
-
-        /* Showroom Grid */
         .showroom-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 30px;
         }
 
-        /* Car Card */
         .car-card {
             background: var(--card-bg);
             border: 1px solid var(--line-color);
@@ -263,135 +254,4 @@
 <body>
 
     <nav>
-        <a href="index.html" class="logo">C.J. DEMETRIOU MOTORS</a>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="cars.html" class="active">Cars</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
-
-    <div class="container">
-        <h1 class="page-title">Our Showroom</h1>
-
-        <div class="filters-box">
-            <h2>Φιλτραρισμα Showroom</h2>
-            <div class="filters-grid">
-                <div class="filter-group">
-                    <label>Μαρκα / Μοντελο</label>
-                    <select id="filterBrand">
-                        <option value="all">Όλα τα Οχήματα</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Προελευση / Χωρα</label>
-                    <select id="filterCountry">
-                        <option value="all">Όλες οι Χώρες</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Έτος Κατασκευης</label>
-                    <select id="filterYear">
-                        <option value="all">Όλα τα Έτη</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="showroom-grid" id="showroomGrid">
-            <div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Φόρτωση showroom...</div>
-        </div>
-    </div>
-
-    <script>
-        const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
-        const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
-        
-        let sbClient;
-        
-        try {
-            if (typeof supabase !== 'undefined' && supabase.createClient) {
-                sbClient = supabase.createClient(sbUrl, sbKey);
-            } else if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-                sbClient = window.supabase.createClient(sbUrl, sbKey);
-            }
-        } catch(e) {
-            console.error("Supabase Initialization Error:", e);
-        }
-
-        let allCars = [];
-
-        async function loadShowroom() {
-            if (!sbClient) {
-                document.getElementById('showroomGrid').innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Σφάλμα σύνδεσης με τη βάση δεδομένων.</div>";
-                return;
-            }
-
-            try {
-                const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
-                
-                if (error) {
-                    console.error("Supabase Error:", error);
-                    document.getElementById('showroomGrid').innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Αποτυχία φόρτωσης οχημάτων.</div>";
-                    return;
-                }
-
-                allCars = cars || [];
-                setupFilters();
-                renderCars(allCars);
-            } catch (err) {
-                console.error("General Load Error:", err);
-                document.getElementById('showroomGrid').innerHTML = "<div style='grid-column: span 3; text-align:center; color:red;'>Σφάλμα συστήματος κατά τη φόρτωση.</div>";
-            }
-        }
-
-        function setupFilters() {
-            const brands = new Set();
-            const countries = new Set();
-            const years = new Set();
-
-            allCars.forEach(car => {
-                try {
-                    let title = car.brand_model || car.brand || "";
-                    if (title && title.trim() !== "") {
-                        const mainBrand = title.trim().split(' ')[0].toUpperCase();
-                        brands.add(mainBrand);
-                    }
-                } catch(e) { console.error("Error parsing brand/model for filters:", e); }
-
-                try {
-                    if (car.country && String(car.country).trim() !== "") {
-                        countries.add(String(car.country).trim().toUpperCase());
-                    }
-                } catch(e) { console.error("Error parsing country for filters:", e); }
-
-                try {
-                    if (car.year && String(car.year).trim() !== "") {
-                        years.add(String(car.year).trim());
-                    }
-                } catch(e) { console.error("Error parsing year for filters:", e); }
-            });
-
-            // Απόλυτα ασφαλές γέμισμα Brand Select
-            const brandSelect = document.getElementById('filterBrand');
-            if (brandSelect) {
-                brandSelect.innerHTML = '<option value="all">Όλα τα Οχήματα</option>';
-                Array.from(brands).sort().forEach(b => {
-                    brandSelect.innerHTML += `<option value="${b}">${b}</option>`;
-                });
-            }
-
-            // Απόλυτα ασφαλές γέμισμα Country Select
-            const countrySelect = document.getElementById('filterCountry');
-            if (countrySelect) {
-                countrySelect.innerHTML = '<option value="all">Όλες οι Χώρες</option>';
-                Array.from(countries).sort().forEach(c => {
-                    countrySelect.innerHTML += `<option value="${c}">${c}</option>`;
-                });
-            }
-
-            // Απόλυτα ασφαλές γέμισμα Year Select
-            const yearSelect = document.getElementById('filterYear');
-            if (yearSelect) {
-                yearSelect.innerHTML = '<option value="all">Όλα τα Έτη</option>';
-                Array.from(years).sort((a, b
+        <a href="index.html" class="logo">C.J. DEMETRIOU MOT
