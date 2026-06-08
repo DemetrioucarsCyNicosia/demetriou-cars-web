@@ -2,66 +2,58 @@
 <html lang="el">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel | Demetriou Cars</title>
-    <!-- Supabase SDK v2 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | C.J. Demetriou Motors</title>
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f0f0f; color: #fff; padding: 20px; }
+        form { background: #1a1a1a; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; box-sizing: border-box; }
+        button { background: #c5a059; color: #000; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #msg { margin-top: 15px; text-align: center; }
+    </style>
 </head>
 <body>
-    <h1>Προσθήκη Νέου Οχήματος</h1>
-    <form id="carForm">
-        <input type="text" id="brand_model" placeholder="Μάρκα & Μοντέλο" required><br>
-        <input type="text" id="country" placeholder="Χώρα εισαγωγής" required><br>
-        <input type="number" id="year" placeholder="Έτος"><br>
-        <input type="text" id="mileage" placeholder="Χιλιόμετρα"><br>
-        <input type="text" id="color" placeholder="Χρώμα"><br>
-        <input type="text" id="price" placeholder="Τιμή"><br>
-        <button type="submit" id="submitBtn">Καταχώρηση στο Στοκ</button>
-    </form>
 
-    <div id="statusMessage" style="margin-top: 20px; font-weight: bold;"></div>
+    <form id="carForm">
+        <h2 style="color: #c5a059;">Προσθήκη Νέου Οχήματος</h2>
+        <input type="text" id="brand_model" placeholder="Μάρκα & Μοντέλο" required>
+        <input type="text" id="country" placeholder="Χώρα εισαγωγής" required>
+        <input type="number" id="year" placeholder="Έτος κατασκευής">
+        <input type="text" id="mileage" placeholder="Χιλιόμετρα">
+        <input type="text" id="color" placeholder="Χρώμα">
+        <input type="text" id="price" placeholder="Τιμή">
+        <button type="submit" id="btn">Καταχώρηση στο Στοκ</button>
+    </form>
+    <div id="msg"></div>
 
     <script>
-        // Αντικατάστησε με τα δικά σου στοιχεία από το Supabase Dashboard
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = supabase.createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_KEY');
 
         document.getElementById('carForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const btn = document.getElementById('submitBtn');
-            const msg = document.getElementById('statusMessage');
-            
+            const btn = document.getElementById('btn');
+            const msg = document.getElementById('msg');
             btn.disabled = true;
-            msg.innerText = "Καταχώρηση σε εξέλιξη...";
+            msg.innerText = "Αποστολή...";
 
-            const carData = {
+            const { error } = await supabase.from('cars').insert([{
                 brand_model: document.getElementById('brand_model').value,
                 country: document.getElementById('country').value,
-                year: parseInt(document.getElementById('year').value) || null,
+                year: document.getElementById('year').value,
                 mileage: document.getElementById('mileage').value,
                 color: document.getElementById('color').value,
                 price: document.getElementById('price').value
-            };
+            }]);
 
-            try {
-                const { data, error } = await supabase
-                    .from('cars')
-                    .insert([carData]);
-
-                if (error) throw error;
-
-                msg.style.color = "green";
-                msg.innerText = "Το όχημα καταχωρήθηκε επιτυχώς!";
+            if (error) {
+                msg.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
+            } else {
+                msg.innerHTML = `<span style="color:green;">Επιτυχής καταχώρηση!</span>`;
                 document.getElementById('carForm').reset();
-            } catch (err) {
-                msg.style.color = "red";
-                msg.innerText = "Σφάλμα: " + err.message;
-                console.error("Supabase Error:", err);
-            } finally {
-                btn.disabled = false;
             }
+            btn.disabled = false;
         });
     </script>
 </body>
