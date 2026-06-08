@@ -56,8 +56,8 @@
                     <input type="text" id="brandModel" placeholder="π.χ. MERCEDES AMG GT" required>
                 </div>
                 <div class="field-group">
-                    <label>Έτος</label>
-                    <input type="number" id="year" placeholder="2023" required>
+                    <label>Έτος Κατασκευής</label>
+                    <input type="number" id="year" placeholder="2024" required>
                 </div>
                 <div class="field-group">
                     <label>Χιλιόμετρα</label>
@@ -120,43 +120,54 @@
 
         async function loadStock() {
             const container = document.getElementById('stockList');
-            const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
+            try {
+                const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
 
-            if (error) {
-                container.innerHTML = `<p style='color: #ff4a4a;'>Σφάλμα: ${error.message}</p>`;
-                return;
-            }
-            if (!cars || cars.length === 0) {
-                container.innerHTML = "<p style='color: var(--text-muted);'>Δεν υπάρχουν οχήματα.</p>";
-                return;
-            }
-
-            container.innerHTML = cars.map(car => {
-                let displayPrice = "On Request";
-                if (car.price && String(car.price).trim() !== "") {
-                    let cleanPrice = String(car.price).replace(/[^0-9]/g, '');
-                    if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
+                if (error) {
+                    container.innerHTML = `<p style='color: #ff4a4a;'>Σφάλμα: ${error.message}</p>`;
+                    return;
                 }
-                
-                let imgCount = 0;
-                if (car.images) {
-                    if (Array.isArray(car.images)) {
-                        imgCount = car.images.length;
-                    } else if (typeof car.images === 'string') {
-                        imgCount = car.images.replace(/[\{\}\"\']/g, '').split(',').filter(s => s.trim() !== '').length;
+                if (!cars || cars.length === 0) {
+                    container.innerHTML = "<p style='color: var(--text-muted);'>Δεν υπάρχουν οχήματα.</p>";
+                    return;
+                }
+
+                container.innerHTML = cars.map(car => {
+                    let displayPrice = "On Request";
+                    if (car.price && String(car.price).trim() !== "") {
+                        let cleanPrice = String(car.price).replace(/[^0-9]/g, '');
+                        if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                     }
-                }
+                    
+                    // Απόλυτα ασφαλής μέτρηση φωτογραφιών για να μην κρασάρει ΠΟΤΕ η JS
+                    let imgCount = 0;
+                    if (car.images) {
+                        if (Array.isArray(car.images)) {
+                            imgCount = car.images.length;
+                        } else if (typeof car.images === 'string') {
+                            try {
+                                const parsed = JSON.parse(car.images);
+                                if (Array.isArray(parsed)) imgCount = parsed.length;
+                            } catch(e) {
+                                imgCount = car.images.replace(/[\{\}\"\']/g, '').split(',').filter(s => s.trim() !== '').length;
+                            }
+                        }
+                    }
 
-                return `
-                    <div class="car-item">
-                        <div class="car-info">
-                            <h4>${car.brand_model || 'Χωρίς Όνομα'} (${car.year || ''})</h4>
-                            <p>Τιμή: ${displayPrice} | Φωτογραφίες: ${imgCount}</p>
+                    return `
+                        <div class="car-item">
+                            <div class="car-info">
+                                <h4>${car.brand_model || 'Χωρίς Όνομα'} (${car.year || 'N/A'})</h4>
+                                <p>Τιμή: ${displayPrice} | Φωτογραφίες: ${imgCount}</p>
+                            </div>
+                            <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
                         </div>
-                        <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            } catch (globalError) {
+                console.error("Σφάλμα κατά τη φόρτωση:", globalError);
+                container.innerHTML = `<p style='color: #ff4a4a;'>Κάτι πήγε στραβά κατά τη φόρτωση της λίστας.</p>`;
+            }
         }
 
         async function saveCar(e) {
@@ -172,54 +183,63 @@
             const files = document.getElementById('fileInput').files;
             let uploadedUrls = [];
 
-            // Ανέβασμα φωτογραφιών μία-μία
-            for(let i=0; i<files.length; i++) {
-                statusMsg.innerText = `Ανέβασμα φωτογραφίας ${i+1} από ${files.length}...`;
-                const file = files[i];
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Date.now()}_${i}.${fileExt}`;
-                
-                const { data, error: uploadError } = await sbClient.storage
-                    .from('car-images')
-                    .upload(fileName, file);
-                
-                if (!uploadError) {
-                    const { data: publicData } = sbClient.storage
+            try {
+                // Ανέβασμα φωτογραφιών μία-μία
+                for(let i=0; i<files.length; i++) {
+                    statusMsg.innerText = `Ανέβασμα φωτογραφίας ${i+1} από ${files.length}...`;
+                    const file = files[i];
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Date.now()}_${i}.${fileExt}`;
+                    
+                    const { data, error: uploadError } = await sbClient.storage
                         .from('car-images')
-                        .getPublicUrl(fileName);
-                    uploadedUrls.push(publicData.publicUrl);
-                } else {
-                    console.error("Σφάλμα upload εικόνας:", uploadError);
+                        .upload(fileName, file);
+                    
+                    if (!uploadError) {
+                        const { data: publicData } = sbClient.storage
+                            .from('car-images')
+                            .getPublicUrl(fileName);
+                        uploadedUrls.push(publicData.publicUrl);
+                    } else {
+                        console.error("Σφάλμα upload εικόνας:", uploadError);
+                    }
                 }
-            }
 
-            statusMsg.innerText = "Αποθήκευση στοιχείων οχήματος...";
+                statusMsg.innerText = "Αποθήκευση στοιχείων οχήματος...";
 
-            const payload = {
-                brand_model: document.getElementById('brandModel').value.trim(),
-                year: parseInt(document.getElementById('year').value) || 2024,
-                mileage: document.getElementById('mileage').value.trim(),
-                color: document.getElementById('color').value.trim(),
-                country: document.getElementById('country').value.trim(),
-                status: document.getElementById('status').value,
-                price: document.getElementById('price').value.trim(),
-                image_url: uploadedUrls[0] || "", 
-                images: uploadedUrls
-            };
+                // Καθαρισμός τιμής από τελείες/γράμματα για σωστή αποθήκευση
+                const cleanPrice = document.getElementById('price').value.replace(/[^0-9]/g, '');
 
-            const { error } = await sbClient.from('cars').insert([payload]);
-            
-            submitBtn.disabled = false;
-            statusMsg.style.display = 'none';
+                const payload = {
+                    brand_model: document.getElementById('brandModel').value.trim(),
+                    year: parseInt(document.getElementById('year').value) || 2024,
+                    mileage: document.getElementById('mileage').value.trim(),
+                    color: document.getElementById('color').value.trim(),
+                    country: document.getElementById('country').value.trim(),
+                    status: document.getElementById('status').value,
+                    price: cleanPrice,
+                    image_url: uploadedUrls[0] || "", 
+                    images: uploadedUrls
+                };
 
-            if (error) {
-                errBox.innerText = "Σφάλμα Supabase: " + error.message;
+                const { error } = await sbClient.from('cars').insert([payload]);
+
+                if (error) {
+                    errBox.innerText = "Σφάλμα Supabase: " + error.message;
+                    errBox.style.display = 'block';
+                } else {
+                    document.getElementById('carForm').reset();
+                    document.getElementById('fileLabel').innerText = "📸 Επιλογή Φωτογραφιών";
+                    await loadStock();
+                    alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με τις φωτογραφίες του!");
+                }
+            } catch (err) {
+                console.error(err);
+                errBox.innerText = "Προέκυψε απρόσμενο σφάλμα: " + err.message;
                 errBox.style.display = 'block';
-            } else {
-                document.getElementById('carForm').reset();
-                document.getElementById('fileLabel').innerText = "📸 Επιλογή Φωτογραφιών";
-                await loadStock();
-                alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με τις φωτογραφίες του!");
+            } finally {
+                submitBtn.disabled = false;
+                statusMsg.style.display = 'none';
             }
         }
 
