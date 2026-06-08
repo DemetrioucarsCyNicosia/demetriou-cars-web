@@ -51,38 +51,42 @@
         <h2>Προσθήκη Νέου Οχήματος</h2>
         <form id="carForm" onsubmit="saveCar(event)">
             <div class="form-grid">
-                <div class="field-group full-width">
-                    <label>Μάρκα & Μοντέλο</label>
-                    <input type="text" id="brandModel" placeholder="π.χ. MERCEDES AMG GT" required>
+                <div class="field-group">
+                    <label>Μάρκα</label>
+                    <input type="text" id="brand" placeholder="π.χ. LEXUS" required>
                 </div>
                 <div class="field-group">
-                    <label>Έτος</label>
-                    <input type="number" id="year" placeholder="2023" required>
+                    <label>Μοντέλο</label>
+                    <input type="text" id="model" placeholder="π.χ. RX350 H VERSION L" required>
+                </div>
+                <div class="field-group">
+                    <label>Έτος Κατασκευής</label>
+                    <input type="number" id="year" placeholder="2022" required>
                 </div>
                 <div class="field-group">
                     <label>Χιλιόμετρα</label>
-                    <input type="text" id="mileage" placeholder="50.000">
+                    <input type="text" id="mileage" placeholder="300.000">
                 </div>
                 <div class="field-group">
                     <label>Χρώμα</label>
-                    <input type="text" id="color" placeholder="Silver">
+                    <input type="text" id="color" placeholder="White PEARL">
                 </div>
                 <div class="field-group">
                     <label>Προέλευση / Χώρα</label>
-                    <input type="text" id="country" placeholder="UK">
+                    <input type="text" id="country" placeholder="Japan">
                 </div>
-                <div class="field-group">
+                <div class="field-group full-width">
                     <label>Κατάσταση (Status)</label>
                     <select id="status">
-                        <option value="Stock">Σε απόθεμα</option>
+                        <option value="Σε απόθεμα">Σε απόθεμα</option>
                         <option value="Pre-order">Pre-order</option>
                         <option value="Coming soon">Coming soon</option>
                         <option value="Sold">Sold</option>
                     </select>
                 </div>
                 <div class="field-group full-width">
-                    <label>Τιμή (Αφήστε κενό για On Request)</label>
-                    <input type="text" id="price" placeholder="90000">
+                    <label>Τιμή (Μόνο αριθμό, π.χ. 59000)</label>
+                    <input type="text" id="price" placeholder="59000">
                 </div>
                 <div class="field-group full-width">
                     <label>Φωτογραφίες Οχήματος (Μπορείς να επιλέξεις ΠΟΛΛΕΣ μαζί)</label>
@@ -113,7 +117,6 @@
             const label = document.getElementById('fileLabel');
             if(input.files.length > 0) {
                 label.innerText = `📁 Επιλέχθηκαν ${input.files.length} φωτογραφίες`;
-                label.style.borderWith = "2px";
             } else {
                 label.innerText = "📸 Επιλογή Φωτογραφιών";
             }
@@ -134,15 +137,26 @@
 
             container.innerHTML = cars.map(car => {
                 let displayPrice = "On Request";
-                if (car.price && car.price.trim() !== "") {
-                    let cleanPrice = car.price.replace(/[^0-9]/g, '');
+                if (car.price) {
+                    let cleanPrice = String(car.price).replace(/[^0-9]/g, '');
                     if (cleanPrice !== "") displayPrice = parseInt(cleanPrice).toLocaleString('el-GR') + " €";
                 }
-                let imgCount = car.images ? car.images.length : 0;
+                
+                let imgCount = 0;
+                if (car.images) {
+                    if (Array.isArray(car.images)) imgCount = car.images.length;
+                    else if (typeof car.images === 'string') {
+                        imgCount = car.images.replace(/[\{\}\"\']/g, '').split(',').filter(s => s.trim() !== '').length;
+                    }
+                }
+                
+                // Εμφάνιση brand και model συνδυαστικά για τη λίστα διαχείρισης
+                const carTitle = `${car.brand || ''} ${car.model || car.brand_model || ''}`.trim();
+
                 return `
                     <div class="car-item">
                         <div class="car-info">
-                            <h4>${car.brand_model} (${car.year})</h4>
+                            <h4>${carTitle} (${car.year || 'N/A'})</h4>
                             <p>Τιμή: ${displayPrice} | Φωτογραφίες: ${imgCount}</p>
                         </div>
                         <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
@@ -164,7 +178,7 @@
             const files = document.getElementById('fileInput').files;
             let uploadedUrls = [];
 
-            // Ανέβασμα φωτογραφιών μία-μία
+            // Ανέβασμα φωτογραφιών
             for(let i=0; i<files.length; i++) {
                 statusMsg.innerText = `Ανέβασμα φωτογραφίας ${i+1} από ${files.length}...`;
                 const file = files[i];
@@ -181,21 +195,27 @@
                         .getPublicUrl(fileName);
                     uploadedUrls.push(publicData.publicUrl);
                 } else {
-                    console.error(uploadError);
+                    console.error("Σφάλμα Upload:", uploadError);
                 }
             }
 
             statusMsg.innerText = "Αποθήκευση στοιχείων οχήματος...";
 
+            // Καθαρισμός τιμής και χιλιομέτρων από γράμματα/τελείες για αποφυγή σφαλμάτων
+            const cleanPrice = document.getElementById('price').value.replace(/[^0-9]/g, '');
+            const cleanMileage = document.getElementById('mileage').value.replace(/[^0-9]/g, '');
+
             const payload = {
-                brand_model: document.getElementById('brandModel').value.trim(),
-                year: parseInt(document.getElementById('year').value),
-                mileage: document.getElementById('mileage').value.trim(),
+                brand: document.getElementById('brand').value.trim(),
+                model: document.getElementById('model').value.trim(),
+                brand_model: `${document.getElementById('brand').value.trim()} ${document.getElementById('model').value.trim()}`, // Για συμβατότητα παλιών στηλών
+                year: parseInt(document.getElementById('year').value) || new Date().getFullYear(),
+                mileage: cleanMileage,
                 color: document.getElementById('color').value.trim(),
                 country: document.getElementById('country').value.trim(),
                 status: document.getElementById('status').value,
-                price: document.getElementById('price').value.trim(),
-                image_url: uploadedUrls[0] || "", // για συμβατότητα
+                price: cleanPrice,
+                image_url: uploadedUrls[0] || "", 
                 images: uploadedUrls
             };
 
@@ -205,13 +225,13 @@
             statusMsg.style.display = 'none';
 
             if (error) {
-                errBox.innerText = "Σφάλμα: " + error.message;
+                errBox.innerText = "Σφάλμα Supabase: " + error.message;
                 errBox.style.display = 'block';
             } else {
                 document.getElementById('carForm').reset();
                 document.getElementById('fileLabel').innerText = "📸 Επιλογή Φωτογραφιών";
                 await loadStock();
-                alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με τις φωτογραφίες του!");
+                alert("Το όχημα καταχωρήθηκε με επιτυχία μαζί με όλες τις φωτογραφίες του!");
             }
         }
 
