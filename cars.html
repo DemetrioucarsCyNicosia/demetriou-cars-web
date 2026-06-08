@@ -68,11 +68,6 @@
         const sbClient = supabase.createClient(sbUrl, sbKey);
         let allCars = [];
 
-        function getCarTitle(car) { 
-            if (car.brand_model) return car.brand_model;
-            return `${car.brand || ''} ${car.model || ''}`.trim() || "UNKNOWN VEHICLE";
-        }
-
         async function loadShowroom() {
             const container = document.getElementById('showroomGrid');
             try {
@@ -87,7 +82,7 @@
         function setupFilters() {
             const brands = new Set(); const countries = new Set(); const years = new Set();
             allCars.forEach(car => {
-                let title = getCarTitle(car);
+                let title = car.brand_model || "UNKNOWN VEHICLE";
                 if (title && title !== "UNKNOWN VEHICLE") brands.add(title.split(' ')[0].toUpperCase());
                 if (car.country) countries.add(String(car.country).trim().toUpperCase());
                 if (car.year) years.add(String(car.year).trim());
@@ -103,7 +98,7 @@
             container.innerHTML = carsToDisplay.map(car => {
                 let displayPrice = "ON REQUEST";
                 if (car.price) { displayPrice = parseInt(String(car.price)).toLocaleString('el-GR') + " €"; }
-                let carTitle = getCarTitle(car);
+                let carTitle = car.brand_model || "UNKNOWN VEHICLE";
                 let imgTagHtml = `<div class="no-image-placeholder">📸 NO IMAGES AVAILABLE</div>`;
                 let foundUrl = "";
 
@@ -135,7 +130,7 @@
             const countryVal = document.getElementById('filterCountry').value;
             const yearVal = document.getElementById('filterYear').value;
             let filtered = allCars.filter(car => {
-                let title = getCarTitle(car);
+                let title = car.brand_model || "";
                 let matchBrand = (brandVal === 'all') || (title && title.trim().split(' ')[0].toUpperCase() === brandVal);
                 let matchCountry = (countryVal === 'all') || (car.country && String(car.country).toUpperCase().trim() === countryVal);
                 let matchYear = (yearVal === 'all') || (car.year && String(car.year).trim() === yearVal);
