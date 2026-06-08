@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Showroom | C.J. Demetriou Motors</title>
+    
+    <!-- Supabase Libraries (Πολλαπλά Links για σιγουριά ώστε να παίξει 100%) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="supabase.js"></script>
+
     <style>
         :root {
             --bg-dark: #0d0d12;
@@ -249,6 +255,7 @@
 </head>
 <body>
 
+    <!-- Header Navigation -->
     <nav>
         <a href="index.html" class="logo">C.J. DEMETRIOU MOTORS</a>
         <ul class="nav-links">
@@ -258,9 +265,11 @@
         </ul>
     </nav>
 
+    <!-- Main Content -->
     <div class="container">
         <h1 class="page-title">Our Showroom</h1>
 
+        <!-- Filters Section -->
         <div class="filters-box">
             <h2>Φιλτραρισμα Showroom</h2>
             <div class="filters-grid">
@@ -285,19 +294,40 @@
             </div>
         </div>
 
+        <!-- Showroom Grid -->
         <div class="showroom-grid" id="showroomGrid">
             <div style="grid-column: span 3; text-align:center; color:var(--text-muted); padding:40px;">Φόρτωση showroom...</div>
         </div>
     </div>
 
+    <!-- JavaScript Logic -->
     <script>
         const sbUrl = "https://qwcdqsmoaobmbeaviioh.supabase.co";
         const sbKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3Y2Rxc21vYW9ibWJlYXZpaW9oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NzA4ODMsImV4cCI6MjA5NjM0Njg4M30.gba-EgEOCQPPvJONrXOUlxQke4caSjnEZ-L9lpy7zaw";
-        const sbClient = supabase.createClient(sbUrl, sbKey);
+        
+        let sbClient;
+        
+        // Έξυπνη αρχικοποίηση για να παίξει με οποιαδήποτε έκδοση βιβλιοθήκης φορτώθηκε
+        try {
+            if (typeof supabase !== 'undefined' && supabase.createClient) {
+                sbClient = supabase.createClient(sbUrl, sbKey);
+            } else if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                sbClient = window.supabase.createClient(sbUrl, sbKey);
+            } else {
+                console.error("Supabase library not initialized correctly.");
+            }
+        } catch(e) {
+            console.error("Error setting up Supabase client:", e);
+        }
 
         let allCars = [];
 
         async function loadShowroom() {
+            if (!sbClient) {
+                document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Σφάλμα σύνδεσης με τη βάση δεδομένων (Library Missing).</p>";
+                return;
+            }
+
             try {
                 const { data: cars, error } = await sbClient.from('cars').select('*').order('id', { ascending: false });
                 
@@ -311,7 +341,8 @@
                 setupFilters();
                 renderCars(allCars);
             } catch (err) {
-                console.error("Γενικό Σφάλμα:", err);
+                console.error("Γενικό Σφάλμα κατά τη φόρτωση:", err);
+                document.getElementById('showroomGrid').innerHTML = "<p style='color: red; grid-column: span 3; text-align:center;'>Σφάλμα συστήματος κατά τη φόρτωση.</p>";
             }
         }
 
@@ -404,3 +435,40 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        function filterCars() {
+            const brandVal = document.getElementById('filterBrand').value;
+            const countryVal = document.getElementById('filterCountry').value;
+            const yearVal = document.getElementById('filterYear').value;
+
+            let filtered = allCars.filter(car => {
+                let matchBrand = true;
+                let matchCountry = true;
+                let matchYear = true;
+
+                if (brandVal !== 'all' && car.brand_model) {
+                    const mainBrand = car.brand_model.split(' ')[0].toUpperCase();
+                    if (mainBrand !== brandVal) matchBrand = false;
+                }
+                if (countryVal !== 'all' && car.country && car.country.toUpperCase() !== countryVal) {
+                    matchCountry = false;
+                }
+                if (yearVal !== 'all' && car.year && String(car.year) !== yearVal) {
+                    matchYear = false;
+                }
+
+                return matchBrand && matchCountry && matchYear;
+            });
+
+            renderCars(filtered);
+        }
+
+        document.getElementById('filterBrand').addEventListener('change', filterCars);
+        document.getElementById('filterCountry').addEventListener('change', filterCars);
+        document.getElementById('filterYear').addEventListener('change', filterCars);
+
+        window.onload = loadShowroom;
+    </script>
+</body>
+</html>
