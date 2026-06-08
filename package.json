@@ -1,0 +1,16 @@
+{
+  "name": "demetriou-cars-web",
+  "version": "1.0.0",
+  "description": "C.J. Demetriou Motors - Automotive Sales & Deals",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Static HTML site - open index.html in browser'",
+    "build": "echo 'No build required for static HTML'"
+  },
+  "keywords": ["automotive", "cars", "showroom"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  }
+}
