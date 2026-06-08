@@ -3,181 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C.J. Demetriou Motors | Demetriou CarsCy Nicosia</title>
+    <title>C.J. Demetriou Motors | Premium Cars</title>
     <style>
-        :root {
-            --bg-card: rgba(20, 20, 28, 0.85); 
-            --text-main: #ffffff;     
-            --text-muted: #90909a;    
-            --accent: #bfa36a;        
-            --line-color: rgba(255, 255, 255, 0.1);    
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-
-        body {
-            background: linear-gradient(rgba(11, 11, 15, 0.75), rgba(11, 11, 15, 0.85)), 
-                        url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1800&q=95') no-repeat center center fixed;
-            background-size: cover; color: var(--text-main); line-height: 1.6; -webkit-font-smoothing: antialiased;
-        }
-
-        header {
-            padding: 15px 50px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--line-color); background: rgba(11, 11, 15, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .logo-block { display: flex; align-items: center; cursor: pointer; width: 160px; }
-        .logo-block svg { width: 100%; height: auto; }
-
-        nav { display: flex; align-items: center; }
-        nav a {
-            color: var(--text-main); text-decoration: none; margin-left: 40px; font-size: 11px;
-            text-transform: uppercase; letter-spacing: 2.5px; transition: color 0.2s ease; font-weight: 500;
-        }
-        nav a:hover, nav a.active-link { color: var(--accent); }
-
-        .fb-header-btn {
-            display: flex; align-items: center; gap: 8px; margin-left: 45px; padding: 6px 14px;
-            border: 1px solid var(--accent); border-radius: 2px; color: var(--accent); text-decoration: none;
-            font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; transition: all 0.2s ease;
-        }
-        .fb-header-btn:hover { background: var(--accent); color: #0d0d12; }
-        .fb-header-btn svg { fill: currentcolor; }
-
-        .premium-hero-container { display: flex; flex-direction: column; width: 100%; }
-        .hero-logo-row { padding: 40px 20px 20px 20px; display: flex; justify-content: center; align-items: center; }
-        .hero-big-logo { width: 100%; max-width: 380px; height: auto; }
-        .hero-car-row { position: relative; min-height: 320px; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .hero-content { position: relative; z-index: 2; max-width: 800px; }
-        .hero-car-row h1 { font-family: "Times New Roman", Times, serif; font-size: 46px; font-weight: 400; letter-spacing: 7px; text-transform: uppercase; color: #ffffff; text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
-        .hero-car-row p { font-size: 12px; text-transform: uppercase; letter-spacing: 5px; margin-top: 12px; color: var(--accent); font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,0.9); }
-
-        .brand-story {
-            max-width: 850px; margin: 40px auto 100px auto; text-align: center; padding: 40px;
-            background: var(--bg-card); border: 1px solid var(--line-color); border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-        }
-        .brand-story h2 { font-family: "Times New Roman", Times, serif; font-size: 30px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 30px; }
-        .brand-story p { font-size: 15px; color: #e0e0e6; line-height: 2.0; margin-bottom: 25px; text-align: justify; }
-
-        .contact-section { background: rgba(11, 11, 15, 0.9); padding: 90px 20px; border-top: 1px solid var(--line-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-        .contact-container { max-width: 750px; margin: 0 auto; }
-        .contact-container h2 { font-family: "Times New Roman", Times, serif; text-align: center; font-size: 34px; font-weight: 400; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 45px; }
-        
-        .showroom-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-        .matrix-item h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 8px; }
-        .matrix-item p, .matrix-item a { font-size: 14px; color: #ffffff; text-decoration: none; }
-        .matrix-item a:hover { color: var(--accent); }
-
-        .fb-full-banner-btn {
-            grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 12px;
-            border: 1px solid var(--accent); color: #0d0d12; background: var(--accent); padding: 15px;
-            font-size: 12px; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; font-weight: bold; margin-bottom: 10px;
-        }
-        .btn-maps { grid-column: span 2; display: block; text-align: center; border: 1px solid #353545; color: #ffffff; padding: 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; text-decoration: none; font-weight: 600; }
-        .btn-maps:hover { border-color: #ffffff; }
-
-        .minimal-form { display: flex; flex-direction: column; gap: 25px; margin-top: 40px; }
-        .minimal-form input, .minimal-form textarea { width: 100%; padding: 14px 5px; border: none; border-bottom: 1px solid #353545; background: transparent; font-size: 14px; color: #ffffff; outline: none; }
-        .minimal-form input:focus, .minimal-form textarea:focus { border-bottom-color: var(--accent); }
-        .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; }
-
-        footer { padding: 40px 50px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; border-top: 1px solid var(--line-color); background: rgba(11, 11, 15, 0.9); }
-        .footer-fb-link { display: flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
-        .footer-fb-link svg { fill: currentcolor; }
-
-        @media (max-width: 900px) { .showroom-matrix { grid-template-columns: 1fr; gap: 25px; } }
-        @media (max-width: 768px) { header { padding: 15px 20px; } nav a { margin-left: 20px; font-size: 10px; } .fb-header-btn { margin-left: 20px; } .hero-car-row { min-height: 240px; } .hero-big-logo { max-width: 280px; } .hero-car-row h1 { font-size: 32px; } footer { padding: 30px 20px; flex-direction: column; gap: 15px; } }
+        :root { --bg-dark: #0f0f0f; --accent: #c5a059; --text: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-dark); color: var(--text); margin: 0; padding: 0; }
+        header { padding: 50px 20px; text-align: center; border-bottom: 2px solid var(--accent); }
+        h1 { font-size: 3rem; color: var(--accent); margin-bottom: 10px; }
+        .nav-links { margin-top: 20px; }
+        .nav-links a { color: var(--text); text-decoration: none; margin: 0 15px; font-weight: bold; text-transform: uppercase; }
+        .nav-links a:hover { color: var(--accent); }
+        .hero { padding: 100px 20px; text-align: center; }
+        .cta-btn { background: var(--accent); color: #000; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- STICKY HEADER -->
     <header>
-        <div class="logo-block" onclick="window.location.href='index.html';">
-            <!-- SVG Logo Here -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240">
-                <path d="M 20 110 L 180 95 L 320 95 L 480 110 L 440 215 L 250 235 L 60 215 Z" fill="#0d0d12" stroke="#bfa36a" stroke-width="3" stroke-linejoin="round"/>
-                <path d="M 26 114 L 180 100 L 320 100 L 474 114 L 436 211 L 250 229 L 64 211 Z" fill="#000000"/>
-                <path d="M 170 105 A 85 85 0 0 1 330 105 Z" fill="#000000" stroke="#bfa36a" stroke-width="2"/>
-                <g transform="translate(190, 30) scale(1.1)">
-                    <path d="M 35 30 Q 55 12 75 12 Q 95 12 115 30 Q 120 40 120 48 L 30 48 Q 30 40 35 30 Z" fill="#bfa36a"/>
-                    <path d="M 42 32 Q 55 18 75 18 Q 95 18 108 32 Z" fill="#000000"/>
-                    <path d="M 22 48 L 128 48 Q 135 48 135 58 L 130 85 Q 128 92 115 92 L 35 92 Q 22 92 20 85 L 15 58 Q 15 48 22 48 Z" fill="#bfa36a"/>
-                    <path d="M 50 68 L 100 68 Q 102 78 75 78 Q 48 78 50 68 Z" fill="#000000"/>
-                </g>
-                <path d="M 40 125 L 460 125 L 445 175 L 55 175 Z" fill="#0d0d12"/>
-                <text x="250" y="160" font-family="'Arial Black', sans-serif" font-size="29" font-weight="900" fill="#ffffff" text-anchor="middle">DEMETRIOU CARSCY NICOSIA</text>
-                <path d="M 55 183 L 445 183 L 430 205 L 250 220 L 70 205 Z" fill="#ffffff"/>
-                <text x="250" y="200" font-family="sans-serif" font-size="11" font-weight="900" fill="#000000" text-anchor="middle" letter-spacing="4">AUTOMOTIVE SALES & DEALS</text>
-            </svg>
-        </div>
-        <div class="nav-container" style="display: flex; align-items: center;">
-            <nav>
-                <a href="index.html" class="active-link">Home</a>
-                <a href="cars.html">Cars</a>
-                <a href="#concierge">Contact</a>
-            </nav>
-            <a href="https://www.facebook.com/profile.php?id=61589330603437" target="_blank" class="fb-header-btn">
-                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.8c4.56-.93 8-4.96 8-9.8z"/></svg>
-                Facebook
-            </a>
+        <h1>C.J. DEMETRIOU MOTORS</h1>
+        <p>Premium Quality Vehicles in Nicosia</p>
+        <div class="nav-links">
+            <a href="index.html">Αρχική</a>
+            <a href="cars.html">Showroom</a>
+            <a href="admin.html">Admin Panel</a>
         </div>
     </header>
 
-    <div class="premium-hero-container">
-        <div class="hero-logo-row">
-            <!-- Big SVG Logo -->
-        </div>
-        <section class="hero-car-row">
-            <div class="hero-content">
-                <h1>DEMETRIOU CARSCY NICOSIA</h1>
-                <h1>YOUR WISH IS OUR MISSION </h1>
-                <p>Curated Selection & Uncompromised Quality</p>
-            </div>
-        </section>
+    <div class="hero">
+        <h2>Βρείτε το επόμενο όχημά σας</h2>
+        <p>Εξερευνήστε τη συλλογή μας από κορυφαία οχήματα.</p>
+        <br><br>
+        <a href="cars.html" class="cta-btn">ΔΕΙΤΕ ΤΟ SHOWROOM</a>
     </div>
 
-    <!-- BRAND STORY -->
-    <section class="brand-story" id="brand">
-        <h2>15+ Years of Trust</h2>
-        <p>Καλωσρίσατε στην <strong>DEMETRIOU CARSCY (Demetriou CarsCy)</strong>. Με μια σταθερή και αξιόπιστη πορεία <strong>πέραν των 15 ετών στην κεντρική μας έκθεση στη Λεμεσό</strong>, προσφέρουμε κορυφαία ποιότητα εξυπηρέτησης και απόλυτη διαφάνεια σε κάθε αγορά οχήματος στην Κύπρο.</p>
-        <p>Με ιδιαίτερη χαρά σας υποδεχόμαστε και στο <strong>νέο, υπερσύγχρονο showroom μας στη Λευκωσία (Περιοχή Χαλεπιανές)</strong>. Εξειδικευόμαστε στην εισαγωγή επιλεγμένων, πιστοποιημένων αυτοκινήτων από τα καλύτερα δημοπρατήρια της Ιαπωνίας (JDM) και του Ηνωμένου Βασιλείου.</p>
-    </section>
-
-    <!-- CONTACT SECTION -->
-    <section class="contact-section" id="concierge">
-        <div class="contact-container">
-            <h2>Showrooms & Contact</h2>
-            <div class="showroom-matrix">
-                <div class="matrix-item"><h4>Nicosia Showroom</h4><p>Demetriou CarsCy (Περιοχή Χαλεπιανές), Λευκωσία</p></div>
-                <div class="matrix-item"><h4>Limassol Showroom</h4><p>ΛΕΜΕΣΟΣ,ΠΑΡΕΚΛΗΣΣΙΑ (15+ Έτη Παρουσίας)</p></div>
-                <div class="matrix-item"><h4>Phone Number</h4><p><a href="tel:94628922">94628922</a></p></div>
-                <div class="matrix-item"><h4>Hours</h4><p>Δευτέρα - Σάββατο | 08:00 - 20:00</p></div>
-                <a href="https://www.facebook.com/profile.php?id=61589330603437" target="_blank" class="fb-full-banner-btn">Facebook Page</a>
-                <a href="https://maps.app.goo.gl/cXNVMjQUNiRPnshDA" target="_blank" class="btn-maps">Open Google Maps</a>
-            </div>
-
-            <form class="minimal-form" id="contactForm" action="https://formspree.io/f/mgobazja" method="POST">
-                <input type="text" name="name" placeholder="Oνοματεπώνυμο" required>
-                <input type="tel" name="phone" placeholder="Τηλέφωνο Επικοινωνίας" required>
-                <input type="text" name="car_model" placeholder="Μοντέλο που σας ενδιαφέρει" required>
-                <textarea rows="3" name="notes" placeholder="Σημειώσεις / Budget / Ιδιαίτερες Προτιμήσεις"></textarea>
-                <button type="submit" class="btn-submit">Υποβολη Εκδηλευσης Ενδιαφεροντος</button>
-            </form>
-        </div>
-    </section>
-
-    <footer>
-        <p>© 2026 C.J. Demetriou Motors | Demetriou CarsCy Nicosia. All Rights Reserved.</p>
-    </footer>
-
-    <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            fetch(this.action, { method: this.method, body: new FormData(this), headers: { 'Accept': 'application/json' } })
-            .then(res => { if (res.ok) { alert("Ευχαριστούμε! Το μήνυμά σας στάλθηκε."); this.reset(); } });
-        });
-    </script>
 </body>
 </html>
