@@ -7,10 +7,10 @@
     <style>
         :root {
             --bg-card: rgba(20, 20, 28, 0.85); 
-            --text-main: #ffffff;     
+            --text-main: #ffffff;      
             --text-muted: #90909a;    
             --accent: #bfa36a;        
-            --line-color: rgba(255, 255, 255, 0.1);    
+            --line-color: rgba(255, 255, 255, 0.1);   
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
@@ -27,8 +27,9 @@
             position: sticky; top: 0; z-index: 1000;
         }
 
-        .logo-block { display: flex; align-items: center; cursor: pointer; width: 160px; }
-        .logo-block svg { width: 100%; height: auto; }
+        .logo-block { display: flex; align-items: center; width: 160px; }
+        .logo-block svg { width: 100%; height: auto; transition: transform 0.2s; }
+        .logo-block a:hover svg { transform: scale(1.05); }
 
         nav { display: flex; align-items: center; }
         nav a {
@@ -83,34 +84,33 @@
         .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; }
 
         footer { padding: 40px 50px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; border-top: 1px solid var(--line-color); background: rgba(11, 11, 15, 0.9); }
-        .footer-fb-link { display: flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font-weight: bold; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
-        .footer-fb-link svg { fill: currentcolor; }
-
+        
         @media (max-width: 900px) { .showroom-matrix { grid-template-columns: 1fr; gap: 25px; } }
-        @media (max-width: 768px) { header { padding: 15px 20px; } nav a { margin-left: 20px; font-size: 10px; } .fb-header-btn { margin-left: 20px; } .hero-car-row { min-height: 240px; } .hero-big-logo { max-width: 280px; } .hero-car-row h1 { font-size: 32px; } footer { padding: 30px 20px; flex-direction: column; gap: 15px; } }
+        @media (max-width: 768px) { header { padding: 15px 20px; } nav a { margin-left: 20px; font-size: 10px; } .fb-header-btn { margin-left: 20px; } .hero-car-row { min-height: 240px; } .hero-car-row h1 { font-size: 32px; } footer { padding: 30px 20px; flex-direction: column; gap: 15px; } }
     </style>
 </head>
 <body>
 
     <!-- STICKY HEADER -->
     <header>
-        <div class="logo-block" onclick="window.location.href='index.html';">
-            <!-- SVG Logo Here -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240">
-                <path d="M 20 110 L 180 95 L 320 95 L 480 110 L 440 215 L 250 235 L 60 215 Z" fill="#0d0d12" stroke="#bfa36a" stroke-width="3" stroke-linejoin="round"/>
-                <path d="M 26 114 L 180 100 L 320 100 L 474 114 L 436 211 L 250 229 L 64 211 Z" fill="#000000"/>
-                <path d="M 170 105 A 85 85 0 0 1 330 105 Z" fill="#000000" stroke="#bfa36a" stroke-width="2"/>
-                <g transform="translate(190, 30) scale(1.1)">
-                    <path d="M 35 30 Q 55 12 75 12 Q 95 12 115 30 Q 120 40 120 48 L 30 48 Q 30 40 35 30 Z" fill="#bfa36a"/>
-                    <path d="M 42 32 Q 55 18 75 18 Q 95 18 108 32 Z" fill="#000000"/>
-                    <path d="M 22 48 L 128 48 Q 135 48 135 58 L 130 85 Q 128 92 115 92 L 35 92 Q 22 92 20 85 L 15 58 Q 15 48 22 48 Z" fill="#bfa36a"/>
-                    <path d="M 50 68 L 100 68 Q 102 78 75 78 Q 48 78 50 68 Z" fill="#000000"/>
-                </g>
-                <path d="M 40 125 L 460 125 L 445 175 L 55 175 Z" fill="#0d0d12"/>
-                <text x="250" y="160" font-family="'Arial Black', sans-serif" font-size="29" font-weight="900" fill="#ffffff" text-anchor="middle">C.J. DEMETRIOU MOTORS</text>
-                <path d="M 55 183 L 445 183 L 430 205 L 250 220 L 70 205 Z" fill="#ffffff"/>
-                <text x="250" y="200" font-family="sans-serif" font-size="11" font-weight="900" fill="#000000" text-anchor="middle" letter-spacing="4">AUTOMOTIVE SALES & DEALS</text>
-            </svg>
+        <div class="logo-block">
+            <a href="index.html" style="text-decoration: none; display: block;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240">
+                    <path d="M 20 110 L 180 95 L 320 95 L 480 110 L 440 215 L 250 235 L 60 215 Z" fill="#0d0d12" stroke="#bfa36a" stroke-width="3" stroke-linejoin="round"/>
+                    <path d="M 26 114 L 180 100 L 320 100 L 474 114 L 436 211 L 250 229 L 64 211 Z" fill="#000000"/>
+                    <path d="M 170 105 A 85 85 0 0 1 330 105 Z" fill="#000000" stroke="#bfa36a" stroke-width="2"/>
+                    <g transform="translate(190, 30) scale(1.1)">
+                        <path d="M 35 30 Q 55 12 75 12 Q 95 12 115 30 Q 120 40 120 48 L 30 48 Q 30 40 35 30 Z" fill="#bfa36a"/>
+                        <path d="M 42 32 Q 55 18 75 18 Q 95 18 108 32 Z" fill="#000000"/>
+                        <path d="M 22 48 L 128 48 Q 135 48 135 58 L 130 85 Q 128 92 115 92 L 35 92 Q 22 92 20 85 L 15 58 Q 15 48 22 48 Z" fill="#bfa36a"/>
+                        <path d="M 50 68 L 100 68 Q 102 78 75 78 Q 48 78 50 68 Z" fill="#000000"/>
+                    </g>
+                    <path d="M 40 125 L 460 125 L 445 175 L 55 175 Z" fill="#0d0d12"/>
+                    <text x="250" y="160" font-family="'Arial Black', sans-serif" font-size="29" font-weight="900" fill="#ffffff" text-anchor="middle">C.J. DEMETRIOU MOTORS</text>
+                    <path d="M 55 183 L 445 183 L 430 205 L 250 220 L 70 205 Z" fill="#ffffff"/>
+                    <text x="250" y="200" font-family="sans-serif" font-size="11" font-weight="900" fill="#000000" text-anchor="middle" letter-spacing="4">AUTOMOTIVE SALES & DEALS</text>
+                </svg>
+            </a>
         </div>
         <div class="nav-container" style="display: flex; align-items: center;">
             <nav>
@@ -126,9 +126,6 @@
     </header>
 
     <div class="premium-hero-container">
-        <div class="hero-logo-row">
-            <!-- Big SVG Logo -->
-        </div>
         <section class="hero-car-row">
             <div class="hero-content">
                 <h1>Your Wish Our Mission</h1>
@@ -151,7 +148,7 @@
             <h2>Showrooms & Contact</h2>
             <div class="showroom-matrix">
                 <div class="matrix-item"><h4>Nicosia Showroom</h4><p>Demetriou CarsCy (Περιοχή Χαλεπιανές), Λευκωσία</p></div>
-                <div class="matrix-item"><h4>Limassol Showroom</h4><p>Limassol,Parekklisa (15+ Έτη Παρουσίας)</p></div>
+                <div class="matrix-item"><h4>Limassol Showroom</h4><p>Limassol, Parekklisa (15+ Έτη Παρουσίας)</p></div>
                 <div class="matrix-item"><h4>Phone Number</h4><p><a href="tel:94628922">94628922</a></p></div>
                 <div class="matrix-item"><h4>Hours</h4><p>Δευτέρα - Σάββατο | 08:00 - 20:00</p></div>
                 <a href="https://www.facebook.com/profile.php?id=61589330603437" target="_blank" class="fb-full-banner-btn">Facebook Page</a>
@@ -179,12 +176,5 @@
             .then(res => { if (res.ok) { alert("Ευχαριστούμε! Το μήνυμά σας στάλθηκε."); this.reset(); } });
         });
     </script>
-
-    <!-- Vercel Web Analytics -->
-    <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-
 </body>
 </html>
