@@ -60,7 +60,7 @@
         .brand-story h2 { font-family: "Times New Roman", Times, serif; font-size: 30px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 30px; }
         .brand-story p { font-size: 15px; color: #e0e0e6; line-height: 2.0; margin-bottom: 25px; text-align: justify; }
 
-        /* CONTACT SECTION & MAP LAYOUT (Στυλ image_800fa2.jpg) */
+        /* CONTACT SECTION & MAP LAYOUT */
         .contact-section { background: rgba(11, 11, 15, 0.9); padding: 90px 20px; border-top: 1px solid var(--line-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .contact-container { max-width: 1000px; margin: 0 auto; }
         .contact-container h2 { font-family: "Times New Roman", Times, serif; text-align: center; font-size: 34px; font-weight: 400; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 60px; }
@@ -90,14 +90,170 @@
         .minimal-form input:focus, .minimal-form textarea:focus { border-bottom-color: var(--accent); }
         .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; }
 
-        footer { padding: 40px 50px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; border-top: 1px solid var(--line-color); background: rgba(11, 11, 15, 0.9); }
+        /* MEGA FOOTER STYLES (Στυλ image_7faec8.png) */
+        .mega-footer {
+            background: #07070a;
+            border-top: 1px solid var(--line-color);
+            padding: 70px 50px 25px 50px;
+            margin-top: 0;
+        }
+
+        .footer-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            padding-bottom: 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-column h4 {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column ul li a {
+            color: #90909a;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .footer-column ul li a:hover {
+            color: #ffffff;
+        }
+
+        .footer-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .footer-info-item a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        
+        .footer-info-item a:hover {
+            color: var(--accent);
+        }
+
+        .flag-icon {
+            font-size: 16px;
+        }
+
+        .footer-showroom {
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        .showroom-title {
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .showroom-title i {
+            color: var(--accent);
+            font-size: 11px;
+        }
+
+        .showroom-hours {
+            color: #90909a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-left: 19px;
+        }
+
+        .showroom-hours i {
+            font-size: 11px;
+        }
+
+        .footer-bottom {
+            max-width: 1000px;
+            margin: 25px auto 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #555560;
+        }
+
+        .footer-logo-text {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .footer-bottom-center p {
+            letter-spacing: 0.5px;
+        }
+
+        .footer-bottom-right {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-bottom-right a {
+            color: #555560;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .footer-bottom-right a:hover {
+            color: #ffffff;
+        }
         
         @media (max-width: 900px) { 
             .branch-block, .branch-block.reverse { flex-direction: column; gap: 30px; }
             .branch-map { width: 100%; height: 300px; }
             .fb-full-banner-btn { align-self: stretch; text-align: center; }
+            
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
         }
-        @media (max-width: 768px) { header { padding: 15px 20px; } nav a { margin-left: 20px; font-size: 10px; } .fb-header-btn { margin-left: 20px; } .hero-car-row { min-height: 240px; } .hero-car-row h1 { font-size: 32px; } footer { padding: 30px 20px; flex-direction: column; gap: 15px; } }
+        @media (max-width: 768px) { 
+            header { padding: 15px 20px; } 
+            nav a { margin-left: 20px; font-size: 10px; } 
+            .fb-header-btn { margin-left: 20px; } 
+            .hero-car-row { min-height: 240px; } 
+            .hero-car-row h1 { font-size: 32px; } 
+            .mega-footer { padding: 50px 20px 20px 20px; }
+        }
+        @media (max-width: 500px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -157,8 +313,8 @@
     <section class="contact-section" id="concierge">
         <div class="contact-container">
             <h2>Showrooms & Contact</h2>
-            
-            <!-- 1ος ΚΛΑΔΟΣ: ΛΕΥΚΩΣΙΑ (Χάρτης Αριστερά - Πληροφορίες Δεξιά) -->
+             
+            <!-- 1ος ΚΛΑΔΟΣ: ΛΕΥΚΩΣΙΑ -->
             <div class="branch-block">
                 <div class="branch-map">
                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3265.597652391039!2d33.391694!3d35.041694!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDAyJzMwLjEiTiAzM8KwMjMnMzAxLjEiRQ!5e0!3m2!1sel!2scy!4v1710000000000!5m2!1sel!2scy" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -181,7 +337,7 @@
                 </div>
             </div>
 
-            <!-- 2ος ΚΛΑΔΟΣ: ΛΕΜΕΣΟΣ (Πληροφορίες Αριστερά - Χάρτης Δεξιά) -->
+            <!-- 2ος ΚΛΑΔΟΣ: ΛΕΜΕΣΟΣ -->
             <div class="branch-block reverse">
                 <div class="branch-map">
                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3270.9234856!2d33.1512345!3d34.7012345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDQyJzA0LjQiTiAzM8KwMDknMDQuNCJF!5e0!3m2!1sel!2scy!4v1710000000001!5m2!1sel!2scy" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -220,8 +376,87 @@
         </div>
     </section>
 
-    <footer>
-        <p>© 2026 C.J. Demetriou Motors | Demetriou CarsCy Nicosia. All Rights Reserved.</p>
+    <!-- PREMIUM MEGA FOOTER (Στυλ image_7faec8.png) -->
+    <footer class="mega-footer">
+        <div class="footer-container">
+            
+            <!-- 1η Στήλη: Car Listing -->
+            <div class="footer-column">
+                <h4>CAR LISTING</h4>
+                <ul>
+                    <li><a href="cars.html">Cars in Stock</a></li>
+                    <li><a href="cars.html">UK & Japan Imports</a></li>
+                </ul>
+            </div>
+
+            <!-- 2η Στήλη: Our Services -->
+            <div class="footer-column">
+                <h4>OUR SERVICES</h4>
+                <ul>
+                    <li><a href="#brand">About Us</a></li>
+                    <li><a href="#concierge">Car Orders</a></li>
+                </ul>
+            </div>
+
+            <!-- 3η Στήλη: Contact -->
+            <div class="footer-column">
+                <h4>CONTACT</h4>
+                <div class="footer-info-item">
+                    <span class="flag-icon">🇨🇾</span>
+                    <a href="tel:94628922">+357 94628922</a>
+                </div>
+                <div class="footer-info-item">
+                    <span class="flag-icon">🇬🇧</span>
+                    <span style="font-size: 13px; color: #90909a;">UK & Japan Imports Desk</span>
+                </div>
+            </div>
+
+            <!-- 4η Στήλη: Showrooms & Hours -->
+            <div class="footer-column">
+                <h4>SHOWROOMS</h4>
+                
+                <!-- Λευκωσία -->
+                <div class="footer-showroom">
+                    <div class="showroom-title">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <strong>Nicosia (Nisou)</strong>
+                    </div>
+                    <div class="showroom-hours">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>Δευτ - Σάβ: 9:00 - 20:00</span>
+                    </div>
+                </div>
+
+                <!-- Λεμεσός -->
+                <div class="footer-showroom">
+                    <div class="showroom-title">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <strong>Limassol (Parekklisa)</strong>
+                    </div>
+                    <div class="showroom-hours">
+                        <i class="fa-regular fa-clock"></i>
+                        <span>Δευτ - Σάβ: 9:00 - 20:00</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Bar (Logo, Copyright, Socials) -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-left">
+                <span class="footer-logo-text">C.J. DEMETRIOU MOTORS</span>
+            </div>
+            
+            <div class="footer-bottom-center">
+                <p>Copyright © 2026 C.J. DEMETRIOU MOTORS. All Rights Reserved.</p>
+            </div>
+
+            <div class="footer-bottom-right">
+                <a href="https://www.facebook.com/profile.php?id=61589330603437" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#concierge"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+        </div>
     </footer>
 
     <script>
