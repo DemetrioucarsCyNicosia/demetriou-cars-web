@@ -31,10 +31,13 @@
         #fileInput { display: none; }
         .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 15px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; }
         .stock-section { margin-top: 40px; }
-        .stock-list { display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; }
+        .stock-list { display: flex; flex-direction: column; gap: 12px; max-height: 500px; overflow-y: auto; }
         .car-item { display: flex; flex-direction: column; background: rgba(255,255,255,0.03); padding: 16px; border: 1px solid var(--line-color); gap: 10px; }
-        .btn-delete { background: transparent; border: 1px solid #ff4a4a; color: #ff4a4a; padding: 5px 10px; font-size: 10px; cursor: pointer; }
-        .btn-save { background: var(--accent); border: none; padding: 5px 10px; font-size: 10px; cursor: pointer; font-weight: bold; }
+        .edit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
+        .edit-grid select, .edit-grid input { background: #14141c; border: 1px solid var(--line-color); color: #fff; padding: 5px; font-size: 12px; border-radius: 2px; }
+        .action-buttons { display: flex; gap: 5px; justify-content: flex-end; margin-top: 5px; }
+        .btn-delete { background: transparent; border: 1px solid #ff4a4a; color: #ff4a4a; padding: 5px 12px; font-size: 11px; cursor: pointer; text-transform: uppercase; }
+        .btn-save { background: var(--accent); border: none; color: #0d0d12; padding: 5px 12px; font-size: 11px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -65,9 +68,47 @@
                     </select>
                 </div>
                 <div class="field-group">
-                    <label>Τιμή</label>
+                    <label>Τιμή (€)</label>
                     <input type="text" id="price">
                 </div>
+                
+                <!-- Νέα πεδία τεχνικών χαρακτηριστικών -->
+                <div class="field-group">
+                    <label>Τύπος Αμαξώματος (Body)</label>
+                    <select id="bodyType">
+                        <option value="Saloon">Saloon</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Hatchback">Hatchback</option>
+                        <option value="Coupe">Coupe</option>
+                        <option value="Convertible">Convertible</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Κιβώτιο Ταχυτήτων</label>
+                    <select id="transmission">
+                        <option value="Automatic">Automatic</option>
+                        <option value="Manual">Manual</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Καύσιμο</label>
+                    <select id="fuel">
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="Electric">Electric</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Κίνηση (Drive)</label>
+                    <select id="drive">
+                        <option value="RWD">RWD (Πίσω)</option>
+                        <option value="AWD">AWD (Τετρακίνηση)</option>
+                        <option value="4WD">4WD (4x4)</option>
+                        <option value="FWD">FWD (Εμπρός)</option>
+                    </select>
+                </div>
+
                 <div class="field-group full-width">
                     <label for="fileInput" class="file-label">📸 Επιλογή Φωτογραφιών</label>
                     <input type="file" id="fileInput" multiple>
@@ -92,17 +133,44 @@
             const list = document.getElementById('stockList');
             list.innerHTML = cars.map(car => `
                 <div class="car-item">
-                    <h4>${car.brand_model}</h4>
-                    <div style="display:flex; gap:5px;">
+                    <h4 style="color:var(--accent);">${car.brand_model} (${car.year || 'N/A'})</h4>
+                    <div class="edit-grid">
                         <select id="status-${car.id}">
                             <option value="Stock" ${car.status==='Stock'?'selected':''}>Stock</option>
                             <option value="Pre-order" ${car.status==='Pre-order'?'selected':''}>Pre-order</option>
                             <option value="Coming soon" ${car.status==='Coming soon'?'selected':''}>Coming soon</option>
                             <option value="Sold" ${car.status==='Sold'?'selected':''}>Sold</option>
                         </select>
-                        <input type="text" id="price-${car.id}" value="${car.price || ''}" style="width:80px; padding:2px;">
-                        <button class="btn-save" onclick="updateCar(${car.id})">SAVE</button>
-                        <button class="btn-delete" onclick="deleteCar(${car.id})">DEL</button>
+                        <input type="text" id="price-${car.id}" value="${car.price || ''}" placeholder="Τιμή €">
+                        <input type="text" id="mileage-${car.id}" value="${car.mileage || ''}" placeholder="Μίλια/Χλμ">
+                        
+                        <select id="body-${car.id}">
+                            <option value="Saloon" ${car.body_type==='Saloon'?'selected':''}>Saloon</option>
+                            <option value="SUV" ${car.body_type==='SUV'?'selected':''}>SUV</option>
+                            <option value="Hatchback" ${car.body_type==='Hatchback'?'selected':''}>Hatchback</option>
+                            <option value="Coupe" ${car.body_type==='Coupe'?'selected':''}>Coupe</option>
+                            <option value="Convertible" ${car.body_type==='Convertible'?'selected':''}>Convertible</option>
+                        </select>
+                        <select id="trans-${car.id}">
+                            <option value="Automatic" ${car.transmission==='Automatic'?'selected':''}>Automatic</option>
+                            <option value="Manual" ${car.transmission==='Manual'?'selected':''}>Manual</option>
+                        </select>
+                        <select id="fuel-${car.id}">
+                            <option value="Petrol" ${car.fuel==='Petrol'?'selected':''}>Petrol</option>
+                            <option value="Diesel" ${car.fuel==='Diesel'?'selected':''}>Diesel</option>
+                            <option value="Hybrid" ${car.fuel==='Hybrid'?'selected':''}>Hybrid</option>
+                            <option value="Electric" ${car.fuel==='Electric'?'selected':''}>Electric</option>
+                        </select>
+                        <select id="drive-${car.id}" style="grid-column: span 3;">
+                            <option value="RWD" ${car.drive==='RWD'?'selected':''}>RWD (Πίσω)</option>
+                            <option value="AWD" ${car.drive==='AWD'?'selected':''}>AWD (Τετρακίνηση)</option>
+                            <option value="4WD" ${car.drive==='4WD'?'selected':''}>4WD (4x4)</option>
+                            <option value="FWD" ${car.drive==='FWD'?'selected':''}>FWD (Εμπρός)</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-save" onclick="updateCar(${car.id})">Αποθήκευση</button>
+                        <button class="btn-delete" onclick="deleteCar(${car.id})">Διαγραφή</button>
                     </div>
                 </div>
             `).join('');
@@ -111,21 +179,81 @@
         async function updateCar(id) {
             const { error } = await sbClient.from('cars').update({
                 status: document.getElementById(`status-${id}`).value,
-                price: document.getElementById(`price-${id}`).value
+                price: document.getElementById(`price-${id}`).value,
+                mileage: document.getElementById(`mileage-${id}`).value,
+                body_type: document.getElementById(`body-${id}`).value,
+                transmission: document.getElementById(`trans-${id}`).value,
+                fuel: document.getElementById(`fuel-${id}`).value,
+                drive: document.getElementById(`drive-${id}`).value
             }).eq('id', id);
+            
             if (error) alert("Σφάλμα: " + error.message);
-            else alert("Ενημερώθηκε!");
+            else alert("Το όχημα ενημερώθηκε επιτυχώς!");
         }
 
         async function saveCar(e) {
             e.preventDefault();
-            // ... [Υπόλοιπος κώδικας για το upload παραμένει ίδιος]
-            alert("Το όχημα προστέθηκε!");
-            loadStock();
+            
+            const brandModel = document.getElementById('brandModel').value;
+            const year = document.getElementById('year').value;
+            const mileage = document.getElementById('mileage').value;
+            const status = document.getElementById('status').value;
+            const price = document.getElementById('price').value;
+            const bodyType = document.getElementById('bodyType').value;
+            const transmission = document.getElementById('transmission').value;
+            const fuel = document.getElementById('fuel').value;
+            const drive = document.getElementById('drive').value;
+            const fileInput = document.getElementById('fileInput');
+
+            let uploadedUrls = [];
+
+            // Διαδικασία Upload Φωτογραφιών αν υπάρχουν αρχεία
+            if (fileInput.files.length > 0) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const file = fileInput.files[i];
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+                    const filePath = `car-images/${fileName}`;
+
+                    const { data, error: uploadError } = await sbClient.storage
+                        .from('showroom')
+                        .upload(filePath, file);
+
+                    if (!uploadError) {
+                        const { data: urlData } = sbClient.storage
+                            .from('showroom')
+                            .getPublicUrl(filePath);
+                        uploadedUrls.push(urlData.publicUrl);
+                    }
+                }
+            }
+
+            // Εισαγωγή στη βάση δεδομένων
+            const { error } = await sbClient.from('cars').insert([{
+                brand_model: brandModel,
+                year: parseInt(year),
+                mileage: mileage,
+                status: status,
+                price: price,
+                body_type: bodyType,
+                transmission: transmission,
+                fuel: fuel,
+                drive: drive,
+                images: uploadedUrls,
+                image_url: uploadedUrls[0] || 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'
+            }]);
+
+            if (error) {
+                alert("Σφάλμα κατά την καταχώρηση: " + error.message);
+            } else {
+                alert("Το όχημα προστέθηκε επιτυχώς!");
+                document.getElementById('carForm').reset();
+                loadStock();
+            }
         }
 
         async function deleteCar(id) {
-            if(confirm("Διαγραφή;")) {
+            if(confirm("Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το όχημα;")) {
                 await sbClient.from('cars').delete().eq('id', id);
                 loadStock();
             }
