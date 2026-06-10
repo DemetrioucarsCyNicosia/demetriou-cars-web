@@ -41,7 +41,9 @@
 
         .showroom-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         
-        .car-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s; position: relative; }
+        .car-card { background: #ffffff; color: #111116; border: 1px solid #eef0f2; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        .car-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        
         .image-slider-container { width: 100%; aspect-ratio: 16/10; position: relative; overflow: hidden; background: #000; }
         .slider-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.4s ease-in-out; }
         .slider-wrapper img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; }
@@ -56,15 +58,22 @@
         .status-coming { background: #3498db; color: #fff; }
         .status-sold { background: #e74c3c; color: #fff; }
 
-        .car-details { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; }
-        .car-details h4 { font-family: "Times New Roman", serif; font-size: 18px; text-transform: uppercase; margin-bottom: 10px; }
-        .car-specs { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .car-details { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; background: #ffffff; }
+        .car-details h4 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
         
-        .btn-container { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-inquire { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 12px; font-size: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; text-decoration: none; border-radius: 2px; }
-        .btn-inquire:hover { background: var(--accent); color: #0b0b0f; }
-        .viber-btn { border-color: #7360f2; color: #7360f2; }
-        .viber-btn:hover { background: #7360f2; color: #fff; }
+        .car-id-label { font-size: 11px; color: #70707a; margin-bottom: 15px; }
+        
+        /* 6-Position Technical Specs Grid */
+        .specs-grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 10px; border-bottom: 1px solid #f0f2f5; padding-bottom: 20px; margin-bottom: 15px; }
+        .spec-item-box { font-size: 12px; color: #50505a; display: flex; align-items: center; gap: 8px; }
+        .spec-item-box i { color: #90909a; width: 16px; text-align: center; }
+        
+        .price-and-action { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .price-container { display: flex; flex-direction: column; }
+        .price-eur { font-weight: 800; font-size: 20px; color: #111116; }
+        
+        .arrow-circle-btn { width: 32px; height: 32px; border: 1px solid #111116; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #111116; transition: background 0.3s, color 0.3s; }
+        .car-card:hover .arrow-circle-btn { background: #111116; color: #ffffff; }
     </style>
 </head>
 <body>
@@ -138,12 +147,21 @@
             container.innerHTML = carsToDisplay.map((car, carIdx) => {
                 let carImages = (car.images && car.images.length > 0) ? car.images : [car.image_url || 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80'];
                 
-                let displayPrice = (car.price && car.price.trim() !== "") ? parseInt(car.price.replace(/[^0-9]/g, '')).toLocaleString('el-GR') + " €" : "On Request";
+                // Καθαρισμός και μορφοποίηση τιμής EUR
+                let cleanPrice = (car.price && car.price.trim() !== "") ? parseInt(car.price.replace(/[^0-9]/g, '')) : 0;
+                let displayPriceEUR = cleanPrice > 0 ? cleanPrice.toLocaleString('el-GR') + " €" : "On Request";
                 
                 let statusClass = 'status-stock', statusText = 'Σε Απόθεμα';
                 if(car.status === 'Pre-order') { statusClass = 'status-preorder'; statusText = 'Pre-Order'; }
                 else if(car.status === 'Coming soon') { statusClass = 'status-coming'; statusText = 'Coming Soon'; }
                 else if(car.status === 'Sold') { statusClass = 'status-sold'; statusText = 'Sold'; }
+                
+                // Διαχείριση των specs (χρησιμοποιεί τα δεδομένα της βάσης ή εμφανίζει έξυπνα default)
+                let bodyType = car.body_type || (car.brand_model && car.brand_model.toLowerCase().includes('rover') ? 'SUV' : 'Saloon');
+                let transmission = car.transmission || 'Automatic';
+                let fuelType = car.fuel || 'Petrol';
+                let driveTrain = car.drive || (car.brand_model && car.brand_model.toLowerCase().includes('evoqe') ? '4WD' : 'RWD');
+                let mileageDisplay = car.mileage ? parseInt(car.mileage.replace(/[^0-9]/g, '')).toLocaleString('en-GB') + " miles" : "0 miles";
                 
                 return `
                     <a href="details.html?id=${car.id}" style="text-decoration:none; color:inherit; display:block;">
@@ -157,14 +175,26 @@
                             </div>
                             <div class="car-details">
                                 <h4>${car.brand_model}</h4>
-                                <div class="car-specs">
-                                    <div><i class="fa-solid fa-calendar-days" style="color:var(--accent);"></i> Έτος: ${car.year || 'N/A'}</div>
-                                    <div><i class="fa-solid fa-gauge-high" style="color:var(--accent);"></i> Χιλιόμετρα: ${car.mileage || 'N/A'} km</div>
+                                <div class="car-id-label">ID: #30${car.id}</div>
+                                
+                                <!-- 6-Position Specs Grid (Layout exact as image_8084de.jpg) -->
+                                <div class="specs-grid-layout">
+                                    <div class="spec-item-box"><i class="fa-solid fa-car"></i> ${bodyType}</div>
+                                    <div class="spec-item-box"><i class="fa-solid fa-gear"></i> ${transmission}</div>
+                                    <div class="spec-item-box"><i class="fa-solid fa-gas-pump"></i> ${fuelType}</div>
+                                    <div class="spec-item-box"><i class="fa-solid fa-road"></i> ${mileageDisplay}</div>
+                                    <div class="spec-item-box"><i class="fa-solid fa-sliders"></i> ${driveTrain}</div>
+                                    <div class="spec-item-box"><i class="fa-solid fa-calendar"></i> ${car.year || 'N/A'}</div>
                                 </div>
-                                <div style="font-weight:bold; font-size:18px; margin-bottom:15px;">${displayPrice}</div>
-                                <div class="btn-container">
-                                    <div class="btn-inquire"><i class="fa-brands fa-whatsapp"></i> WhatsApp</div>
-                                    <div class="btn-inquire viber-btn"><i class="fa-brands fa-viber"></i> Viber</div>
+                                
+                                <!-- Price & Action Area -->
+                                <div class="price-and-action">
+                                    <div class="price-container">
+                                        <span class="price-eur">${displayPriceEUR}</span>
+                                    </div>
+                                    <div class="arrow-circle-btn">
+                                        <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
