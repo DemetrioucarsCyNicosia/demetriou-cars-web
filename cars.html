@@ -35,18 +35,21 @@
         .filter-section { max-width: 1200px; margin: 40px auto; padding: 30px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 4px; }
         .filter-section h3 { font-family: "Times New Roman", serif; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 20px; text-align: center; }
         .filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .filter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .filter-group { display: flex; flex-direction: column; }
         .filter-group label { font-size: 9px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
         .filter-group select { background: #181822; border: 1px solid var(--border-color); color: #fff; padding: 12px; font-size: 13px; outline: none; border-radius: 2px; transition: border-color 0.3s; cursor: pointer; }
 
         .showroom-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         
-        .car-card { background: #ffffff; color: #111116; border: 1px solid #eef0f2; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
-        .car-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        /* Μετατροπή της κάρτας σε Premium Σκούρο Look */
+        .car-card { background: #14141c; color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        .car-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
+        /* Διόρθωση για να κάθεται τέλεια η φωτογραφία χωρίς να κόβεται απότομα */
         .image-slider-container { width: 100%; aspect-ratio: 16/10; position: relative; overflow: hidden; background: #000; }
         .slider-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.4s ease-in-out; }
-        .slider-wrapper img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; }
+        .slider-wrapper img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; display: block; }
         
         .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: none; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; cursor: pointer; border-radius: 50%; z-index: 5; }
         .slider-btn.prev { left: 10px; }
@@ -58,22 +61,24 @@
         .status-coming { background: #3498db; color: #fff; }
         .status-sold { background: #e74c3c; color: #fff; }
 
-        .car-details { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; background: #ffffff; }
-        .car-details h4 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
+        /* Σκούρο background για τις λεπτομέρειες */
+        .car-details { padding: 25px; display: flex; flex-direction: column; flex-grow: 1; background: #14141c; }
+        .car-details h4 { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
         
-        .car-id-label { font-size: 11px; color: #70707a; margin-bottom: 15px; }
+        .car-id-label { font-size: 11px; color: var(--text-muted); margin-bottom: 15px; }
         
-        /* 6-Position Technical Specs Grid */
-        .specs-grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 10px; border-bottom: 1px solid #f0f2f5; padding-bottom: 20px; margin-bottom: 15px; }
-        .spec-item-box { font-size: 12px; color: #50505a; display: flex; align-items: center; gap: 8px; }
-        .spec-item-box i { color: #90909a; width: 16px; text-align: center; }
+        /* Σκούρο Grid με Χρυσά Εικονίδια */
+        .specs-grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 20px; margin-bottom: 15px; }
+        .spec-item-box { font-size: 12px; color: #d1d1d6; display: flex; align-items: center; gap: 8px; }
+        .spec-item-box i { color: var(--accent); width: 16px; text-align: center; }
         
         .price-and-action { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
         .price-container { display: flex; flex-direction: column; }
-        .price-eur { font-weight: 800; font-size: 20px; color: #111116; }
+        .price-eur { font-weight: 800; font-size: 20px; color: #ffffff; }
         
-        .arrow-circle-btn { width: 32px; height: 32px; border: 1px solid #111116; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #111116; transition: background 0.3s, color 0.3s; }
-        .car-card:hover .arrow-circle-btn { background: #111116; color: #ffffff; }
+        /* Χρυσό Κυκλικό Κουμπί / Βέλος */
+        .arrow-circle-btn { width: 32px; height: 32px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--accent); transition: background 0.3s, color 0.3s, border-color 0.3s; }
+        .car-card:hover .arrow-circle-btn { background: var(--accent); color: #0b0b0f; border-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -177,7 +182,7 @@
                                 <h4>${car.brand_model}</h4>
                                 <div class="car-id-label">ID: #30${car.id}</div>
                                 
-                                <!-- 6-Position Specs Grid (Layout exact as image_8084de.jpg) -->
+                                <!-- 6-Position Specs Grid -->
                                 <div class="specs-grid-layout">
                                     <div class="spec-item-box"><i class="fa-solid fa-car"></i> ${bodyType}</div>
                                     <div class="spec-item-box"><i class="fa-solid fa-gear"></i> ${transmission}</div>
