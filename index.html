@@ -90,7 +90,7 @@
         .minimal-form input:focus, .minimal-form textarea:focus { border-bottom-color: var(--accent); }
         .btn-submit { background: var(--accent); color: #0d0d12; border: none; padding: 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; font-weight: bold; }
 
-        /* MEGA FOOTER STYLES (Στυλ image_7faec8.png) */
+        /* MEGA FOOTER STYLES */
         .mega-footer {
             background: #07070a;
             border-top: 1px solid var(--line-color);
@@ -309,7 +309,7 @@
         <p>Με ιδιαίτερη χαρά σας υποδεχόμαστε και στο <strong>νέο, υπερσύγχρονο showroom μας στη Λευκωσία (Περιοχή Χαλεπιανές)</strong>. Εξειδικευόμαστε στην εισαγωγή επιλεγμένων, πιστοποιημένων αυτοκινήτων από τα καλύτερα δημοπρατήρια της Ιαπωνίας (JDM) και του Ηνωμένου Βασιλείου.</p>
     </section>
 
-    <!-- CONTACT SECTION (Widescreen Zip-Zag Layout) -->
+    <!-- CONTACT SECTION -->
     <section class="contact-section" id="concierge">
         <div class="contact-container">
             <h2>Showrooms & Contact</h2>
@@ -376,11 +376,10 @@
         </div>
     </section>
 
-    <!-- PREMIUM MEGA FOOTER (Στυλ image_7faec8.png) -->
+    <!-- PREMIUM MEGA FOOTER -->
     <footer class="mega-footer">
         <div class="footer-container">
             
-            <!-- 1η Στήλη: Car Listing -->
             <div class="footer-column">
                 <h4>CAR LISTING</h4>
                 <ul>
@@ -389,7 +388,6 @@
                 </ul>
             </div>
 
-            <!-- 2η Στήλη: Our Services -->
             <div class="footer-column">
                 <h4>OUR SERVICES</h4>
                 <ul>
@@ -398,7 +396,6 @@
                 </ul>
             </div>
 
-            <!-- 3η Στήλη: Contact -->
             <div class="footer-column">
                 <h4>CONTACT</h4>
                 <div class="footer-info-item">
@@ -411,11 +408,9 @@
                 </div>
             </div>
 
-            <!-- 4η Στήλη: Showrooms & Hours -->
             <div class="footer-column">
                 <h4>SHOWROOMS</h4>
                 
-                <!-- Λευκωσία -->
                 <div class="footer-showroom">
                     <div class="showroom-title">
                         <i class="fa-solid fa-location-dot"></i>
@@ -427,7 +422,6 @@
                     </div>
                 </div>
 
-                <!-- Λεμεσός -->
                 <div class="footer-showroom">
                     <div class="showroom-title">
                         <i class="fa-solid fa-location-dot"></i>
@@ -442,7 +436,6 @@
 
         </div>
 
-        <!-- Bottom Bar (Logo, Copyright, Socials) -->
         <div class="footer-bottom">
             <div class="footer-bottom-left">
                 <span class="footer-logo-text">C.J. DEMETRIOU MOTORS</span>
@@ -467,9 +460,14 @@
         });
     </script>
 
-    <!-- TAWK.TO LIVE CHAT SCRIPT (Στυλ image_7fa6e2.png) -->
+    <!-- TAWK.TO LIVE CHAT SCRIPT (Ρυθμισμένο Αριστερά) -->
     <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    var Tawk_API=Tawk_API||{};
+    
+    // Εξαναγκασμός του widget να εμφανίζεται αριστερά μέσω API
+    Tawk_API.widgetPosition = 'bottom-left';
+    
+    var Tawk_LoadStart=new Date();
     (function(){
     var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
     s1.async=true;
